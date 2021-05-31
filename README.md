@@ -9,4 +9,4 @@ Feel free to help out fixing bugs, pull requests or whatever!
 ## Download
 [MS Remake DLs](https://www.msremake.com/resources/master-sword-classic-full-installer.22/)
 
-![MS:C][./msc.png]
+![MS:C](./msc.png)
