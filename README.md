@@ -1,4 +1,5 @@
 # Master Sword Classic
+Run createall to create the solution(s).
 
 ## Compiling
 You can compile with any version of Visual Studio, if you use VS > 2013 be sure to compile with the 2013 toolset (install it if missing). 
