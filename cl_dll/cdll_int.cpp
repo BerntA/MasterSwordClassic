@@ -23,9 +23,9 @@
 #include "netadr.h"
 #include "vgui_schememanager.h"
 #include "logfile.h"
+#include <windows.h>
 
 //#define LOG_ALLEXPORTS //more exports in entity.cpp
-
 
 #ifdef LOG_ALLEXPORTS
 	#define logfileopt logfile
@@ -54,9 +54,66 @@ TeamFortressViewport *gViewPort = NULL;
 extern void InitScreenGlow(void);
 extern void RenderScreenGlow(void);
 
-void InitInput (void);
-void EV_HookEvents( void );
-void IN_Commands( void );
+void InitInput(void);
+void EV_HookEvents(void);
+void IN_Commands(void);
+
+static cvar_s  *g_pVarBorderless = NULL;
+static int g_iBorderlessMode = 0;
+
+enum BORDERLESS_WINDOW_TYPES
+{
+	BORDERLESS_SHOWTASKBAR = 1,
+	BORDERLESS_FULLSCREEN,
+	BORDERLESS_RESIZABLE,
+};
+
+static void SetBorderlessWindow() // Bernt; fixing bloom by making fullscreen windowed a thing *shrugs*!
+{
+	int iCurrentMode = (g_pVarBorderless ? ((int)g_pVarBorderless->value) : 0);
+	if ((g_iBorderlessMode == iCurrentMode) || (iCurrentMode <= 0))
+		return;
+
+	HWND handle = GetActiveWindow();
+	if (!handle)
+		return;
+
+	RECT area;
+	const int w = GetSystemMetrics(SM_CXSCREEN);
+	const int h = GetSystemMetrics(SM_CYSCREEN);
+	SystemParametersInfoA(SPI_GETWORKAREA, 0, &area, 0);
+
+	switch (iCurrentMode)
+	{
+
+	case BORDERLESS_SHOWTASKBAR:
+	{
+		SetWindowLongPtr(handle, GWL_STYLE, WS_VISIBLE | WS_POPUP);
+		SetWindowPos(handle, HWND_TOP, 0, 0, w, area.bottom, SWP_FRAMECHANGED);
+		break;
+	}
+
+	case BORDERLESS_FULLSCREEN:
+	{
+		SetWindowLongPtr(handle, GWL_STYLE, WS_VISIBLE | WS_POPUP);
+		SetWindowPos(handle, HWND_TOP, 0, 0, w, h, SWP_FRAMECHANGED);
+		break;
+	}
+
+	case BORDERLESS_RESIZABLE:
+	{
+		DWORD new_style = (WS_POPUP | WS_THICKFRAME | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX);
+		::SetWindowLongPtrW(handle, GWL_STYLE, static_cast<LONG>(new_style));
+		::SetWindowPos(handle, nullptr, 0, 0, w, area.bottom, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE);
+		::ShowWindow(handle, SW_SHOW);
+		break;
+	}
+
+	}
+
+	g_iBorderlessMode = iCurrentMode;
+}
+
 /*
 ========================== 
     Initialize
@@ -192,6 +249,7 @@ int DLLEXPORT Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 	memcpy(&gEngfuncs, pEnginefuncs, sizeof(cl_enginefunc_t));
 
 	EV_HookEvents();
+	g_pVarBorderless = CVAR_CREATE("ms_borderless", "0", FCVAR_ARCHIVE);
 
 	logfile << "[DLLEXPORT Initialize: Complete]" << endl;
 
@@ -220,6 +278,9 @@ int DLLEXPORT HUD_VidInit( void )
 
 	dbg( "Call VGui_Startup" );
 	VGui_Startup();
+
+	dbg("Try Set Borderless");
+	SetBorderlessWindow();
 
 	dbg( "Call Glow" );
 	// IMAGE-SPACE GLOW - Thothie TWHL JUN2010_22 - see comments in tri.cpp
@@ -259,11 +320,14 @@ void DLLEXPORT HUD_Init( void )
 	dbg( "Call Scheme_Init" );
 	Scheme_Init();
 
+	logfile << "[HUD_Init: SetBorderlessWindow]" << endl;
+	dbg("Call SetBorderlessWindow");
+	SetBorderlessWindow();
+
 	logfile << "[HUD_Init: Complete]" << endl;
 
 	enddbg;
 }
-
 
 /*
 ==========================
@@ -292,7 +356,6 @@ int DLLEXPORT HUD_Redraw( float time, int intermission )
 	enddbg;
 	return 1;
 }
-
 
 /*
 ==========================
@@ -359,8 +422,9 @@ void DLLEXPORT HUD_Frame( double time )
 
 	dbg( "Call ServersThink" );
 	ServersThink( time );
-
 	dbg( "Call ServersThink DONE" );
+
+	SetBorderlessWindow();
 
 	enddbg;
 }
@@ -403,4 +467,3 @@ void DLLEXPORT HUD_DirectorMessage( int iSize, void *pbuf )
 	enddbg;
 
 }
-
