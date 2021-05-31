@@ -1,0 +1,19 @@
+//-----------------------------------------------------------------------------
+//	PROJECTS.VGC
+//
+//	Project Configurations for all Source(TM) Projects
+//-----------------------------------------------------------------------------
+
+/////////////////////////
+// Project definitions //
+/////////////////////////
+
+$Project "server"
+{
+	"dlls\server.vpc"
+}
+
+$Project "client"
+{
+	"cl_dll\client.vpc"
+}

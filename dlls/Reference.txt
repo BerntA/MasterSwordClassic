@@ -1,0 +1,28 @@
+MS uses the extraneous pev variables in both the client and sever
+
+*Server*
+
+CBasePlayer
+¯¯¯¯¯¯¯¯¯¯¯
+iuser1 - sent to the client for player ID
+iuser4 - sent to the server (via cliend cmd: "attack X") Indicates which 
+		 attack the client picked
+
+CGenericItem
+¯¯¯¯¯¯¯¯¯¯¯¯
+iuser1 - Indicates which attack is currently playing.  CShieldAreas check
+		 this to determine if they should die this frame.
+
+CMSMonster
+¯¯¯¯¯¯¯¯¯¯
+euser1 - Used in the Used() function to indicate who used the monster.
+iuser4 - Same use as in CBasePlayer, but set by scripts
+
+
+*Client*
+
+All Entities
+¯¯¯¯¯¯¯¯¯¯¯¯
+euser1 - Points to the entvars_t of the next entity
+globalname - A string_t containing the name of the map this ent is from
+("globalname" is not coded yet)
