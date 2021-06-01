@@ -1,6 +1,6 @@
-//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
+//========= Copyright ï¿½ 1996-2002, Valve LLC, All rights reserved. ============
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -8,18 +8,18 @@
 #ifndef SCOREPANEL_H
 #define SCOREPANEL_H
 
-#include<VGUI_Panel.h>
-#include<VGUI_TablePanel.h>
-#include<VGUI_HeaderPanel.h>
-#include<VGUI_TextGrid.h>
-#include<VGUI_Label.h>
-#include<VGUI_TextImage.h>
+#include <VGUI_Panel.h>
+#include <VGUI_TablePanel.h>
+#include <VGUI_HeaderPanel.h>
+#include <VGUI_TextGrid.h>
+#include <VGUI_Label.h>
+#include <VGUI_TextImage.h>
 #include "..\game_shared\vgui_listbox.h"
 
 #include <ctype.h>
 
-#define MAX_SCORES					10
-#define MAX_SCOREBOARD_TEAMS		5
+#define MAX_SCORES 10
+#define MAX_SCOREBOARD_TEAMS 5
 
 // Scoreboard cells
 enum
@@ -44,20 +44,20 @@ enum
 #define COLUMN_VOICE	6
 #define COLUMN_BLANK	7
 #define NUM_COLUMNS		8*/
-#define NUM_ROWS		(MAX_PLAYERS + (MAX_SCOREBOARD_TEAMS * 2))
+#define NUM_ROWS (MAX_PLAYERS + (MAX_SCOREBOARD_TEAMS * 2))
 
 // Scoreboard positions
-#define SBOARD_INDENT_X			XRES(104)
-#define SBOARD_INDENT_Y			YRES(40)
+#define SBOARD_INDENT_X XRES(104)
+#define SBOARD_INDENT_Y YRES(40)
 
 // low-res scoreboard indents
-#define SBOARD_INDENT_X_512		30
-#define SBOARD_INDENT_Y_512		30
+#define SBOARD_INDENT_X_512 30
+#define SBOARD_INDENT_Y_512 30
 
-#define SBOARD_INDENT_X_400		0
-#define SBOARD_INDENT_Y_400		20
+#define SBOARD_INDENT_X_400 0
+#define SBOARD_INDENT_Y_400 20
 
-struct extra_player_info_t 
+struct extra_player_info_t
 {
 	//short frags;
 	//short deaths;
@@ -69,10 +69,10 @@ struct extra_player_info_t
 	char teamname[MAX_TEAM_NAME];
 	ulong TeamID;
 	int MaxHP; //FEB2008a -- Shuriken
-	int HP;   //FEB2008a -- Shuriken
+	int HP;	   //FEB2008a -- Shuriken
 };
 
-struct team_info_t 
+struct team_info_t
 {
 	char name[MAX_TEAM_NAME];
 	short frags;
@@ -86,10 +86,9 @@ struct team_info_t
 	int teamnumber;
 };
 
-extern hud_player_info_t	g_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
-extern extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player info sent directly to the client dll
-extern team_info_t			g_TeamInfo[MAX_TEAMS+1];
-
+extern hud_player_info_t g_PlayerInfoList[MAX_PLAYERS + 1];	   // player info from the engine
+extern extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS + 1]; // additional player info sent directly to the client dll
+extern team_info_t g_TeamInfo[MAX_TEAMS + 1];
 
 using namespace vgui;
 
@@ -133,7 +132,7 @@ public:
 	void setPos(int x, int y)
 	{
 		_image[0]->setPos(x, y);
-		
+
 		int swide, stall;
 		_image[0]->getSize(swide, stall);
 
@@ -154,7 +153,6 @@ public:
 
 private:
 	TextImage *_image[2];
-
 };
 
 //-----------------------------------------------------------------------------
@@ -188,9 +186,9 @@ public:
 		_useFgColorAsImageColor = state;
 	}
 
-	virtual void setText(int textBufferLen, const char* text);
+	virtual void setText(int textBufferLen, const char *text);
 
-	virtual void setText(const char* text)
+	virtual void setText(const char *text)
 	{
 		// strip any non-alnum characters from the end
 		char buf[512];
@@ -215,10 +213,10 @@ public:
 		_dualImage->getSize(wide, tall);
 	}
 
-	void setFgColor(int r,int g,int b,int a)
+	void setFgColor(int r, int g, int b, int a)
 	{
-		Label::setFgColor(r,g,b,a);
-		Color color(r,g,b,a);
+		Label::setFgColor(r, g, b, a);
+		Color color(r, g, b, a);
 		_dualImage->setColor(color);
 		_dualImage->setColor2(color);
 		repaint();
@@ -228,10 +226,10 @@ public:
 	{
 		int r, g, b, a;
 		Label::setFgColor(sc);
-		Label::getFgColor( r, g, b, a );
+		Label::getFgColor(r, g, b, a);
 
 		// Call the r,g,b,a version so it sets the color in the dualImage..
-		setFgColor( r, g, b, a );
+		setFgColor(r, g, b, a);
 	}
 
 	void setFont(Font *font)
@@ -278,80 +276,74 @@ private:
 	class HitTestPanel : public Panel
 	{
 	public:
-		virtual void	internalMousePressed(MouseCode code);
+		virtual void internalMousePressed(MouseCode code);
 	};
 
-
 private:
+	Label m_TitleLabel;
+	vgui::BitmapTGA *m_pIcons[1]; //0 == Transition icon
 
-	Label			m_TitleLabel;
-	vgui::BitmapTGA	*m_pIcons[1];	//0 == Transition icon
-	
 	// Here is how these controls are arranged hierarchically.
 	// m_HeaderGrid
 	//     m_HeaderLabels
 
 	// m_PlayerGridScroll
 	//     m_PlayerGrid
-	//         m_PlayerEntries 
+	//         m_PlayerEntries
 
-	CGrid			m_HeaderGrid;
-	CLabelHeader	m_HeaderLabels[NUM_COLUMNS];			// Labels above the 
-	CLabelHeader	*m_pCurrentHighlightLabel;
-	int				m_iHighlightRow;
-	
-	vgui::CListBox	m_PlayerList;
-	CGrid			m_PlayerGrids[NUM_ROWS];				// The grid with player and team info. 
-	CLabelHeader	m_PlayerEntries[NUM_COLUMNS][NUM_ROWS];	// Labels for the grid entries.
+	CGrid m_HeaderGrid;
+	CLabelHeader m_HeaderLabels[NUM_COLUMNS]; // Labels above the
+	CLabelHeader *m_pCurrentHighlightLabel;
+	int m_iHighlightRow;
 
-	ScorePanel::HitTestPanel	m_HitTestPanel;
-	class CommandButton			*m_pCloseButton;
-	CLabelHeader*	GetPlayerEntry(int x, int y)	{return &m_PlayerEntries[x][y];}
+	vgui::CListBox m_PlayerList;
+	CGrid m_PlayerGrids[NUM_ROWS];						 // The grid with player and team info.
+	CLabelHeader m_PlayerEntries[NUM_COLUMNS][NUM_ROWS]; // Labels for the grid entries.
 
-public:
-	
-	int				m_iNumTeams;
-	int				m_iPlayerNum;
-	int				m_iShowscoresHeld;
-
-	int				m_iRows;
-	int				m_iSortedRows[NUM_ROWS];
-	int				m_iIsATeam[NUM_ROWS];
-	bool			m_bHasBeenSorted[MAX_PLAYERS];
-	int				m_iLastKilledBy;
-	int				m_fLastKillTime;
-
+	ScorePanel::HitTestPanel m_HitTestPanel;
+	class CommandButton *m_pCloseButton;
+	CLabelHeader *GetPlayerEntry(int x, int y) { return &m_PlayerEntries[x][y]; }
 
 public:
+	int m_iNumTeams;
+	int m_iPlayerNum;
+	int m_iShowscoresHeld;
 
-	ScorePanel(int x,int y,int wide,int tall);
+	int m_iRows;
+	int m_iSortedRows[NUM_ROWS];
+	int m_iIsATeam[NUM_ROWS];
+	bool m_bHasBeenSorted[MAX_PLAYERS];
+	int m_iLastKilledBy;
+	int m_fLastKillTime;
 
-	void Update( void );
+public:
+	ScorePanel(int x, int y, int wide, int tall);
 
-	void SortTeams( void );
-	void SortPlayers( int iTeam, char *team );
-	void RebuildTeams( void );
+	void Update(void);
+
+	void SortTeams(void);
+	void SortPlayers(int iTeam, char *team);
+	void RebuildTeams(void);
 
 	void FillGrid();
 
-	void DeathMsg( int killer, int victim );
+	void DeathMsg(int killer, int victim);
 
-	void Initialize( void );
+	void Initialize(void);
 
-	void Open( void );
+	void Open(void);
 
 	void MouseOverCell(int row, int col);
 
-// InputSignal overrides.
+	// InputSignal overrides.
 public:
-
-	virtual void mousePressed(MouseCode code, Panel* panel);
+	virtual void mousePressed(MouseCode code, Panel *panel);
 	virtual void cursorMoved(int x, int y, Panel *panel);
 
 	friend CLabelHeader;
 };
 
 //Master Sword
-void MSG_ScoreInfo( const char *pszName, int iSize, void *pbuf );
+void MSG_ScoreInfo(const char *pszName, int iSize, void *pbuf);
 
 #endif

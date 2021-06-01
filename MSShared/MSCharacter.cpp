@@ -5,12 +5,12 @@
 #include "inc_weapondefs.h"
 #include "Stats/Stats.h"
 #ifdef VALVE_DLL
-	#include "../MSShared/Global.h"
-	#include "MSCentral.h"
+#include "../MSShared/Global.h"
+#include "MSCentral.h"
 #else
-	#include "../cl_dll/inc_huditem.h"
-	#include "../cl_dll/MasterSword/CLGlobal.h"
-	#include "../cl_dll/vgui_ScorePanel.h"
+#include "../cl_dll/inc_huditem.h"
+#include "../cl_dll/MasterSword/CLGlobal.h"
+#include "../cl_dll/vgui_ScorePanel.h"
 #endif
 #include "logfile.h"
 #include "MSCharacter.h"
@@ -18,180 +18,181 @@
 #include "../MSShared/Script.h"
 
 #ifndef _WIN32
-	#include "sys/io.h"
+#include "sys/io.h"
 #endif
 #include <direct.h> //for mkdir()
 
-//Vector	MSChar_Interface::LastGoodPos, 
+//Vector	MSChar_Interface::LastGoodPos,
 //		MSChar_Interface::LastGoodAng;
 
-void ReplaceChar( char *pString, char org, char dest ); 
+void ReplaceChar(char *pString, char org, char dest);
 
-
-bool IsValidCharVersion( int Version )
+bool IsValidCharVersion(int Version)
 {
 	//logfile << "Check char version: " << Version << "\r\n";
-	if( Version == SAVECHAR_VERSION || Version == SAVECHAR_LASTVERSION )
+	if (Version == SAVECHAR_VERSION || Version == SAVECHAR_LASTVERSION)
 		return true;
 
-	if( Version == SAVECHAR_DEV_VERSION || Version == SAVECHAR_REL_VERSION )	//hack to get somebody's char back
+	if (Version == SAVECHAR_DEV_VERSION || Version == SAVECHAR_REL_VERSION) //hack to get somebody's char back
 		return true;
-		
-	#ifndef RELEASE_LOCKDOWN
-		if( Version == SAVECHAR_REL_VERSION )
-			return true;
-	#endif
+
+#ifndef RELEASE_LOCKDOWN
+	if (Version == SAVECHAR_REL_VERSION)
+		return true;
+#endif
 	return false;
 }
 
-const char *GetSaveFileName( int iCharacter, CBasePlayer *pPlayer ) 
+const char *GetSaveFileName(int iCharacter, CBasePlayer *pPlayer)
 {
 	static char cFileName[MAX_PATH];
 
-	#ifdef VALVE_DLL
-		//Server
-		msstring FileID;
-		//if( MSGlobals::IsLanGame ) pszFileID = LanID = msstring("LAN_") + STRING(pPlayer->DisplayName) + g_engfuncs.pfnInfoKeyValue( g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "ms_id" );
-		if( MSGlobals::IsLanGame ) FileID = msstring("LAN_") + g_engfuncs.pfnInfoKeyValue( g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "name" );
-		else FileID = GETPLAYERAUTHID( pPlayer->edict() );
-		msstring Prefix = MSCentral::Enabled( ) ? CENTRAL_FILEPREFIX : "";
+#ifdef VALVE_DLL
+	//Server
+	msstring FileID;
+	//if( MSGlobals::IsLanGame ) pszFileID = LanID = msstring("LAN_") + STRING(pPlayer->DisplayName) + g_engfuncs.pfnInfoKeyValue( g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "ms_id" );
+	if (MSGlobals::IsLanGame)
+		FileID = msstring("LAN_") + g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "name");
+	else
+		FileID = GETPLAYERAUTHID(pPlayer->edict());
+	msstring Prefix = MSCentral::Enabled() ? CENTRAL_FILEPREFIX : "";
 
-		//Thothie MAR2010_08 emergency work around
-		//iCharacter = pPlayer->m_CharacterNum;
-		//Print("CHAR_SAVE_DEBUG [MSCharacter]: %i vs %i\n",iCharacter+1,pPlayer->m_CharacterNum);
-        
-		sprintf( cFileName, "%s/save/%s%s_%i.char", EngineFunc::GetGameDir(), Prefix.c_str(), FileID.c_str(), iCharacter+1 );
-		ReplaceChar( cFileName, ':', '-' );
-	#else
-		//Client
-		//Print("CHAR_CLIENT [MSCharacter]: %i\n",iCharacter+1); //MAR2010_08
-		msstring Prefix = !MSGlobals::ServerSideChar ? "cl_" : "";
-		sprintf( cFileName, "%s/save/%ssave%i.char", EngineFunc::GetGameDir(), Prefix.c_str(), iCharacter+1 );
-	#endif
+	//Thothie MAR2010_08 emergency work around
+	//iCharacter = pPlayer->m_CharacterNum;
+	//Print("CHAR_SAVE_DEBUG [MSCharacter]: %i vs %i\n",iCharacter+1,pPlayer->m_CharacterNum);
+
+	sprintf(cFileName, "%s/save/%s%s_%i.char", EngineFunc::GetGameDir(), Prefix.c_str(), FileID.c_str(), iCharacter + 1);
+	ReplaceChar(cFileName, ':', '-');
+#else
+	//Client
+	//Print("CHAR_CLIENT [MSCharacter]: %i\n",iCharacter+1); //MAR2010_08
+	msstring Prefix = !MSGlobals::ServerSideChar ? "cl_" : "";
+	sprintf(cFileName, "%s/save/%ssave%i.char", EngineFunc::GetGameDir(), Prefix.c_str(), iCharacter + 1);
+#endif
 
 	return cFileName;
 }
 
 #ifdef VALVE_DLL
-const char *GetSaveFileName( int iCharacter, const char *AuthID ) 
+const char *GetSaveFileName(int iCharacter, const char *AuthID)
 {
 	static char cFileName[MAX_PATH];
 
 	//Server
-	Print("CHAR_SAVE_DEBUG [GetSaveFileName]: %s %#i\n",cFileName,iCharacter+1);
-	sprintf( cFileName, "%s/save/%s_%i.char", EngineFunc::GetGameDir(), AuthID, iCharacter+1 );
-	ReplaceChar( cFileName, ':', '-' );
+	Print("CHAR_SAVE_DEBUG [GetSaveFileName]: %s %#i\n", cFileName, iCharacter + 1);
+	sprintf(cFileName, "%s/save/%s_%i.char", EngineFunc::GetGameDir(), AuthID, iCharacter + 1);
+	ReplaceChar(cFileName, ':', '-');
 
 	return cFileName;
 }
 #endif
-bool DeleteChar( int iCharacter )
+bool DeleteChar(int iCharacter)
 {
-	const char *pszCharFileName = GetSaveFileName( iCharacter );
-	int ret = remove( pszCharFileName );		//Delete savefile
-	remove( BACKUP_NAME(pszCharFileName) );		//Delete backup
+	const char *pszCharFileName = GetSaveFileName(iCharacter);
+	int ret = remove(pszCharFileName);	  //Delete savefile
+	remove(BACKUP_NAME(pszCharFileName)); //Delete backup
 	return (!ret) ? true : false;
 }
 
-
-savedata_t *GetCharInfo( const char *pszFileName, msstringlist &VisitedMaps )
+savedata_t *GetCharInfo(const char *pszFileName, msstringlist &VisitedMaps)
 {
 	CPlayer_DataBuffer gFile;
 	static savedata_t Data;
-	bool fCharLoaded = gFile.ReadFromFile( pszFileName, "rb" , true );
-	if( fCharLoaded )
+	bool fCharLoaded = gFile.ReadFromFile(pszFileName, "rb", true);
+	if (fCharLoaded)
 	{
-		fCharLoaded = gFile.Decrypt( ENCRYPTION_TYPE );
-		if( fCharLoaded )
+		fCharLoaded = gFile.Decrypt(ENCRYPTION_TYPE);
+		if (fCharLoaded)
 		{
-			memset( &Data, 0, sizeof(savedata_t) );
-			gFile.Read( &Data, sizeof(savedata_t) );
+			memset(&Data, 0, sizeof(savedata_t));
+			gFile.Read(&Data, sizeof(savedata_t));
 
-			if( IsValidCharVersion(Data.Version) )
+			if (IsValidCharVersion(Data.Version))
 			{
 				//Also read the visited maps -- This is used to determine whether you can spawn on this map
 				//The visited maps must come DIRECTLY after the main data
 				int Maps = 0;
-				gFile.ReadInt( Maps );												//[INT]
+				gFile.ReadInt(Maps); //[INT]
 
 				char cTemp[256];
-				VisitedMaps.clear( );
-				 for (int m = 0; m < Maps; m++) 
+				VisitedMaps.clear();
+				for (int m = 0; m < Maps; m++)
 				{
-					gFile.ReadString( cTemp );										//[STRING]
-					VisitedMaps.add( cTemp );
+					gFile.ReadString(cTemp); //[STRING]
+					VisitedMaps.add(cTemp);
 				}
 			}
-			else fCharLoaded = false;
-		
-			gFile.Close( );
+			else
+				fCharLoaded = false;
+
+			gFile.Close();
 		}
 	}
 
-	if( fCharLoaded ) return &Data;
+	if (fCharLoaded)
+		return &Data;
 	return NULL;
 }
 
-bool MSChar_Interface::ReadCharData( void *pData, ulong Size, chardata_t *CharData )
+bool MSChar_Interface::ReadCharData(void *pData, ulong Size, chardata_t *CharData)
 {
-	return CharData->ReadData( pData, Size );
+	return CharData->ReadData(pData, Size);
 }
 
-bool chardata_t::ReadData( void *pData, ulong Size )
+bool chardata_t::ReadData(void *pData, ulong Size)
 {
 	bool ValidVersion = false;
 
 	startdbg;
-	dbg( "Begin" );
+	dbg("Begin");
 
-
-	CPlayer_DataBuffer m_File( Size );
-	m_File.Write( pData, Size );
-	if( !m_File.Decrypt( ENCRYPTION_TYPE ) )
+	CPlayer_DataBuffer m_File(Size);
+	m_File.Write(pData, Size);
+	if (!m_File.Decrypt(ENCRYPTION_TYPE))
 		return false;
 
 	byte DataID = CHARDATA_UNKNOWN;
 
 	do
 	{
-		m_File.ReadByte( DataID );
-		if( DataID >= CHARDATA_UNKNOWN )
+		m_File.ReadByte(DataID);
+		if (DataID >= CHARDATA_UNKNOWN)
 		{
 			ValidVersion = false;
 			break;
 		}
 
-		if( ReadHeader1( DataID, m_File ) ) ValidVersion = true;
-		#ifdef VALVE_DLL
-			ReadMaps1( DataID, m_File );
-			ReadSkills1( DataID, m_File );
-			ReadSpells1( DataID, m_File );
-			ReadItems1( DataID, m_File );
-			ReadStorageItems1( DataID, m_File );
-			ReadCompanions1( DataID, m_File );
-			ReadHelpTips1( DataID, m_File );
-			ReadQuests1( DataID, m_File );
-			ReadQuickSlots1( DataID, m_File );
-		#else
-			//Only read the header data from the client
-			//Just enough to get the version, character's name and maps
-			break;
-		#endif
-	}
-	while( !m_File.Eof( ) );
+		if (ReadHeader1(DataID, m_File))
+			ValidVersion = true;
+#ifdef VALVE_DLL
+		ReadMaps1(DataID, m_File);
+		ReadSkills1(DataID, m_File);
+		ReadSpells1(DataID, m_File);
+		ReadItems1(DataID, m_File);
+		ReadStorageItems1(DataID, m_File);
+		ReadCompanions1(DataID, m_File);
+		ReadHelpTips1(DataID, m_File);
+		ReadQuests1(DataID, m_File);
+		ReadQuickSlots1(DataID, m_File);
+#else
+		//Only read the header data from the client
+		//Just enough to get the version, character's name and maps
+		break;
+#endif
+	} while (!m_File.Eof());
 
-	m_File.Close( );
+	m_File.Close();
 	enddbg;
 
 	return ValidVersion;
 }
-bool chardata_t::ReadHeader1( byte DataID, CPlayer_DataBuffer &m_File )
+bool chardata_t::ReadHeader1(byte DataID, CPlayer_DataBuffer &m_File)
 {
-	if( DataID == CHARDATA_HEADER1 )
+	if (DataID == CHARDATA_HEADER1)
 	{
-		m_File.Read( this, sizeof(savedata_t) );		//[HEADER}
+		m_File.Read(this, sizeof(savedata_t)); //[HEADER}
 
-		if( !IsValidCharVersion(Version) )
+		if (!IsValidCharVersion(Version))
 			return false;
 
 		return true;
@@ -199,53 +200,64 @@ bool chardata_t::ReadHeader1( byte DataID, CPlayer_DataBuffer &m_File )
 	return false;
 }
 
-
-jointype_e MSChar_Interface::CanJoinThisMap( savedata_t &Data, msstringlist &VisitedMaps )
+jointype_e MSChar_Interface::CanJoinThisMap(savedata_t &Data, msstringlist &VisitedMaps)
 {
 	//phase this function out.  Use the one below
 	jointype_e JoinType = JN_NOTALLOWED;
-	if( MSGlobals::CanCreateCharOnMap ) JoinType = JN_STARTMAP;			//Can create a character on this map
-	else if( !stricmp(Data.MapName,MSGlobals::MapName) ||				//Already in this map Or trying to 
-		!stricmp(Data.NextMap,MSGlobals::MapName) )						//transition to this map
-			JoinType = JN_TRAVEL;
-	else if( HasVisited( MSGlobals::MapName, VisitedMaps ) &&
-			 GetOtherPlayerTransition( NULL ) ) JoinType = JN_STARTMAP;	// Already visited this map before and at least 
-																		//1 other player is currently playing it
-	else if( Data.IsElite )	JoinType = JN_ELITE;						//GM.  You can always join any may
-	
-	if( strcmp( Data.Name, "LOAD_ERROR-RECONNECT" ) == 0) {JoinType = JN_NOTALLOWED;}
-	if( strcmp( Data.Name, "LOAD_FAILED-RECONNECT" ) == 0) {JoinType = JN_NOTALLOWED;}
+	if (MSGlobals::CanCreateCharOnMap)
+		JoinType = JN_STARTMAP;							   //Can create a character on this map
+	else if (!stricmp(Data.MapName, MSGlobals::MapName) || //Already in this map Or trying to
+			 !stricmp(Data.NextMap, MSGlobals::MapName))   //transition to this map
+		JoinType = JN_TRAVEL;
+	else if (HasVisited(MSGlobals::MapName, VisitedMaps) &&
+			 GetOtherPlayerTransition(NULL))
+		JoinType = JN_STARTMAP; // Already visited this map before and at least
+								//1 other player is currently playing it
+	else if (Data.IsElite)
+		JoinType = JN_ELITE; //GM.  You can always join any may
+
+	if (strcmp(Data.Name, "LOAD_ERROR-RECONNECT") == 0)
+	{
+		JoinType = JN_NOTALLOWED;
+	}
+	if (strcmp(Data.Name, "LOAD_FAILED-RECONNECT") == 0)
+	{
+		JoinType = JN_NOTALLOWED;
+	}
 	//If this character is one that shouldn't be loaded
 	//then don't allow it to be loaded.  ---MiB---
 
 	return JoinType;
 }
-jointype_e MSChar_Interface::CanJoinThisMap( charinfo_t &CharData, msstringlist &VisitedMaps )
+jointype_e MSChar_Interface::CanJoinThisMap(charinfo_t &CharData, msstringlist &VisitedMaps)
 {
 	jointype_e JoinType = JN_NOTALLOWED;
-	if( MSGlobals::CanCreateCharOnMap ) JoinType = JN_STARTMAP;			//Can create a character on this map
-	else if( !stricmp(CharData.MapName,MSGlobals::MapName) ||			//Already in this map Or trying to 
-		!stricmp(CharData.NextMap,MSGlobals::MapName) )					//transition to this map
-			JoinType = JN_TRAVEL;
-	else if( HasVisited( MSGlobals::MapName, VisitedMaps ) &&
-			 GetOtherPlayerTransition( NULL ) ) JoinType = JN_STARTMAP;	// Already visited this map before and at least 
-																		//1 other player is currently playing it
-	else if( CharData.IsElite )	JoinType = JN_ELITE;					//GM.  You can always join any may
-	
+	if (MSGlobals::CanCreateCharOnMap)
+		JoinType = JN_STARTMAP;								   //Can create a character on this map
+	else if (!stricmp(CharData.MapName, MSGlobals::MapName) || //Already in this map Or trying to
+			 !stricmp(CharData.NextMap, MSGlobals::MapName))   //transition to this map
+		JoinType = JN_TRAVEL;
+	else if (HasVisited(MSGlobals::MapName, VisitedMaps) &&
+			 GetOtherPlayerTransition(NULL))
+		JoinType = JN_STARTMAP; // Already visited this map before and at least
+								//1 other player is currently playing it
+	else if (CharData.IsElite)
+		JoinType = JN_ELITE; //GM.  You can always join any may
+
 	return JoinType;
 }
 
-bool MSChar_Interface::HasVisited( msstring_ref MapName, msstringlist &VisitedMaps )
+bool MSChar_Interface::HasVisited(msstring_ref MapName, msstringlist &VisitedMaps)
 {
-	 for (int m = 0; m < VisitedMaps.size(); m++) 
-		if( VisitedMaps[m] == MSGlobals::MapName )
+	for (int m = 0; m < VisitedMaps.size(); m++)
+		if (VisitedMaps[m] == MSGlobals::MapName)
 			return true;
 	return false;
 }
 
-void MSChar_Interface::CreateSaveDir( )
+void MSChar_Interface::CreateSaveDir()
 {
-	mkdir( MSGlobals::DllPath + "/../save" );
+	mkdir(MSGlobals::DllPath + "/../save");
 }
 
 #define RWVar Write
@@ -289,39 +301,39 @@ void MSChar_Interface::CreateSaveDir( )
 	}
 }*/
 
-void WriteItem( CPlayer_DataBuffer &gFile, genericitem_full_t &Item )
+void WriteItem(CPlayer_DataBuffer &gFile, genericitem_full_t &Item)
 {
-	if( FBitSet(Item.Properties, ITEM_SPELL) )
-	{ 
+	if (FBitSet(Item.Properties, ITEM_SPELL))
+	{
 		//No item or item is a spell
-		gFile.RWByte( 0 );
+		gFile.RWByte(0);
 		return;
 	}
 
-	gFile.RWString( Item.Name );				//[STRING] Item Type
+	gFile.RWString(Item.Name); //[STRING] Item Type
 
-	gFile.RWShort( Item.Properties );			//[SHORT] Item Properties
-	gFile.RWShort( Item.Location );				//[SHORT] Item Location
-	gFile.RWByte( Item.Hand );					//[BYTE] Item Hand
-	gFile.WriteInt( Item.ID );					//[INT] Item ID at last save (used by quickslots to identify this item)
+	gFile.RWShort(Item.Properties); //[SHORT] Item Properties
+	gFile.RWShort(Item.Location);	//[SHORT] Item Location
+	gFile.RWByte(Item.Hand);		//[BYTE] Item Hand
+	gFile.WriteInt(Item.ID);		//[INT] Item ID at last save (used by quickslots to identify this item)
 
-	if( FBitSet( Item.Properties, ITEM_PERISHABLE ) ||
-		FBitSet( Item.Properties, ITEM_DRINKABLE ) )
+	if (FBitSet(Item.Properties, ITEM_PERISHABLE) ||
+		FBitSet(Item.Properties, ITEM_DRINKABLE))
 	{
-		gFile.RWShort( Item.Quality );			//[SHORT] Current quality
-		gFile.RWShort( Item.MaxQuality );		//[SHORT] Max quality
-		//Print( "Write Shield Quality: %i\n", pItem->Quality );
+		gFile.RWShort(Item.Quality);	//[SHORT] Current quality
+		gFile.RWShort(Item.MaxQuality); //[SHORT] Max quality
+										//Print( "Write Shield Quality: %i\n", pItem->Quality );
 	}
 
-	if(FBitSet( Item.Properties, ITEM_GROUPABLE ))
-		gFile.RWShort( Item.Quantity );			//[SHORT] Grouped amount
+	if (FBitSet(Item.Properties, ITEM_GROUPABLE))
+		gFile.RWShort(Item.Quantity); //[SHORT] Grouped amount
 
 	//Writing contained items should be the *LAST* thing you do
-	if(FBitSet( Item.Properties, ITEM_CONTAINER ))
+	if (FBitSet(Item.Properties, ITEM_CONTAINER))
 	{
-		gFile.RWShort( Item.ContainerItems.size() ); //[SHORT] Container Item Total
+		gFile.RWShort(Item.ContainerItems.size()); //[SHORT] Container Item Total
 
-		 for (int i = 0; i < Item.ContainerItems.size(); i++) 
-			WriteItem( gFile,Item.ContainerItems[i] );
+		for (int i = 0; i < Item.ContainerItems.size(); i++)
+			WriteItem(gFile, Item.ContainerItems[i]);
 	}
 }

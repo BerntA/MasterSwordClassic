@@ -46,7 +46,7 @@
 #include "SVGlobals.h"
 #include "Effects/MSEffects.h"
 #include "vgui_MenuDefsShared.h"
-#include "Store.h"				//CStore
+#include "Store.h" //CStore
 #include "Syntax/Syntax.h"
 #include "Monsters/MonsterAnimation.h"
 #include "gamerules/Teams.h"
@@ -57,9 +57,7 @@
 #include "MSCentral.h"
 #include "logfile.h"
 
-
-
-clientitem_t::clientitem_t( class CGenericItem *pItem ) : genericitem_t( pItem )
+clientitem_t::clientitem_t(class CGenericItem *pItem) : genericitem_t(pItem)
 {
 	Location = pItem->m_Location;
 	Hand = pItem->m_Hand;
@@ -67,39 +65,38 @@ clientitem_t::clientitem_t( class CGenericItem *pItem ) : genericitem_t( pItem )
 
 //------
 
-CGenericItem *FindParryWeapon( CMSMonster *pMonster, /*out*/int &iPlayerHand, /*out*/int &iAttackNum );
+CGenericItem *FindParryWeapon(CMSMonster *pMonster, /*out*/ int &iPlayerHand, /*out*/ int &iAttackNum);
 extern char *ModelList[][2];
 extern int HumanModels;
 
 //DLL_GLOBAL ULONG		g_ulModelRefHuman;
-extern DLL_GLOBAL BOOL		g_fGameOver;
-extern DLL_GLOBAL	BOOL	g_fDrawLines;
+extern DLL_GLOBAL BOOL g_fGameOver;
+extern DLL_GLOBAL BOOL g_fDrawLines;
 int gEvilImpulse101;
-extern DLL_GLOBAL int		g_iSkillLevel, gDisplayTitle;
+extern DLL_GLOBAL int g_iSkillLevel, gDisplayTitle;
 BOOL gInitHUD = TRUE;
 
 extern void respawn(entvars_t *pev, BOOL fCopyCorpse);
-extern Vector VecBModelOrigin(entvars_t *pevBModel );
+extern Vector VecBModelOrigin(entvars_t *pevBModel);
 int MapTextureTypeStepType(char chTextureType);
 
 // the world node graph
-extern CGraph	WorldGraph;
+extern CGraph WorldGraph;
 
-#define	PLAYER_WALLJUMP_SPEED 300 // how fast we can spring off walls
+#define PLAYER_WALLJUMP_SPEED 300 // how fast we can spring off walls
 #define PLAYER_LONGJUMP_SPEED 350 // how fast we longjump
 
-#define TRAIN_ACTIVE	0x80 
-#define TRAIN_NEW		0xc0
-#define TRAIN_OFF		0x00
-#define TRAIN_NEUTRAL	0x01
-#define TRAIN_SLOW		0x02
-#define TRAIN_MEDIUM	0x03
-#define TRAIN_FAST		0x04 
-#define TRAIN_BACK		0x05
+#define TRAIN_ACTIVE 0x80
+#define TRAIN_NEW 0xc0
+#define TRAIN_OFF 0x00
+#define TRAIN_NEUTRAL 0x01
+#define TRAIN_SLOW 0x02
+#define TRAIN_MEDIUM 0x03
+#define TRAIN_FAST 0x04
+#define TRAIN_BACK 0x05
 
-#define	FLASH_DRAIN_TIME	 1.2 //100 units/3 minutes
-#define	FLASH_CHARGE_TIME	 0.2 // 100 units/20 seconds  (seconds per unit)
-
+#define FLASH_DRAIN_TIME 1.2  //100 units/3 minutes
+#define FLASH_CHARGE_TIME 0.2 // 100 units/20 seconds  (seconds per unit)
 
 //#define PLAYER_MAX_SAFE_FALL_DIST	20// falling any farther than this many feet will inflict damage
 //#define	PLAYER_FATAL_FALL_DIST		60// 100% damage inflicted if player falls this many feet
@@ -185,7 +182,6 @@ extern CGraph	WorldGraph;
 	
 };	*/
 
-
 int giPrecacheGrunt = 0;
 int gmsgShake = 0;
 int gmsgFade = 0;
@@ -216,45 +212,45 @@ int gmsgTextMsg = 0;
 int gmsgSetFOV = 0;
 int gmsgShowMenu = 0;
 int gmsgGeigerRange = 0;
-	//SDK 2.3
+//SDK 2.3
 int gmsgStatusText = 0;
-int gmsgStatusValue = 0; 
+int gmsgStatusValue = 0;
 
 //Master Sword
 //These correspond to the netmsg_e enums in player.h
 const char *g_PlayerMsgs[NETMSG_NUM] =
-{
-	( "SetProp" ), // MiBNov/Dec2007 - Part of the name/title changing system.
-	( "StatusIcons" ), //Drigien MAY2008 - Status Icons
-	{ "Anim" },
-	{ "Fatigue" },
-	{ "Music" },
-	{ "Hands" },
-	{ "SetStat" },
-	{ "Spells" },
-	{ "HP" },
-	{ "MP" },
-	{ "PlayEvent" },
-	{ "CLDllFunc" },
-	{ "VGUIMenu" },
-	{ "EntInfo" },
-	{ "StoreItem" },
-	{ "Vote" },
-	{ "HUDInfoMsg" },
-	{ "CharInfo" },
-	{ "Item" },
-	( "Exp" ), //Search shuri
-	{ "CLXPlay" }, //MAR2012_28 - client side sound
-	{ "LocalPanel" }, // MiB MAR2015_01 [LOCAL_PANEL] - Message for local panel
+	{
+		("SetProp"),	 // MiBNov/Dec2007 - Part of the name/title changing system.
+		("StatusIcons"), //Drigien MAY2008 - Status Icons
+		{"Anim"},
+		{"Fatigue"},
+		{"Music"},
+		{"Hands"},
+		{"SetStat"},
+		{"Spells"},
+		{"HP"},
+		{"MP"},
+		{"PlayEvent"},
+		{"CLDllFunc"},
+		{"VGUIMenu"},
+		{"EntInfo"},
+		{"StoreItem"},
+		{"Vote"},
+		{"HUDInfoMsg"},
+		{"CharInfo"},
+		{"Item"},
+		("Exp"),		//Search shuri
+		{"CLXPlay"},	//MAR2012_28 - client side sound
+		{"LocalPanel"}, // MiB MAR2015_01 [LOCAL_PANEL] - Message for local panel
 };
-int g_netmsg[NETMSG_NUM] = { 0 };
+int g_netmsg[NETMSG_NUM] = {0};
 
 //-------------
 
-void LinkUserMessages( void )
+void LinkUserMessages(void)
 {
 	// Already taken care of?
-	if ( gmsgGeigerRange )
+	if (gmsgGeigerRange)
 	{
 		return;
 	}
@@ -262,42 +258,41 @@ void LinkUserMessages( void )
 	//gmsgSelAmmo = REG_USER_MSG("SelAmmo", sizeof(SelAmmo));
 	//gmsgCurWeapon = REG_USER_MSG("CurWeapon", 3);
 	gmsgGeigerRange = REG_USER_MSG("Geiger", 1);
-	gmsgDamage = REG_USER_MSG( "Damage", 12 );
-	gmsgTrain = REG_USER_MSG( "Train", 1);
-	gmsgHudText = REG_USER_MSG( "HudText", -1 );
-	gmsgSayText = REG_USER_MSG( "SayText", -1 );
-	gmsgTextMsg = REG_USER_MSG( "TextMsg", -1 );
+	gmsgDamage = REG_USER_MSG("Damage", 12);
+	gmsgTrain = REG_USER_MSG("Train", 1);
+	gmsgHudText = REG_USER_MSG("HudText", -1);
+	gmsgSayText = REG_USER_MSG("SayText", -1);
+	gmsgTextMsg = REG_USER_MSG("TextMsg", -1);
 	gmsgWeaponList = REG_USER_MSG("WeaponList", -1);
-	gmsgResetHUD = REG_USER_MSG("ResetHUD", -1);		// called every respawn
-	gmsgInitHUD = REG_USER_MSG("InitHUD", -1 );		// called every time a new player joins the server
+	gmsgResetHUD = REG_USER_MSG("ResetHUD", -1); // called every respawn
+	gmsgInitHUD = REG_USER_MSG("InitHUD", -1);	 // called every time a new player joins the server
 	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);
-	gmsgDeathMsg = REG_USER_MSG( "DeathMsg", -1 );
-	gmsgScoreInfo = REG_USER_MSG( "ScoreInfo", -1 );
-	gmsgTeamInfo = REG_USER_MSG( "TeamInfo", -1 );  // sets the name of a player's team
-	gmsgTeamScore = REG_USER_MSG( "TeamScore", -1 );  // sets the score of a team on the scoreboard
-	gmsgGameMode = REG_USER_MSG( "GameMode", 1 );
-	gmsgMOTD = REG_USER_MSG( "MOTD", -1 );
-	gmsgAmmoPickup = REG_USER_MSG( "AmmoPickup", 2 );
-	gmsgWeapPickup = REG_USER_MSG( "WeapPickup", 1 );
-	gmsgItemPickup = REG_USER_MSG( "ItemPickup", -1 );
-	gmsgHideWeapon = REG_USER_MSG( "HideWeapon", 1 );
-	gmsgSetFOV = REG_USER_MSG( "SetFOV", 1 );
-	gmsgShowMenu = REG_USER_MSG( "ShowMenu", -1 );
+	gmsgDeathMsg = REG_USER_MSG("DeathMsg", -1);
+	gmsgScoreInfo = REG_USER_MSG("ScoreInfo", -1);
+	gmsgTeamInfo = REG_USER_MSG("TeamInfo", -1);   // sets the name of a player's team
+	gmsgTeamScore = REG_USER_MSG("TeamScore", -1); // sets the score of a team on the scoreboard
+	gmsgGameMode = REG_USER_MSG("GameMode", 1);
+	gmsgMOTD = REG_USER_MSG("MOTD", -1);
+	gmsgAmmoPickup = REG_USER_MSG("AmmoPickup", 2);
+	gmsgWeapPickup = REG_USER_MSG("WeapPickup", 1);
+	gmsgItemPickup = REG_USER_MSG("ItemPickup", -1);
+	gmsgHideWeapon = REG_USER_MSG("HideWeapon", 1);
+	gmsgSetFOV = REG_USER_MSG("SetFOV", 1);
+	gmsgShowMenu = REG_USER_MSG("ShowMenu", -1);
 	gmsgShake = REG_USER_MSG("ScreenShake", sizeof(ScreenShake));
 	gmsgFade = REG_USER_MSG("ScreenFade", sizeof(ScreenFade));
 
-
 	//Master Sword
-	 for (int i = 0; i < NETMSG_NUM; i++) 
-		g_netmsg[i] = REG_USER_MSG( g_PlayerMsgs[i], -1 );
+	for (int i = 0; i < NETMSG_NUM; i++)
+		g_netmsg[i] = REG_USER_MSG(g_PlayerMsgs[i], -1);
 	//------------
 
-		//SDK 2.3
-	gmsgStatusText = REG_USER_MSG("StatusText", -1);	
-	gmsgStatusValue = REG_USER_MSG("StatusValue", 3); 
+	//SDK 2.3
+	gmsgStatusText = REG_USER_MSG("StatusText", -1);
+	gmsgStatusValue = REG_USER_MSG("StatusValue", 3);
 }
 
-LINK_ENTITY_TO_CLASS( player, CBasePlayer );
+LINK_ENTITY_TO_CLASS(player, CBasePlayer);
 
 /*void CBasePlayer :: Pain( void )
 {
@@ -318,7 +313,7 @@ LINK_ENTITY_TO_CLASS( player, CBasePlayer );
  */
 Vector VecVelocityForDamage(float flDamage)
 {
-	Vector vec(RANDOM_FLOAT(-100,100), RANDOM_FLOAT(-100,100), RANDOM_FLOAT(200,300));
+	Vector vec(RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(200, 300));
 
 	if (flDamage > -50)
 		vec = vec * 0.7;
@@ -326,7 +321,7 @@ Vector VecVelocityForDamage(float flDamage)
 		vec = vec * 2;
 	else
 		vec = vec * 10;
-	
+
 	return vec;
 }
 
@@ -338,7 +333,7 @@ int TrainSpeed(int iSpeed, int iMax)
 	fMax = (float)iMax;
 	fSpeed = iSpeed;
 
-	fSpeed = fSpeed/fMax;
+	fSpeed = fSpeed / fMax;
 
 	if (iSpeed < 0)
 		iRet = TRAIN_BACK;
@@ -354,36 +349,36 @@ int TrainSpeed(int iSpeed, int iMax)
 	return iRet;
 }
 
-const char *CBasePlayer :: DisplayName( )
+const char *CBasePlayer ::DisplayName()
 {
-	return g_engfuncs.pfnInfoKeyValue( g_engfuncs.pfnGetInfoKeyBuffer( edict() ), "name" );
+	return g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "name");
 }
 
-void CBasePlayer :: DeathSound( void )
+void CBasePlayer ::DeathSound(void)
 {
 	//Master Sword: Don't play this if you got splattered
 	//if( !FBitSet(pev->effects,EF_NODRAW) )
 	//	PlaySound( CHAN_VOICE, "player/death.wav", 1, true );
 
-	STOP_SOUND( edict(), CHAN_ITEM, "common/null.wav" );
-	STOP_SOUND( edict(), CHAN_BODY, "common/null.wav" );
-	STOP_SOUND( edict(), CHAN_WEAPON, "common/null.wav" );
+	STOP_SOUND(edict(), CHAN_ITEM, "common/null.wav");
+	STOP_SOUND(edict(), CHAN_BODY, "common/null.wav");
+	STOP_SOUND(edict(), CHAN_WEAPON, "common/null.wav");
 }
 
 // TakeHealth - Called by a trigger_hurt with a dmg value of < 0
-// bitsDamageType indicates type of damage healed. 
+// bitsDamageType indicates type of damage healed.
 
-int CBasePlayer :: TakeHealth( float flHealth, int bitsDamageType )
+int CBasePlayer ::TakeHealth(float flHealth, int bitsDamageType)
 {
-	return GiveHP( flHealth );
+	return GiveHP(flHealth);
 }
 
-Vector CBasePlayer :: GetGunPosition( )
+Vector CBasePlayer ::GetGunPosition()
 {
-//	UTIL_MakeVectors(pev->v_angle);
-//	m_HackedGunPos = pev->view_ofs;
+	//	UTIL_MakeVectors(pev->v_angle);
+	//	m_HackedGunPos = pev->view_ofs;
 	Vector origin;
-	
+
 	origin = pev->origin + pev->view_ofs;
 	return origin;
 }
@@ -391,36 +386,38 @@ Vector CBasePlayer :: GetGunPosition( )
 //=========================================================
 // TraceAttack
 //=========================================================
-float CBasePlayer :: TraceAttack( damage_t &Damage )
+float CBasePlayer ::TraceAttack(damage_t &Damage)
 {
-	if( !pev->takedamage )
+	if (!pev->takedamage)
 		return 0;
 
 	//if( Body ) Damage.flDamage = Body->Bodypart(HitGroupToBodyPart(m_LastHitGroup))->TraceAttack( m_LastHitGroup, pInflictor, pAttacker, Damage.flDamage, Damage.iDamageType );
-	
-	Damage.iHitGroup = m_LastHitGroup = RANDOM_LONG(0,HUMAN_BODYPARTS-1);
-	if( Damage.outTraceResult.pHit )
-		Damage.iHitGroup = m_LastHitGroup = HitGroupToBodyPart( Damage.outTraceResult.iHitgroup );
+
+	Damage.iHitGroup = m_LastHitGroup = RANDOM_LONG(0, HUMAN_BODYPARTS - 1);
+	if (Damage.outTraceResult.pHit)
+		Damage.iHitGroup = m_LastHitGroup = HitGroupToBodyPart(Damage.outTraceResult.iHitgroup);
 
 	//Let armor and shield do their magic
-	 for (int i = 0; i < Gear.size(); i++) 
-		Gear[i]->OwnerTakeDamage( Damage );
+	for (int i = 0; i < Gear.size(); i++)
+		Gear[i]->OwnerTakeDamage(Damage);
 
-	if( Damage.flDamage <= 0 ) Damage.flDamage = 0;
+	if (Damage.flDamage <= 0)
+		Damage.flDamage = 0;
 
 	//flDamage = CMSMonster::TraceAttack( pevInflictor, pevAttacker, flDamage, vecDir, ptr, bitsDamageType, iAccuracyRoll );
-	Damage.flDamage = CMSMonster::TraceAttack( Damage );
+	Damage.flDamage = CMSMonster::TraceAttack(Damage);
 
-	if( Damage.flDamage == -1 )
+	if (Damage.flDamage == -1)
 	{
 		//THOTHIE - uncommented in attempt to restore game_parry script function
 		//New parry effect - make it look like you dodged
-		pev->punchangle = Vector(0, 0, RANDOM_LONG(0,1) ? 10 : -10); //thothie was 15 : -15);
-		if( Damage.pParryItem ) Damage.pParryItem->CallScriptEvent( "game_parry" );
+		pev->punchangle = Vector(0, 0, RANDOM_LONG(0, 1) ? 10 : -10); //thothie was 15 : -15);
+		if (Damage.pParryItem)
+			Damage.pParryItem->CallScriptEvent("game_parry");
 
 		//OLD parry
 		//Parry with a weapon, if available
-		
+
 		/*int iAttackNum = 0, iHand = 0;;
 		CGenericItem *pHandItem = FindParryWeapon( this, iHand, iAttackNum );
 
@@ -464,7 +461,7 @@ float CBasePlayer :: TraceAttack( damage_t &Damage )
 	etc are implemented with subsequent calls to TakeDamage using DMG_GENERIC.
 */
 
-int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
+int CBasePlayer ::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	// have suit diagnose the problem - ie: report damage type
 	int bitsDamage = bitsDamageType;
@@ -472,16 +469,14 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 	int fTookDamage;
 	//float flHealthPrev = pev->health;
 
-
 	// Already dead
-	if ( !IsAlive() )
+	if (!IsAlive())
 		return 0;
 	// go take the damage first
 
-	
 	CBaseEntity *pAttacker = CBaseEntity::Instance(pevAttacker);
 
-	if ( !g_pGameRules->FPlayerCanTakeDamage( this, pAttacker ) )
+	if (!g_pGameRules->FPlayerCanTakeDamage(this, pAttacker))
 	{
 		// Refuse the damage
 		return 0;
@@ -509,21 +504,20 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 	}
 
 	// tell director about it
-	MESSAGE_BEGIN( MSG_SPEC, SVC_DIRECTOR );
-		WRITE_BYTE ( 9 );	// command length in bytes
-		WRITE_BYTE ( DRC_CMD_EVENT );	// take damage event
-		WRITE_SHORT( ENTINDEX(this->edict()) );	// index number of primary entity
-		WRITE_SHORT( ENTINDEX(ENT(pevInflictor)) );	// index number of secondary entity
-		WRITE_LONG( 5 );   // eventflags (priority and flags)
+	MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
+	WRITE_BYTE(9);							  // command length in bytes
+	WRITE_BYTE(DRC_CMD_EVENT);				  // take damage event
+	WRITE_SHORT(ENTINDEX(this->edict()));	  // index number of primary entity
+	WRITE_SHORT(ENTINDEX(ENT(pevInflictor))); // index number of secondary entity
+	WRITE_LONG(5);							  // eventflags (priority and flags)
 	MESSAGE_END();
 
-
 	m_bitsDamageType |= bitsDamage; // Save this so we can report it to the client
-	m_bitsHUDDamage = -1;  // make sure the damage bits get resent
+	m_bitsHUDDamage = -1;			// make sure the damage bits get resent
 
 	return fTookDamage;
 }
-void CBasePlayer::TakeDamageEffect( CBaseEntity *pInflictor, CBaseEntity *pAttacker, float flDamage, int bitsDamageType )
+void CBasePlayer::TakeDamageEffect(CBaseEntity *pInflictor, CBaseEntity *pAttacker, float flDamage, int bitsDamageType)
 {
 	// grab the vector of the incoming attack. ( pretend that the inflictor is a little lower than it really is, so the body will tend to fly upward a bit).
 	/*Vector vecDir = Vector( 0, 0, 0 );
@@ -534,20 +528,19 @@ void CBasePlayer::TakeDamageEffect( CBaseEntity *pInflictor, CBaseEntity *pAttac
 	}*/
 
 	//Red tint and a little punch
-	if( flDamage > 0 && IsAlive( ) )
+	if (flDamage > 0 && IsAlive())
 	{
-		float Amt = flDamage/MaxHP() * 255;
-		int alpha = max(Amt,0);
+		float Amt = flDamage / MaxHP() * 255;
+		int alpha = max(Amt, 0);
 
-		if( flDamage > 0.5 )  //If too small, don't even waste the bandwidth
-			UTIL_ScreenFade( this, Vector(255,0,0), 1, 0.5, alpha, FFADE_IN );
+		if (flDamage > 0.5) //If too small, don't even waste the bandwidth
+			UTIL_ScreenFade(this, Vector(255, 0, 0), 1, 0.5, alpha, FFADE_IN);
 
 		float flPunch = alpha * 0.25;
-		pev->punchangle.x += RANDOM_FLOAT( -flPunch, flPunch ) * 0.5;
-		pev->punchangle.y += RANDOM_FLOAT( -flPunch, flPunch ) * 0.1;
-		pev->punchangle.z += RANDOM_FLOAT( -flPunch, flPunch ) * 0.2;
+		pev->punchangle.x += RANDOM_FLOAT(-flPunch, flPunch) * 0.5;
+		pev->punchangle.y += RANDOM_FLOAT(-flPunch, flPunch) * 0.1;
+		pev->punchangle.z += RANDOM_FLOAT(-flPunch, flPunch) * 0.2;
 	}
-
 }
 
 //=========================================================
@@ -557,10 +550,10 @@ void CBasePlayer::TakeDamageEffect( CBaseEntity *pInflictor, CBaseEntity *pAttac
 //
 // This is pretty brute force :(
 //=========================================================
-void CBasePlayer::PackDeadPlayerItems( void )
+void CBasePlayer::PackDeadPlayerItems(void)
 {
-	if( m_fDropAllItems )
-		RemoveAllItems( TRUE );// now strip off everything the player has
+	if (m_fDropAllItems)
+		RemoveAllItems(TRUE); // now strip off everything the player has
 	m_fDropAllItems = false;
 }
 
@@ -569,33 +562,41 @@ void CBasePlayer::PackDeadPlayerItems( void )
  *
  * ENTITY_METHOD(PlayerDie)
  */
-entvars_t *g_pevLastInflictor;  // Set in combat.cpp.  Used to pass the damage inflictor for death messages.
-								// Better solution:  Add as parameter to all Killed() functions.
+entvars_t *g_pevLastInflictor; // Set in combat.cpp.  Used to pass the damage inflictor for death messages.
+							   // Better solution:  Add as parameter to all Killed() functions.
 
-void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
+void CBasePlayer::Killed(entvars_t *pevAttacker, int iGib)
 {
 	startdbg;
-	UTIL_ClientPrintAll( HUD_PRINTCENTER, UTIL_VarArgs( "%s has fallen!", DisplayName() ) );
+	UTIL_ClientPrintAll(HUD_PRINTCENTER, UTIL_VarArgs("%s has fallen!", DisplayName()));
 
-//	if( AwardFrags )
-//		g_pGameRules->PlayerKilled( this, pevAttacker, g_pevLastInflictor );
-	
-	enum { KILLED_BY_MONSTER, KILLED_BY_SELF, KILLED_BY_TRIGGER, KILLED_BY_UNKNOWN }
-		DeathType = KILLED_BY_UNKNOWN;
+	//	if( AwardFrags )
+	//		g_pGameRules->PlayerKilled( this, pevAttacker, g_pevLastInflictor );
+
+	enum
+	{
+		KILLED_BY_MONSTER,
+		KILLED_BY_SELF,
+		KILLED_BY_TRIGGER,
+		KILLED_BY_UNKNOWN
+	} DeathType = KILLED_BY_UNKNOWN;
 	int LoseGoldPercent = 0; //Amount of Gold to put on corpse
 
 	CBaseEntity *pKillerEnt = (CBaseEntity *)MSInstance(pevAttacker);
-	if( pKillerEnt )
+	if (pKillerEnt)
 	{
-		if( pKillerEnt->MyMonsterPointer() ) 
+		if (pKillerEnt->MyMonsterPointer())
 		{
-			if( pKillerEnt == this ) DeathType = KILLED_BY_SELF;
-			else DeathType = KILLED_BY_MONSTER;	
+			if (pKillerEnt == this)
+				DeathType = KILLED_BY_SELF;
+			else
+				DeathType = KILLED_BY_MONSTER;
 		}
-		else DeathType = KILLED_BY_TRIGGER;
+		else
+			DeathType = KILLED_BY_TRIGGER;
 	}
 
-	if( DeathType == KILLED_BY_MONSTER )
+	if (DeathType == KILLED_BY_MONSTER)
 	{
 		//Lose about 50% of your gold
 		//LoseGoldPercent = RANDOM_LONG(40,60);
@@ -608,29 +609,29 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 		//THOTHIE: This makes high level mons neigh impossible to overwhelm with numbers
 		//consider removing (compromize, reducing to 25%)
 		//MAR2008b - changing system and moving to script side
-		if( pKillerEnt->MyMonsterPointer() && !pKillerEnt->IsPlayer() )
+		if (pKillerEnt->MyMonsterPointer() && !pKillerEnt->IsPlayer())
 		{
 			CMSMonster *pMonster = (CMSMonster *)pKillerEnt;
 			static msstringlist Params;
-			Params.clearitems( );
-			Params.add( EntToString(this) );
-			pMonster->CallScriptEvent( "game_killed_player", &Params );
+			Params.clearitems();
+			Params.add(EntToString(this));
+			pMonster->CallScriptEvent("game_killed_player", &Params);
 		}
 
-		if( pKillerEnt->IsPlayer() ) 
+		if (pKillerEnt->IsPlayer())
 		{
 			//A player killed me
 			CBasePlayer *pPlayerKiller = (CBasePlayer *)pKillerEnt;
-			if( !m_PlayersKilled && !m_TimeWaitedToForgetSteal )
+			if (!m_PlayersKilled && !m_TimeWaitedToForgetSteal)
 			{
 				//I'm just an innocent player
 				pPlayerKiller->m_PlayersKilled++;
 				pPlayerKiller->m_TimeWaitedToForgetKill = 0;
-				m_LastPlayerToKillMe = pPlayerKiller->entindex( );
+				m_LastPlayerToKillMe = pPlayerKiller->entindex();
 				m_pLastPlayerToKillMe = pPlayerKiller;
-				SendHUDMsg( "Player Kill", msstring("*** ") + pPlayerKiller->DisplayName() + " has killed you!  If this was accidental, press F4 (forgive)\nto remove the crime from " + pPlayerKiller->DisplayName() + "'s record! ***" );
+				SendHUDMsg("Player Kill", msstring("*** ") + pPlayerKiller->DisplayName() + " has killed you!  If this was accidental, press F4 (forgive)\nto remove the crime from " + pPlayerKiller->DisplayName() + "'s record! ***");
 			}
-			else if( m_PlayersKilled > 0 )
+			else if (m_PlayersKilled > 0)
 			{
 				//I'm a player killer
 				//int Reward = RANDOM_LONG( 10, m_PlayersKilled * 50 );
@@ -640,40 +641,41 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	}
 
 	//Thothie - removing XP penalty for being killed by trigger
-	if( DeathType == KILLED_BY_MONSTER && !pKillerEnt->IsPlayer() ) 
+	if (DeathType == KILLED_BY_MONSTER && !pKillerEnt->IsPlayer())
 	{
 		//THOTHIE wants this so you lose:
 		//up to 20% XP of a random skill when you die
-		//20% at level 1-10, 
-		//10% at levels 11-20, 
-		//5% at levels 21-30, 
+		//20% at level 1-10,
+		//10% at levels 11-20,
+		//5% at levels 21-30,
 		//and 2% at levels above 30.
 		//+ 1% of gold on hand
 		//Contribs: HobbitG
 
 		//Thothie SEP2007 - attempting to allow magic item to reduce XP loss
-        //int thoth_noxploss = atoi( GetFirstScriptVar("PLR_NOXPLOSS") );
+		//int thoth_noxploss = atoi( GetFirstScriptVar("PLR_NOXPLOSS") );
 
-		if ( NoExpLoss < 1 )
+		if (NoExpLoss < 1)
 		{
 			float DeathTax = 0.01;
 			int TaxOut = m_Gold;
 
 			(int)TaxOut *= DeathTax;
-			GiveGold( -TaxOut, false );
+			GiveGold(-TaxOut, false);
 
-			int highestSkill = 0; 
+			int highestSkill = 0;
 			/* for (int i = 0; i < GetSkillStatCount(); i++)  
 				if( GetSkillStat( i + SKILL_FIRSTSKILL ) > GetSkillStat( highestSkill ) ) 
 					highestSkill = i;*/
-			(int)highestSkill = RANDOM_LONG( 0, 7 );
+			(int)highestSkill = RANDOM_LONG(0, 7);
 
-			if ( highestSkill == 6 ) highestSkill = 7; //spellcasting hits causing crash
+			if (highestSkill == 6)
+				highestSkill = 7; //spellcasting hits causing crash
 
 			//DEC2010_04 Thothie - Don't penalize parry (no effect)
-			if ( ( highestSkill + SKILL_FIRSTSKILL ) == SKILL_PARRY )
+			if ((highestSkill + SKILL_FIRSTSKILL) == SKILL_PARRY)
 			{
-				if ( RANDOM_LONG( 0, 1 ) == 1 )
+				if (RANDOM_LONG(0, 1) == 1)
 				{
 					highestSkill = SKILL_POLEARMS - SKILL_FIRSTSKILL;
 				}
@@ -687,100 +689,101 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 
 			//highestSkill = RANDOM_LONG( SKILL_FIRSTSKILL, SKILL_LASTSKILL ); //be nice if this worked ><
 
-			//highestSkill = RANDOM_LONG( 1, 8 ); 
+			//highestSkill = RANDOM_LONG( 1, 8 );
 
-			ALERT( at_aiconsole, "DEBUG: Death Penalty num %i name %s", highestSkill, SkillStatList[highestSkill].Name );
+			ALERT(at_aiconsole, "DEBUG: Death Penalty num %i name %s", highestSkill, SkillStatList[highestSkill].Name);
 
 			//ALERT( at_aiconsole, "Highest(%d) Name(%s)", GetSkillStat( highestSkill ), SkillStatList[highestSkill].Name );
-			//ALERT( at_aiconsole, "StatFirst(%d) Stat+1(%d) Stat+2(%d) Stat+3(%d) Stat+4(%d) Stat+5(%d) Stat+6(%d)\n", GetSkillStat( SKILL_FIRSTSKILL ), GetSkillStat( SKILL_FIRSTSKILL + 1 ), GetSkillStat( SKILL_FIRSTSKILL + 2 ), GetSkillStat( SKILL_FIRSTSKILL + 3 ), GetSkillStat( SKILL_FIRSTSKILL + 4 ),GetSkillStat( SKILL_FIRSTSKILL + 5 ), GetSkillStat( SKILL_FIRSTSKILL + 6 ) ); // SkillStatList[1].Name, SkillStatList[1].StatCount); 
+			//ALERT( at_aiconsole, "StatFirst(%d) Stat+1(%d) Stat+2(%d) Stat+3(%d) Stat+4(%d) Stat+5(%d) Stat+6(%d)\n", GetSkillStat( SKILL_FIRSTSKILL ), GetSkillStat( SKILL_FIRSTSKILL + 1 ), GetSkillStat( SKILL_FIRSTSKILL + 2 ), GetSkillStat( SKILL_FIRSTSKILL + 3 ), GetSkillStat( SKILL_FIRSTSKILL + 4 ),GetSkillStat( SKILL_FIRSTSKILL + 5 ), GetSkillStat( SKILL_FIRSTSKILL + 6 ) ); // SkillStatList[1].Name, SkillStatList[1].StatCount);
 
 			float modifier = 1.00;
 			float thoth_pen_level = 0.0; //DEC2010_04 Thothie making it easier to setup a system where penalty is *reduced* rather than eliminated
 
-			if( GetSkillStat( SKILL_FIRSTSKILL + highestSkill ) <= 10 )
+			if (GetSkillStat(SKILL_FIRSTSKILL + highestSkill) <= 10)
 			{
 				//ALERT( at_aiconsole, "Death Penalty 20%% from %s \n", SkillStatList[highestSkill].Name );
-				SendEventMsg( HUDEVENT_UNABLE, UTIL_VarArgs("Death Penalty: 20%% from %s and %i gp \n", SkillStatList[highestSkill].Name, TaxOut ) );
+				SendEventMsg(HUDEVENT_UNABLE, UTIL_VarArgs("Death Penalty: 20%% from %s and %i gp \n", SkillStatList[highestSkill].Name, TaxOut));
 				thoth_pen_level = 0.2;
 			}
 
-			if( GetSkillStat( SKILL_FIRSTSKILL + highestSkill ) <= 20 && GetSkillStat( highestSkill ) > 10 ) 
+			if (GetSkillStat(SKILL_FIRSTSKILL + highestSkill) <= 20 && GetSkillStat(highestSkill) > 10)
 			{
 				//ALERT( at_aiconsole, "Death Penalty 10%% from %s \n", SkillStatList[highestSkill].Name );
-				SendEventMsg( HUDEVENT_UNABLE, UTIL_VarArgs("Death Penalty: 10%% from %s and %i gp \n", SkillStatList[highestSkill].Name, TaxOut ) );
+				SendEventMsg(HUDEVENT_UNABLE, UTIL_VarArgs("Death Penalty: 10%% from %s and %i gp \n", SkillStatList[highestSkill].Name, TaxOut));
 				thoth_pen_level = 0.1;
 			}
 
-			if( GetSkillStat( SKILL_FIRSTSKILL + highestSkill ) <= 30 && GetSkillStat( highestSkill ) > 20 ) 
+			if (GetSkillStat(SKILL_FIRSTSKILL + highestSkill) <= 30 && GetSkillStat(highestSkill) > 20)
 			{
 				//ALERT( at_aiconsole, "Death Penalty 5%% from %s \n", SkillStatList[highestSkill].Name );
-				SendEventMsg( HUDEVENT_UNABLE, UTIL_VarArgs("Death Penalty: 5%% from %s and %i gp \n", SkillStatList[highestSkill].Name, TaxOut ) );
+				SendEventMsg(HUDEVENT_UNABLE, UTIL_VarArgs("Death Penalty: 5%% from %s and %i gp \n", SkillStatList[highestSkill].Name, TaxOut));
 				thoth_pen_level = 0.05;
 			}
 
-			if( GetSkillStat( SKILL_FIRSTSKILL + highestSkill ) > 30 )
+			if (GetSkillStat(SKILL_FIRSTSKILL + highestSkill) > 30)
 			{
 				//ALERT( at_aiconsole, "Death Penalty 2%% from %s \n", SkillStatList[highestSkill].Name );
-				SendEventMsg( HUDEVENT_UNABLE, UTIL_VarArgs("Death Penalty: 2%% from %s and %i gp \n", SkillStatList[highestSkill].Name, TaxOut ) );
+				SendEventMsg(HUDEVENT_UNABLE, UTIL_VarArgs("Death Penalty: 2%% from %s and %i gp \n", SkillStatList[highestSkill].Name, TaxOut));
 				thoth_pen_level = 0.02;
 			}
 
 			modifier -= thoth_pen_level;
-			
-			//CStat *pLargest = FindStat( highestSkill ); 
 
-					/*
+			//CStat *pLargest = FindStat( highestSkill );
+
+			/*
 			int highestskill = 0;
 			 for (int i = 0; i < GetSkillStatCount(); i++)  
 				if( GetSkillStat( i + SKILL_FIRSTSKILL ) > GetSkillStat( highestSkill ) ) 
 					highestSkill = i;*/
 
-			CStat *pLargest = FindStat( SKILL_FIRSTSKILL + highestSkill );
+			CStat *pLargest = FindStat(SKILL_FIRSTSKILL + highestSkill);
 			//ALERT( at_aiconsole, "DEBUG: Death Penalty num %s vs %s (substats s% )", pLargest->m_Name.c_str, SkillStatList[highestSkill].Name, pLargest->m_SubStats.size() );
-			 for (int r = 0; r < pLargest->m_SubStats.size(); r++) 
+			for (int r = 0; r < pLargest->m_SubStats.size(); r++)
 			{
 				pLargest->m_SubStats[r].Exp *= modifier;
 				//Shuriken - Send exp update message after xp loss on death because MiB says to.
-				if(pLargest->m_SubStats[r].Value > 26)
+				if (pLargest->m_SubStats[r].Value > 26)
 				{
-					MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_EXP], NULL, pev );
-						WRITE_BYTE( highestSkill ); 
-						WRITE_BYTE( r );
-						WRITE_LONG( pLargest->m_SubStats[r].Exp );
+					MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_EXP], NULL, pev);
+					WRITE_BYTE(highestSkill);
+					WRITE_BYTE(r);
+					WRITE_LONG(pLargest->m_SubStats[r].Exp);
 					MESSAGE_END();
 				}
 			}
 		} //Endif NoExpLoss
-		if ( NoExpLoss >= 1 ) SendEventMsg( HUDEVENT_UNABLE, "Death Penalty averted due to quest or magic item." );
+		if (NoExpLoss >= 1)
+			SendEventMsg(HUDEVENT_UNABLE, "Death Penalty averted due to quest or magic item.");
 	} //Endif DeathType == KILLED_BY_MONSTER
-	
 
 	//if( OpenPack ) OpenPack->Container_UnListContents( );
-	CancelAttack( );
-	
-	if(	FBitSet(pev->flags,FL_DUCKING) ) {
-		CinematicCamera( FALSE );
-		ClearBits( pev->flags, FL_DUCKING) ;
-		ClearBits( m_afPhysicsFlags, PFLAG_DUCKING );
-		pev->origin.z = pev->origin.z + ((Size(0).z/2) - (Size(FL_DUCKING).z/2));
-		SetSize( pev->flags );
-		UTIL_SetOrigin( pev, pev->origin );
+	CancelAttack();
+
+	if (FBitSet(pev->flags, FL_DUCKING))
+	{
+		CinematicCamera(FALSE);
+		ClearBits(pev->flags, FL_DUCKING);
+		ClearBits(m_afPhysicsFlags, PFLAG_DUCKING);
+		pev->origin.z = pev->origin.z + ((Size(0).z / 2) - (Size(FL_DUCKING).z / 2));
+		SetSize(pev->flags);
+		UTIL_SetOrigin(pev, pev->origin);
 	}
-//	if( FBitSet( SkillInfo.SkillsActivated, SKILL_ROGUE_FADE ) )
-//		SkillInfo.FadeAmt = -2; //Silently deactivate skill
+	//	if( FBitSet( SkillInfo.SkillsActivated, SKILL_ROGUE_FADE ) )
+	//		SkillInfo.FadeAmt = -2; //Silently deactivate skill
 
 	CSound *pSound;
 
-	if ( m_pTank != NULL )
+	if (m_pTank != NULL)
 	{
-		m_pTank->Use( this, this, USE_OFF, 0 );
+		m_pTank->Use(this, this, USE_OFF, 0);
 		m_pTank = NULL;
 	}
 
 	// this client isn't going to be thinking for a while, so reset the sound until they respawn
-	pSound = CSoundEnt::SoundPointerForIndex( CSoundEnt::ClientSoundIndex( edict() ) );
+	pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt::ClientSoundIndex(edict()));
 	{
-		if ( pSound )
+		if (pSound)
 		{
 			pSound->Reset();
 		}
@@ -789,30 +792,29 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	/*m_Activity = GetDeathActivity( );
 	SetAnimation( MONSTER_ANIM_BREAK );
 	SetAnimation( MONSTER_ANIM_DIE, NULL, (void *)m_Activity );*/
-	
+
 	//pev->modelindex = g_ulModelRefHuman;    // don't use eyes
 
-	pev->health			= 0;
-	pev->deadflag		= DEAD_DYING;
-	pev->solid			= SOLID_NOT;
-	pev->movetype		= MOVETYPE_TOSS;
-	ClearBits( pev->flags, FL_ONGROUND );
+	pev->health = 0;
+	pev->deadflag = DEAD_DYING;
+	pev->solid = SOLID_NOT;
+	pev->movetype = MOVETYPE_TOSS;
+	ClearBits(pev->flags, FL_ONGROUND);
 
 	// reset FOV
 	m_iFOV = m_iClientFOV = 0;
 
-	MESSAGE_BEGIN( MSG_ONE, gmsgSetFOV, NULL, pev );
-		WRITE_BYTE(0);
+	MESSAGE_BEGIN(MSG_ONE, gmsgSetFOV, NULL, pev);
+	WRITE_BYTE(0);
 	MESSAGE_END();
 
 	//Call the client killed function
-	MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev );
-		WRITE_BYTE( 1 );
+	MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev);
+	WRITE_BYTE(1);
 	MESSAGE_END();
 
-
 	// UNDONE: Put this in, but add FFADE_PERMANENT and make fade time 8.8 instead of 4.12
-	UTIL_ScreenFade( this, Vector(255,0,0), 0.2, 15, 128, FFADE_IN );
+	UTIL_ScreenFade(this, Vector(255, 0, 0), 0.2, 15, 128, FFADE_IN);
 
 	SetThink(&CBasePlayer::PlayerDeathThink);
 	pev->nextthink = gpGlobals->time + 0.1;
@@ -827,50 +829,51 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 
 	DeathSound();
 	// Origin/Angles for the Camera position
-	Vector vOrigin = pev->origin + gpGlobals->v_right*70 + Vector(0,0,25);
+	Vector vOrigin = pev->origin + gpGlobals->v_right * 70 + Vector(0, 0, 25);
 	TraceResult tr;
-	UTIL_TraceLine( pev->origin, vOrigin, dont_ignore_monsters, edict(), &tr );
-	if( tr.flFraction < 1.0 ) vOrigin = tr.vecEndPos;
+	UTIL_TraceLine(pev->origin, vOrigin, dont_ignore_monsters, edict(), &tr);
+	if (tr.flFraction < 1.0)
+		vOrigin = tr.vecEndPos;
 	Vector vAngles = UTIL_VecToAngles(vOrigin - pev->origin);
-	
+
 	vAngles.y += 180;
 	pev->angles.x = 0;
 	pev->angles.z = 0; //0
 
 	//pev->gaitsequence = 0;
 
-	//MiB Dec2007a - For removing effects on death  
-	if ( m_Scripts.size() > 0 )
+	//MiB Dec2007a - For removing effects on death
+	if (m_Scripts.size() > 0)
 	{
 		IScripted *pScripted = GetScripted(); // UScripted? IScripted.
-		if ( pScripted )
+		if (pScripted)
 		{
-			for (int i = 0; i < pScripted->m_Scripts.size(); i++) // Check each 
-				if( m_Scripts[i]->VarExists("game.effect.id") ) //This is an effect 
-					if( strcmp( m_Scripts[i]->GetVar("game.effect.removeondeath"), "1" ) == 0) //If the effect is SUPPOSED to be removed 
-						m_Scripts[i]->RunScriptEventByName( "effect_die" ); //Call this effect's die function
+			for (int i = 0; i < pScripted->m_Scripts.size(); i++)							 // Check each
+				if (m_Scripts[i]->VarExists("game.effect.id"))								 //This is an effect
+					if (strcmp(m_Scripts[i]->GetVar("game.effect.removeondeath"), "1") == 0) //If the effect is SUPPOSED to be removed
+						m_Scripts[i]->RunScriptEventByName("effect_die");					 //Call this effect's die function
 		}
 	}
 
-	dbg( "Call game_death" );
-	CallScriptEvent( "game_death" );
-	dbg( "init bones" );
-	InitBoneControllers( );
+	dbg("Call game_death");
+	CallScriptEvent("game_death");
+	dbg("init bones");
+	InitBoneControllers();
 
-	dbg( "spawn corpse" );
+	dbg("spawn corpse");
 
 	//Create a brand new corpse
 	m_Corpse = (CCorpse *)GetClassPtr((CCorpse *)NULL);
-	m_Corpse->CreateCorpse( this, LoseGoldPercent );
+	m_Corpse->CreateCorpse(this, LoseGoldPercent);
 
-	CinematicCamera( TRUE, vOrigin, vAngles );
+	CinematicCamera(TRUE, vOrigin, vAngles);
 	pev->effects |= EF_NODRAW;
-	UTIL_SetSize( pev, Vector(0,0,0), Vector(0,0,0) );
+	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
 	pev->takedamage = DAMAGE_NO;
 	pev->solid = SOLID_NOT;
-	SetBits( pev->flags, FL_NOTARGET );
+	SetBits(pev->flags, FL_NOTARGET);
 	m_TimeTillSuicide = 0;
-	
+
 	enddbg;
 }
 
@@ -879,7 +882,7 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 WaterMove
 ============
 */
-#define AIRTIME	12		// lung full of air lasts this many seconds
+#define AIRTIME 12 // lung full of air lasts this many seconds
 
 void CBasePlayer::WaterMove()
 {
@@ -896,10 +899,10 @@ void CBasePlayer::WaterMove()
 	// waterlevel 2 - waist in water
 	// waterlevel 3 - head in water
 
-	if (pev->waterlevel != 3) 
+	if (pev->waterlevel != 3)
 	{
 		// not underwater
-		
+
 		// play 'up for air' sound
 		if (pev->air_finished < gpGlobals->time)
 			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_wade1.wav", 1, ATTN_NORM);
@@ -915,7 +918,7 @@ void CBasePlayer::WaterMove()
 			// set drowning damage bit.  hack - dmg_drownrecover actually
 			// makes the time based damage code 'give back' health over time.
 			// make sure counter is cleared so we start count correctly.
-			
+
 			// NOTE: this actually causes the count to continue restarting
 			// until all drowning damage is healed.
 
@@ -923,15 +926,14 @@ void CBasePlayer::WaterMove()
 			m_bitsDamageType &= ~DMG_DROWN;
 			m_rgbTimeBasedDamage[itbd_DrownRecover] = 0;
 		}
-
 	}
 	else
-	{	// fully under water
+	{ // fully under water
 		// stop restoring damage while underwater
 		m_bitsDamageType &= ~DMG_DROWNRECOVER;
 		m_rgbTimeBasedDamage[itbd_DrownRecover] = 0;
 
-		if (pev->air_finished < gpGlobals->time)		// drown!
+		if (pev->air_finished < gpGlobals->time) // drown!
 		{
 			if (pev->pain_finished < gpGlobals->time)
 			{
@@ -939,15 +941,15 @@ void CBasePlayer::WaterMove()
 				pev->dmg += 1;
 				if (pev->dmg > 5)
 					pev->dmg = 5;
-				if( !FBitSet(pev->flags,FL_GODMODE) )
+				if (!FBitSet(pev->flags, FL_GODMODE))
 					TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), pev->dmg, DMG_DROWN);
 				pev->pain_finished = gpGlobals->time + 1;
-				
+
 				// track drowning damage, give it back when
 				// player finally takes a breath
 
 				m_idrowndmg += pev->dmg;
-			} 
+			}
 		}
 		else
 		{
@@ -961,46 +963,53 @@ void CBasePlayer::WaterMove()
 			ClearBits(pev->flags, FL_INWATER);
 		return;
 	}
-	
+
 	// make bubbles
 
 	air = (int)(pev->air_finished - gpGlobals->time);
-	if (!RANDOM_LONG(0,0x1f) && RANDOM_LONG(0,AIRTIME-1) >= air)
+	if (!RANDOM_LONG(0, 0x1f) && RANDOM_LONG(0, AIRTIME - 1) >= air)
 	{
-		switch (RANDOM_LONG(0,3))
-			{
-			case 0:	EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim1.wav", 0.8, ATTN_NORM); break;
-			case 1:	EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim2.wav", 0.8, ATTN_NORM); break;
-			case 2:	EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim3.wav", 0.8, ATTN_NORM); break;
-			case 3:	EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim4.wav", 0.8, ATTN_NORM); break;
+		switch (RANDOM_LONG(0, 3))
+		{
+		case 0:
+			EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim1.wav", 0.8, ATTN_NORM);
+			break;
+		case 1:
+			EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim2.wav", 0.8, ATTN_NORM);
+			break;
+		case 2:
+			EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim3.wav", 0.8, ATTN_NORM);
+			break;
+		case 3:
+			EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim4.wav", 0.8, ATTN_NORM);
+			break;
 		}
 	}
 
-	if (pev->watertype == CONTENT_LAVA)		// do damage
+	if (pev->watertype == CONTENT_LAVA) // do damage
 	{
 		if (pev->dmgtime < gpGlobals->time)
 			TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), 10 * pev->waterlevel, DMG_BURN);
 	}
-	else if (pev->watertype == CONTENT_SLIME)		// do damage
+	else if (pev->watertype == CONTENT_SLIME) // do damage
 	{
 		pev->dmgtime = gpGlobals->time + 1;
 		TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), 4 * pev->waterlevel, DMG_ACID);
 	}
-	
+
 	if (!FBitSet(pev->flags, FL_INWATER))
 	{
 		SetBits(pev->flags, FL_INWATER);
 		pev->dmgtime = 0;
 	}
-	
+
 	//if (!FBitSet(pev->flags, FL_WATERJUMP))
 	//	pev->velocity = pev->velocity - 0.8 * pev->waterlevel * gpGlobals->frametime * pev->velocity;
 }
 
-
 // TRUE if the player is attached to a ladder
-BOOL CBasePlayer::IsOnLadder( void )
-{ 
+BOOL CBasePlayer::IsOnLadder(void)
+{
 	return (pev->movetype == MOVETYPE_FLY);
 }
 
@@ -1013,7 +1022,7 @@ void CBasePlayer::PlayerDeathThink(void)
 		flForward = pev->velocity.Length() - 20;
 		if (flForward <= 0)
 			pev->velocity = g_vecZero;
-		else    
+		else
 			pev->velocity = flForward * pev->velocity.Normalize();
 	}
 
@@ -1023,49 +1032,47 @@ void CBasePlayer::PlayerDeathThink(void)
 	// we aren't calling into any of their code anymore through the player pointer.
 
 	//PackDeadPlayerItems(); //JAN2015_11 Thothie - this causes too many exploits
-							//though we may need to tweak this meathod insead, if the crash issue is still there (sfaik we have no AOE weapons that can damage the user.)
-
+	//though we may need to tweak this meathod insead, if the crash issue is still there (sfaik we have no AOE weapons that can damage the user.)
 
 	if (pev->modelindex && (!m_fSequenceFinished) && (pev->deadflag == DEAD_DYING))
 	{
-		StudioFrameAdvance( );
+		StudioFrameAdvance();
 
-		m_iRespawnFrames++;		// Note, these aren't necessarily real "frames", so behavior is dependent on # of client movement commands
-		if ( m_iRespawnFrames < 120 )   // Animations should be no longer than this
+		m_iRespawnFrames++;			// Note, these aren't necessarily real "frames", so behavior is dependent on # of client movement commands
+		if (m_iRespawnFrames < 120) // Animations should be no longer than this
 			return;
 	}
 
 	if (pev->deadflag == DEAD_DYING)
 		pev->deadflag = DEAD_DEAD;
-	
+
 	pev->effects |= EF_NOINTERP;
 
-	BOOL fAnyButtonDown = (pev->button & ~IN_SCORE );
-	
+	BOOL fAnyButtonDown = (pev->button & ~IN_SCORE);
+
 	// wait for all buttons released
 	if (pev->deadflag == DEAD_DEAD)
 	{
 		if (fAnyButtonDown)
 			return;
 
-		if ( g_pGameRules->FPlayerCanRespawn( this ) )
+		if (g_pGameRules->FPlayerCanRespawn(this))
 		{
 			m_fDeadTime = gpGlobals->time;
 			pev->deadflag = DEAD_RESPAWNABLE;
 		}
-		
+
 		return;
 	}
 
-// wait for any button down,  or mp_forcerespawn is set and the respawn time is up
-	if (!fAnyButtonDown 
-		&& !( g_pGameRules->IsMultiplayer() && forcerespawn.value > 0 && (gpGlobals->time > (m_fDeadTime + 5))) )
+	// wait for any button down,  or mp_forcerespawn is set and the respawn time is up
+	if (!fAnyButtonDown && !(g_pGameRules->IsMultiplayer() && forcerespawn.value > 0 && (gpGlobals->time > (m_fDeadTime + 5))))
 		return;
 
 	pev->button = 0;
 	m_iRespawnFrames = 0;
 
-	respawn(pev, !(m_afPhysicsFlags & PFLAG_OBSERVER) );// don't copy a corpse if we're in deathcam.
+	respawn(pev, !(m_afPhysicsFlags & PFLAG_OBSERVER)); // don't copy a corpse if we're in deathcam.
 	pev->nextthink = -1;
 }
 
@@ -1073,29 +1080,29 @@ void CBasePlayer::PlayerDeathThink(void)
 // StartDeathCam - find an intermission spot and send the
 // player off into observer mode
 //=========================================================
-void CBasePlayer::StartDeathCam( void )
+void CBasePlayer::StartDeathCam(void)
 {
 	edict_t *pSpot, *pNewSpot;
 	int iRand;
 
-	if ( pev->view_ofs == g_vecZero )
+	if (pev->view_ofs == g_vecZero)
 	{
 		// don't accept subsequent attempts to StartDeathCam()
 		return;
 	}
 
-	pSpot = FIND_ENTITY_BY_CLASSNAME( NULL, "info_intermission");	
+	pSpot = FIND_ENTITY_BY_CLASSNAME(NULL, "info_intermission");
 
-	if ( !FNullEnt( pSpot ) )
+	if (!FNullEnt(pSpot))
 	{
 		// at least one intermission spot in the world.
-		iRand = RANDOM_LONG( 0, 3 );
+		iRand = RANDOM_LONG(0, 3);
 
-		while ( iRand > 0 )
+		while (iRand > 0)
 		{
-			pNewSpot = FIND_ENTITY_BY_CLASSNAME( pSpot, "info_intermission");
-			
-			if ( pNewSpot )
+			pNewSpot = FIND_ENTITY_BY_CLASSNAME(pSpot, "info_intermission");
+
+			if (pNewSpot)
 			{
 				pSpot = pNewSpot;
 			}
@@ -1103,21 +1110,21 @@ void CBasePlayer::StartDeathCam( void )
 			iRand--;
 		}
 
-//		CopyToBodyQue( pev );
-		StartObserver( pSpot->v.origin, pSpot->v.v_angle );
+		//		CopyToBodyQue( pev );
+		StartObserver(pSpot->v.origin, pSpot->v.v_angle);
 	}
 	else
 	{
 		// no intermission spot. Push them up in the air, looking down at their corpse
 		TraceResult tr;
-//		CopyToBodyQue( pev );
-		UTIL_TraceLine( pev->origin, pev->origin + Vector( 0, 0, 128 ), ignore_monsters, edict(), &tr );
-		StartObserver( tr.vecEndPos, UTIL_VecToAngles( tr.vecEndPos - pev->origin  ) );
+		//		CopyToBodyQue( pev );
+		UTIL_TraceLine(pev->origin, pev->origin + Vector(0, 0, 128), ignore_monsters, edict(), &tr);
+		StartObserver(tr.vecEndPos, UTIL_VecToAngles(tr.vecEndPos - pev->origin));
 		return;
 	}
 }
 
-void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
+void CBasePlayer::StartObserver(Vector vecPosition, Vector vecViewAngle)
 {
 	m_afPhysicsFlags |= PFLAG_OBSERVER;
 
@@ -1128,13 +1135,14 @@ void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 	pev->takedamage = DAMAGE_NO;
 	pev->movetype = MOVETYPE_NONE;
 	pev->modelindex = 0;
-	UTIL_SetOrigin( pev, vecPosition );
+	UTIL_SetOrigin(pev, vecPosition);
 }
-void CBasePlayer::CinematicCamera( BOOL OnorOff, Vector vecPosition, Vector vecViewAngle, BOOL bCreateClone )
+void CBasePlayer::CinematicCamera(BOOL OnorOff, Vector vecPosition, Vector vecViewAngle, BOOL bCreateClone)
 {
-	if( OnorOff == TRUE ) {
+	if (OnorOff == TRUE)
+	{
 		m_afPhysicsFlags |= PFLAG_OBSERVER;
-		CamEntity = GetClassPtr( (CBaseEntity *)NULL );
+		CamEntity = GetClassPtr((CBaseEntity *)NULL);
 		CamEntity->pev->classname = MAKE_STRING("camera");
 		CamEntity->pev->modelindex = MODEL_INDEX("models/null.mdl");
 		CamEntity->pev->renderamt = 0; // The engine won't draw this model if this is set to 0 and blending is on
@@ -1143,63 +1151,65 @@ void CBasePlayer::CinematicCamera( BOOL OnorOff, Vector vecPosition, Vector vecV
 
 		CamEntity->pev->origin = vecPosition;
 		CamEntity->pev->angles = CamEntity->pev->v_angle = vecViewAngle;
-		UTIL_SetOrigin( CamEntity->pev, CamEntity->pev->origin );
-//		UTIL_SetSize(CamEntity->pev, Vector( 0, 0, 0), Vector(0, 0, 0) );
-		SET_VIEW( edict(), CamEntity->edict() );
-
+		UTIL_SetOrigin(CamEntity->pev, CamEntity->pev->origin);
+		//		UTIL_SetSize(CamEntity->pev, Vector( 0, 0, 0), Vector(0, 0, 0) );
+		SET_VIEW(edict(), CamEntity->edict());
 	}
-	else {
+	else
+	{
 		m_afPhysicsFlags &= ~PFLAG_OBSERVER;
-		if( CamEntity ) {
-			SET_VIEW( edict(), edict() );
-			CamEntity->SUB_Remove( );
+		if (CamEntity)
+		{
+			SET_VIEW(edict(), edict());
+			CamEntity->SUB_Remove();
 			CamEntity = NULL;
 		}
 	}
 }
 
-
-// 
+//
 // PlayerUse - handles USE keypress
 //
-#define	PLAYER_SEARCH_RADIUS	(float)64
+#define PLAYER_SEARCH_RADIUS (float)64
 
-void CBasePlayer::PlayerUse ( void )
+void CBasePlayer::PlayerUse(void)
 {
 	// Was use pressed or released?
-	if ( ! ((pev->button | m_afButtonPressed | m_afButtonReleased) & IN_USE) ) return;
+	if (!((pev->button | m_afButtonPressed | m_afButtonReleased) & IN_USE))
+		return;
 
-	if( HasConditions( MONSTER_OPENCONTAINER ) || HasConditions( MONSTER_TRADING ) ) return;
+	if (HasConditions(MONSTER_OPENCONTAINER) || HasConditions(MONSTER_TRADING))
+		return;
 
 	// Hit Use on a train?
-	if ( m_afButtonPressed & IN_USE )
+	if (m_afButtonPressed & IN_USE)
 	{
-		if ( m_pTank != NULL )
+		if (m_pTank != NULL)
 		{
 			// Stop controlling the tank
 			// TODO: Send HUD Update
-			m_pTank->Use( this, this, USE_OFF, 0 );
+			m_pTank->Use(this, this, USE_OFF, 0);
 			m_pTank = NULL;
 			return;
 		}
 		else
 		{
-			if ( m_afPhysicsFlags & PFLAG_ONTRAIN )
+			if (m_afPhysicsFlags & PFLAG_ONTRAIN)
 			{
 				m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
-				m_iTrain = TRAIN_NEW|TRAIN_OFF;
+				m_iTrain = TRAIN_NEW | TRAIN_OFF;
 				return;
 			}
 			else
-			{	// Start controlling the train!
-				CBaseEntity *pTrain = CBaseEntity::Instance( pev->groundentity );
+			{ // Start controlling the train!
+				CBaseEntity *pTrain = CBaseEntity::Instance(pev->groundentity);
 
-				if ( pTrain && !(pev->button & IN_JUMP) && FBitSet(pev->flags, FL_ONGROUND) && (pTrain->ObjectCaps() & FCAP_DIRECTIONAL_USE) && pTrain->OnControls(pev) )
+				if (pTrain && !(pev->button & IN_JUMP) && FBitSet(pev->flags, FL_ONGROUND) && (pTrain->ObjectCaps() & FCAP_DIRECTIONAL_USE) && pTrain->OnControls(pev))
 				{
 					m_afPhysicsFlags |= PFLAG_ONTRAIN;
 					m_iTrain = TrainSpeed(pTrain->pev->speed, pTrain->pev->impulse);
 					m_iTrain |= TRAIN_NEW;
-					EMIT_SOUND( ENT(pev), CHAN_ITEM, "plats/train_use1.wav", 0.8, ATTN_NORM);
+					EMIT_SOUND(ENT(pev), CHAN_ITEM, "plats/train_use1.wav", 0.8, ATTN_NORM);
 					return;
 				}
 			}
@@ -1208,13 +1218,13 @@ void CBasePlayer::PlayerUse ( void )
 
 	CBaseEntity *pObject = NULL;
 	CBaseEntity *pClosest = NULL;
-	Vector		vecLOS;
+	Vector vecLOS;
 	float flMaxDot = VIEW_FIELD_NARROW;
 	float flDot;
 
-	UTIL_MakeVectors ( pev->v_angle );// so we know which way we are facing
-	
-	while ((pObject = UTIL_FindEntityInSphere( pObject, pev->origin, PLAYER_SEARCH_RADIUS )) != NULL)
+	UTIL_MakeVectors(pev->v_angle); // so we know which way we are facing
+
+	while ((pObject = UTIL_FindEntityInSphere(pObject, pev->origin, PLAYER_SEARCH_RADIUS)) != NULL)
 	{
 
 		if (pObject->ObjectCaps() & (FCAP_IMPULSE_USE | FCAP_CONTINUOUS_USE | FCAP_ONOFF_USE))
@@ -1222,69 +1232,67 @@ void CBasePlayer::PlayerUse ( void )
 			// !!!PERFORMANCE- should this check be done on a per case basis AFTER we've determined that
 			// this object is actually usable? This dot is being done for every object within PLAYER_SEARCH_RADIUS
 			// when player hits the use key. How many objects can be in that area, anyway? (sjb)
-			vecLOS = (VecBModelOrigin( pObject->pev ) - (pev->origin + pev->view_ofs));
-			
-			// This essentially moves the origin of the target to the corner nearest the player to test to see 
+			vecLOS = (VecBModelOrigin(pObject->pev) - (pev->origin + pev->view_ofs));
+
+			// This essentially moves the origin of the target to the corner nearest the player to test to see
 			// if it's "hull" is in the view cone
-			vecLOS = UTIL_ClampVectorToBox( vecLOS, pObject->pev->size * 0.5 );
-			
-			flDot = DotProduct (vecLOS , gpGlobals->v_forward);
-			if (flDot > flMaxDot )
-			{// only if the item is in front of the user
+			vecLOS = UTIL_ClampVectorToBox(vecLOS, pObject->pev->size * 0.5);
+
+			flDot = DotProduct(vecLOS, gpGlobals->v_forward);
+			if (flDot > flMaxDot)
+			{ // only if the item is in front of the user
 				pClosest = pObject;
 				flMaxDot = flDot;
-//				ALERT( at_console, "%s : %f\n", STRING( pObject->pev->classname ), flDot );
+				//				ALERT( at_console, "%s : %f\n", STRING( pObject->pev->classname ), flDot );
 			}
-//			ALERT( at_console, "%s : %f\n", STRING( pObject->pev->classname ), flDot );
+			//			ALERT( at_console, "%s : %f\n", STRING( pObject->pev->classname ), flDot );
 		}
 	}
 	pObject = pClosest;
 
 	// Found an object
-	if (pObject )
+	if (pObject)
 	{
-		//!!!UNDONE: traceline here to prevent USEing buttons through walls			
+		//!!!UNDONE: traceline here to prevent USEing buttons through walls
 		int caps = pObject->ObjectCaps();
 
-		if ( m_afButtonPressed & IN_USE )
-			EMIT_SOUND( ENT(pev), CHAN_ITEM, "common/wpn_select.wav", 0.4, ATTN_NORM);
+		if (m_afButtonPressed & IN_USE)
+			EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/wpn_select.wav", 0.4, ATTN_NORM);
 
-		if ( ( (pev->button & IN_USE) && (caps & FCAP_CONTINUOUS_USE) ) ||
-			 ( (m_afButtonPressed & IN_USE) && (caps & (FCAP_IMPULSE_USE|FCAP_ONOFF_USE)) ) )
+		if (((pev->button & IN_USE) && (caps & FCAP_CONTINUOUS_USE)) ||
+			((m_afButtonPressed & IN_USE) && (caps & (FCAP_IMPULSE_USE | FCAP_ONOFF_USE))))
 		{
-			if ( caps & FCAP_CONTINUOUS_USE )
+			if (caps & FCAP_CONTINUOUS_USE)
 				m_afPhysicsFlags |= PFLAG_USING;
 
-			pObject->Use( this, this, USE_SET, 1 );
+			pObject->Use(this, this, USE_SET, 1);
 		}
 		// UNDONE: Send different USE codes for ON/OFF.  Cache last ONOFF_USE object to send 'off' if you turn away
-		else if ( (m_afButtonReleased & IN_USE) && (pObject->ObjectCaps() & FCAP_ONOFF_USE) )	// BUGBUG This is an "off" use
+		else if ((m_afButtonReleased & IN_USE) && (pObject->ObjectCaps() & FCAP_ONOFF_USE)) // BUGBUG This is an "off" use
 		{
-			pObject->Use( this, this, USE_SET, 0 );
+			pObject->Use(this, this, USE_SET, 0);
 		}
 	}
 	else
 	{
-		if ( m_afButtonPressed & IN_USE )
-			EMIT_SOUND( ENT(pev), CHAN_ITEM, "common/wpn_denyselect.wav", 0.4, ATTN_NORM);
+		if (m_afButtonPressed & IN_USE)
+			EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/wpn_denyselect.wav", 0.4, ATTN_NORM);
 	}
 }
-
-
 
 void CBasePlayer::Jump()
 {
 	//if( FBitSet(m_StatusFlags, PLAYER_MOVE_NOJUMP) ) return;
 
-	Vector		vecWallCheckDir;// direction we're tracing a line to find a wall when walljumping
-	Vector		vecAdjustedVelocity;
-	Vector		vecSpot;
-	TraceResult	tr;
+	Vector vecWallCheckDir; // direction we're tracing a line to find a wall when walljumping
+	Vector vecAdjustedVelocity;
+	Vector vecSpot;
+	TraceResult tr;
 	//BOOL bCanJump = TRUE;
 
 	if (FBitSet(pev->flags, FL_WATERJUMP))
 		return;
-	
+
 	if (pev->waterlevel >= 2)
 	{
 		return;
@@ -1293,14 +1301,14 @@ void CBasePlayer::Jump()
 	// jump velocity is sqrt( height * gravity * 2)
 
 	// If this isn't the first frame pressing the jump button, break out.
-	if ( !FBitSet( m_afButtonPressed, IN_JUMP ) )
-		return;         // don't pogo stick
+	if (!FBitSet(m_afButtonPressed, IN_JUMP))
+		return; // don't pogo stick
 
-	if ( !(pev->flags & FL_ONGROUND) || !pev->groundentity )
+	if (!(pev->flags & FL_ONGROUND) || !pev->groundentity)
 		return;
 
-	SetBits( m_StatusFlags, PLAYER_MOVE_JUMPING );
-	CallScriptEvent( "game_jump" );
+	SetBits(m_StatusFlags, PLAYER_MOVE_JUMPING);
+	CallScriptEvent("game_jump");
 
 	/*if ( FBitSet(pev->flags, FL_DUCKING ) || FBitSet(m_afPhysicsFlags, PFLAG_DUCKING) )
 	{
@@ -1309,50 +1317,51 @@ void CBasePlayer::Jump()
 			SetAnimation( MONSTER_ANIM_SUPERJUMP, "longjump" );
 		}
 	}*/
-	
+
 	// If you're standing on a conveyor, add it's velocity to yours (for momentum)
 	entvars_t *pevGround = VARS(pev->groundentity);
-	if ( pevGround && (pevGround->flags & FL_CONVEYOR) )
+	if (pevGround && (pevGround->flags & FL_CONVEYOR))
 	{
 		pev->velocity = pev->velocity + pev->basevelocity;
 	}
 }
 
-
-
 // This is a glorious hack to find free space when you've crouched into some solid space
 // Our crouching collisions do not work correctly for some reason and this is easier
 // than fixing the problem :(
-void FixPlayerCrouchStuck( edict_t *pPlayer )
+void FixPlayerCrouchStuck(edict_t *pPlayer)
 {
 	TraceResult trace;
 
 	// Move up as many as 18 pixels if the player is stuck.
-	for ( int i = 0; i < 18; i++ )
+	for (int i = 0; i < 18; i++)
 	{
-		UTIL_TraceHull( pPlayer->v.origin, pPlayer->v.origin, dont_ignore_monsters, head_hull, pPlayer, &trace );
-		if ( trace.fStartSolid )
-			pPlayer->v.origin.z ++;
+		UTIL_TraceHull(pPlayer->v.origin, pPlayer->v.origin, dont_ignore_monsters, head_hull, pPlayer, &trace);
+		if (trace.fStartSolid)
+			pPlayer->v.origin.z++;
 		else
 			break;
 	}
 }
 
-void CBasePlayer::Duck( ) 
+void CBasePlayer::Duck()
 {
 }
-void CBasePlayer::PlayerAction( msstring_ref Action )
+void CBasePlayer::PlayerAction(msstring_ref Action)
 {
 	CScript *EventScript = NULL;
 
-	 for (int i = 0; i < m_Scripts.size(); i++) 
-		if( !strcmp( m_Scripts[i]->GetVar( "game.effect.id" ), Action ) )
-			{ EventScript = m_Scripts[i]; break; }
+	for (int i = 0; i < m_Scripts.size(); i++)
+		if (!strcmp(m_Scripts[i]->GetVar("game.effect.id"), Action))
+		{
+			EventScript = m_Scripts[i];
+			break;
+		}
 
-	if( !EventScript ) 
+	if (!EventScript)
 		return;
 
-	EventScript->RunScriptEventByName( "game_player_activate" );
+	EventScript->RunScriptEventByName("game_player_activate");
 }
 /*void CBasePlayer::Act( int iAction ) 
 {
@@ -1439,89 +1448,88 @@ void CBasePlayer::DoAction( int iAction ) {
 //
 // ID's player as such.
 //
-int  CBasePlayer::Classify ( void )
+int CBasePlayer::Classify(void)
 {
 	return CLASS_PLAYER;
 }
-
 
 //Player Steam ID
 void CBasePlayer::InitStatusBar()
 {
 	m_flStatusBarDisappearDelay = 0;
-	m_SbarString1[0] = m_SbarString0[0] = 0; 
+	m_SbarString1[0] = m_SbarString0[0] = 0;
 }
 
 void CBasePlayer::UpdateStatusBar()
 {
-	int newSBarState[ SBAR_END ];
-	char sbuf0[ SBAR_STRING_SIZE ];
-	char sbuf1[ SBAR_STRING_SIZE ];
+	int newSBarState[SBAR_END];
+	char sbuf0[SBAR_STRING_SIZE];
+	char sbuf1[SBAR_STRING_SIZE];
 
-	memset( newSBarState, 0, sizeof(newSBarState) );
-	strcpy( sbuf0, m_SbarString0 );
-	strcpy( sbuf1, m_SbarString1 );
+	memset(newSBarState, 0, sizeof(newSBarState));
+	strcpy(sbuf0, m_SbarString0);
+	strcpy(sbuf1, m_SbarString1);
 
 	// Find an ID Target
 	TraceResult tr;
-	UTIL_MakeVectors( pev->v_angle + pev->punchangle );
+	UTIL_MakeVectors(pev->v_angle + pev->punchangle);
 	Vector vecSrc = EyePosition();
 	Vector vecEnd = vecSrc + (gpGlobals->v_forward * MAX_ID_RANGE);
-	UTIL_TraceLine( vecSrc, vecEnd, dont_ignore_monsters, edict(), &tr);
+	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, edict(), &tr);
 
 	if (tr.flFraction != 1.0)
 	{
-		if ( !FNullEnt( tr.pHit ) )
+		if (!FNullEnt(tr.pHit))
 		{
-			CBaseEntity *pEntity = CBaseEntity::Instance( tr.pHit );
+			CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
 
-			if (pEntity->Classify() == CLASS_PLAYER )
+			if (pEntity->Classify() == CLASS_PLAYER)
 			{
-				newSBarState[ SBAR_ID_TARGETNAME ] = ENTINDEX( pEntity->edict() );
-				strcpy( sbuf1, "1 %p1\n2 Health: %i2%%\n3 Armor: %i3%%" );
+				newSBarState[SBAR_ID_TARGETNAME] = ENTINDEX(pEntity->edict());
+				strcpy(sbuf1, "1 %p1\n2 Health: %i2%%\n3 Armor: %i3%%");
 
 				// allies and medics get to see the targets health
-				if ( g_pGameRules->PlayerRelationship( this, pEntity ) == GR_TEAMMATE )
+				if (g_pGameRules->PlayerRelationship(this, pEntity) == GR_TEAMMATE)
 				{
-					newSBarState[ SBAR_ID_TARGETHEALTH ] = 100 * (pEntity->pev->health / pEntity->pev->max_health);
-					newSBarState[ SBAR_ID_TARGETARMOR ] = pEntity->pev->armorvalue; //No need to get it % based since 100 it's the max.
+					newSBarState[SBAR_ID_TARGETHEALTH] = 100 * (pEntity->pev->health / pEntity->pev->max_health);
+					newSBarState[SBAR_ID_TARGETARMOR] = pEntity->pev->armorvalue; //No need to get it % based since 100 it's the max.
 				}
 
 				m_flStatusBarDisappearDelay = gpGlobals->time + 1.0;
 			}
 		}
-		else if ( m_flStatusBarDisappearDelay > gpGlobals->time )
+		else if (m_flStatusBarDisappearDelay > gpGlobals->time)
 		{
 			// hold the values for a short amount of time after viewing the object
-			newSBarState[ SBAR_ID_TARGETNAME ] = m_izSBarState[ SBAR_ID_TARGETNAME ];
-			newSBarState[ SBAR_ID_TARGETHEALTH ] = m_izSBarState[ SBAR_ID_TARGETHEALTH ];
-			newSBarState[ SBAR_ID_TARGETARMOR ] = m_izSBarState[ SBAR_ID_TARGETARMOR ];
+			newSBarState[SBAR_ID_TARGETNAME] = m_izSBarState[SBAR_ID_TARGETNAME];
+			newSBarState[SBAR_ID_TARGETHEALTH] = m_izSBarState[SBAR_ID_TARGETHEALTH];
+			newSBarState[SBAR_ID_TARGETARMOR] = m_izSBarState[SBAR_ID_TARGETARMOR];
 		}
 	}
 
 	BOOL bForceResend = FALSE;
 
-	if ( strcmp( sbuf0, m_SbarString0 ) )
+	if (strcmp(sbuf0, m_SbarString0))
 	{
-		MESSAGE_BEGIN( MSG_ONE, gmsgStatusText, NULL, pev );
-			WRITE_BYTE( 0 );
-			WRITE_STRING( sbuf0 );
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusText, NULL, pev);
+		WRITE_BYTE(0);
+		WRITE_STRING(sbuf0);
 		MESSAGE_END();
 
-		strcpy( m_SbarString0, sbuf0 );
+		strcpy(m_SbarString0, sbuf0);
 
 		// make sure everything's resent
 		bForceResend = TRUE;
 	}
 
-	if ( strcmp( sbuf1, m_SbarString1 ) )
+	if (strcmp(sbuf1, m_SbarString1))
 	{
-		MESSAGE_BEGIN( MSG_ONE, gmsgStatusText, NULL, pev );
-			WRITE_BYTE( 1 );
-			WRITE_STRING( sbuf1 );
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusText, NULL, pev);
+		WRITE_BYTE(1);
+		WRITE_STRING(sbuf1);
 		MESSAGE_END();
 
-		strcpy( m_SbarString1, sbuf1 );
+		strcpy(m_SbarString1, sbuf1);
 
 		// make sure everything's resent
 		bForceResend = TRUE;
@@ -1530,11 +1538,11 @@ void CBasePlayer::UpdateStatusBar()
 	// Check values and send if they don't match
 	for (int i = 1; i < SBAR_END; i++)
 	{
-		if ( newSBarState[i] != m_izSBarState[i] || bForceResend )
+		if (newSBarState[i] != m_izSBarState[i] || bForceResend)
 		{
-			MESSAGE_BEGIN( MSG_ONE, gmsgStatusValue, NULL, pev );
-				WRITE_BYTE( i );
-				WRITE_SHORT( newSBarState[i] );
+			MESSAGE_BEGIN(MSG_ONE, gmsgStatusValue, NULL, pev);
+			WRITE_BYTE(i);
+			WRITE_SHORT(newSBarState[i]);
 			MESSAGE_END();
 
 			m_izSBarState[i] = newSBarState[i];
@@ -1542,157 +1550,157 @@ void CBasePlayer::UpdateStatusBar()
 	}
 }
 
-#define CLIMB_SHAKE_FREQUENCY	22	// how many frames in between screen shakes when climbing
-#define	MAX_CLIMB_SPEED			200	// fastest vertical climbing speed possible
-#define	CLIMB_SPEED_DEC			15	// climbing deceleration rate
-#define	CLIMB_PUNCH_X			-7  // how far to 'punch' client X axis when climbing
-#define CLIMB_PUNCH_Z			7	// how far to 'punch' client Z axis when climbing
+#define CLIMB_SHAKE_FREQUENCY 22 // how many frames in between screen shakes when climbing
+#define MAX_CLIMB_SPEED 200		 // fastest vertical climbing speed possible
+#define CLIMB_SPEED_DEC 15		 // climbing deceleration rate
+#define CLIMB_PUNCH_X -7		 // how far to 'punch' client X axis when climbing
+#define CLIMB_PUNCH_Z 7			 // how far to 'punch' client Z axis when climbing
 
-void SetKeys( CBasePlayer *pPlayer );
+void SetKeys(CBasePlayer *pPlayer);
 
 void CBasePlayer::PreThink(void)
 {
 	startdbg;
 
-	dbg( "Begin" );
+	dbg("Begin");
 
 	//Anti-cheat
-	if( !IsElite( ) )
+	if (!IsElite())
 	{
-		if( (pev->movetype == MOVETYPE_NOCLIP && pev->solid != SOLID_NOT) ||
-			FBitSet(pev->flags, FL_GODMODE) )
-				#ifndef RELEASE_LOCKDOWN
-					ALERT( at_console, "Player attmpting to use Half-life Cheat! (In the public build this is a fatal error)\n" );
-				#else
-					exit( 0 );
-				#endif
+		if ((pev->movetype == MOVETYPE_NOCLIP && pev->solid != SOLID_NOT) ||
+			FBitSet(pev->flags, FL_GODMODE))
+#ifndef RELEASE_LOCKDOWN
+			ALERT(at_console, "Player attmpting to use Half-life Cheat! (In the public build this is a fatal error)\n");
+#else
+			exit(0);
+#endif
 	}
-	
+
 	//Send char info, if character is still unloaded
-	Think_SendCharData( );
+	Think_SendCharData();
 
-	dbg( "Call MSChar_Interface::AutoSave" );
-	MSChar_Interface::AutoSave( this );	//Autosave character
+	dbg("Call MSChar_Interface::AutoSave");
+	MSChar_Interface::AutoSave(this); //Autosave character
 
-	dbg( "Call MSChar_Interface::Think_SendChar" );
-	MSChar_Interface::Think_SendChar( this );	//Send client-side char down to client
+	dbg("Call MSChar_Interface::Think_SendChar");
+	MSChar_Interface::Think_SendChar(this); //Send client-side char down to client
 
-	int buttonsChanged = (m_afButtonLast ^ pev->button);	// These buttons have changed this frame
-	
+	int buttonsChanged = (m_afButtonLast ^ pev->button); // These buttons have changed this frame
+
 	// Debounced button codes for pressed/released
 	// UNDONE: Do we need auto-repeat?
-	m_afButtonPressed =  buttonsChanged & pev->button;		// The changed ones still down are "pressed"
-	m_afButtonReleased = buttonsChanged & (~pev->button);	// The ones not down are "released"
+	m_afButtonPressed = buttonsChanged & pev->button;	  // The changed ones still down are "pressed"
+	m_afButtonReleased = buttonsChanged & (~pev->button); // The ones not down are "released"
 
-	dbg( "Call SetKeys" );
-	SetKeys( );
+	dbg("Call SetKeys");
+	SetKeys();
 
-	dbg( "Call g_pGameRules->PlayerThink" );
-	if( g_pGameRules )
-		g_pGameRules->PlayerThink( this );
+	dbg("Call g_pGameRules->PlayerThink");
+	if (g_pGameRules)
+		g_pGameRules->PlayerThink(this);
 
-	if ( g_fGameOver )
-		return;         // intermission or finale
+	if (g_fGameOver)
+		return; // intermission or finale
 
-	dbg( "Call Trade" );
-	Trade( );									//Trade - Do this early on
+	dbg("Call Trade");
+	Trade(); //Trade - Do this early on
 
-	dbg( "Call ItemPreFrame" );
-	ItemPreFrame( );
+	dbg("Call ItemPreFrame");
+	ItemPreFrame();
 	WaterMove();
 
-	RunScriptEvents( );							//RunScriptEvents
+	RunScriptEvents(); //RunScriptEvents
 
-	dbg( "Call UpdateClientData" );
-	UpdateClientData();							//UpdateClientData
-	
-	if( SpawnCheckTime > 0 && gpGlobals->time > SpawnCheckTime )
+	dbg("Call UpdateClientData");
+	UpdateClientData(); //UpdateClientData
+
+	if (SpawnCheckTime > 0 && gpGlobals->time > SpawnCheckTime)
 	{
 		SpawnCheckTime = 0;
-		dbg( "Call Spawn" );
-		Spawn( );
+		dbg("Call Spawn");
+		Spawn();
 	}
 
-	if( FBitSet(pev->flags,FL_SPECTATOR) ) return;
+	if (FBitSet(pev->flags, FL_SPECTATOR))
+		return;
 
-	dbg( "Call CheckTimeBasedDamage" );
+	dbg("Call CheckTimeBasedDamage");
 	CheckTimeBasedDamage();
 
 	if (pev->deadflag >= DEAD_DYING)
 	{
-		dbg( "Call PlayerDeathThink" );
+		dbg("Call PlayerDeathThink");
 		PlayerDeathThink();
 		return;
 	}
 
 	// So the correct flags get sent to client asap.
 	//
-	if ( m_afPhysicsFlags & PFLAG_ONTRAIN )
+	if (m_afPhysicsFlags & PFLAG_ONTRAIN)
 		pev->flags |= FL_ONTRAIN;
-	else 
+	else
 		pev->flags &= ~FL_ONTRAIN;
 
 	// Train speed control
-	if ( m_afPhysicsFlags & PFLAG_ONTRAIN )
+	if (m_afPhysicsFlags & PFLAG_ONTRAIN)
 	{
-		CBaseEntity *pTrain = CBaseEntity::Instance( pev->groundentity );
+		CBaseEntity *pTrain = CBaseEntity::Instance(pev->groundentity);
 		float vel;
-		
-		if ( !pTrain )
+
+		if (!pTrain)
 		{
 			TraceResult trainTrace;
 			// Maybe this is on the other side of a level transition
-			UTIL_TraceLine( pev->origin, pev->origin + Vector(0,0,-38), ignore_monsters, ENT(pev), &trainTrace );
+			UTIL_TraceLine(pev->origin, pev->origin + Vector(0, 0, -38), ignore_monsters, ENT(pev), &trainTrace);
 
 			// HACKHACK - Just look for the func_tracktrain classname
-			if ( trainTrace.flFraction != 1.0 && trainTrace.pHit )
-			pTrain = CBaseEntity::Instance( trainTrace.pHit );
+			if (trainTrace.flFraction != 1.0 && trainTrace.pHit)
+				pTrain = CBaseEntity::Instance(trainTrace.pHit);
 
-
-			if ( !pTrain || !(pTrain->ObjectCaps() & FCAP_DIRECTIONAL_USE) || !pTrain->OnControls(pev) )
+			if (!pTrain || !(pTrain->ObjectCaps() & FCAP_DIRECTIONAL_USE) || !pTrain->OnControls(pev))
 			{
 				//ALERT( at_error, "In train mode with no train!\n" );
 				m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
-				m_iTrain = TRAIN_NEW|TRAIN_OFF;
+				m_iTrain = TRAIN_NEW | TRAIN_OFF;
 				return;
 			}
 		}
-		else if ( !FBitSet( pev->flags, FL_ONGROUND ) || FBitSet( pTrain->pev->spawnflags, SF_TRACKTRAIN_NOCONTROL ) || (pev->button & (IN_MOVELEFT|IN_MOVERIGHT) ) )
+		else if (!FBitSet(pev->flags, FL_ONGROUND) || FBitSet(pTrain->pev->spawnflags, SF_TRACKTRAIN_NOCONTROL) || (pev->button & (IN_MOVELEFT | IN_MOVERIGHT)))
 		{
 			// Turn off the train if you jump, strafe, or the train controls go dead
 			m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
-			m_iTrain = TRAIN_NEW|TRAIN_OFF;
+			m_iTrain = TRAIN_NEW | TRAIN_OFF;
 			return;
 		}
 
 		pev->velocity = g_vecZero;
 		vel = 0;
-		if ( m_afButtonPressed & IN_FORWARD )
+		if (m_afButtonPressed & IN_FORWARD)
 		{
 			vel = 1;
-			pTrain->Use( this, this, USE_SET, (float)vel );
+			pTrain->Use(this, this, USE_SET, (float)vel);
 		}
-		else if ( m_afButtonPressed & IN_BACK )
+		else if (m_afButtonPressed & IN_BACK)
 		{
 			vel = -1;
-			pTrain->Use( this, this, USE_SET, (float)vel );
+			pTrain->Use(this, this, USE_SET, (float)vel);
 		}
 
 		if (vel)
 		{
 			m_iTrain = TrainSpeed(pTrain->pev->speed, pTrain->pev->impulse);
-			m_iTrain |= TRAIN_ACTIVE|TRAIN_NEW;
+			m_iTrain |= TRAIN_ACTIVE | TRAIN_NEW;
 		}
-
-	} else if (m_iTrain & TRAIN_ACTIVE)
+	}
+	else if (m_iTrain & TRAIN_ACTIVE)
 		m_iTrain = TRAIN_NEW; // turn off train
 
-	if( FBitSet( m_StatusFlags, PLAYER_MOVE_JUMPING ) &&		//Was jumping
-		FBitSet( pev->flags, FL_ONGROUND )  )					//Now on ground
-		{
-			ClearBits( m_StatusFlags, PLAYER_MOVE_JUMPING );
-			CallScriptEvent( "game_jump_land" );
-		}
+	if (FBitSet(m_StatusFlags, PLAYER_MOVE_JUMPING) && //Was jumping
+		FBitSet(pev->flags, FL_ONGROUND))			   //Now on ground
+	{
+		ClearBits(m_StatusFlags, PLAYER_MOVE_JUMPING);
+		CallScriptEvent("game_jump_land");
+	}
 
 	if (pev->button & IN_JUMP)
 	{
@@ -1701,9 +1709,8 @@ void CBasePlayer::PreThink(void)
 		Jump();
 	}
 
-
 	// If trying to duck, already ducked, or in the process of ducking
-	if ((pev->button & IN_DUCK) || FBitSet(pev->flags,FL_DUCKING) || (m_afPhysicsFlags & PFLAG_DUCKING) )
+	if ((pev->button & IN_DUCK) || FBitSet(pev->flags, FL_DUCKING) || (m_afPhysicsFlags & PFLAG_DUCKING))
 		Duck();
 
 	/*if( FBitSet(StatusFlags,PLAYER_MOVE_SITTING) )
@@ -1720,35 +1727,35 @@ void CBasePlayer::PreThink(void)
 	}*/
 
 	// play a footstep if it's time - this will eventually be frame-based. not time based.
-	
+
 	//UpdateStepSound();
 
-	if ( !FBitSet ( pev->flags, FL_ONGROUND ) )
+	if (!FBitSet(pev->flags, FL_ONGROUND))
 		m_flFallVelocity = -pev->velocity.z;
-	else m_flFallVelocity = 0;
+	else
+		m_flFallVelocity = 0;
 
 	// StudioFrameAdvance( );//!!!HACKHACK!!! Can't be hit by traceline when not animating?
 
-	if( m_TimeTillSuicide )
+	if (m_TimeTillSuicide)
 	{
-		EnableControl( FALSE );
-		if( gpGlobals->time >= m_TimeTillSuicide )
+		EnableControl(FALSE);
+		if (gpGlobals->time >= m_TimeTillSuicide)
 		{
 			// have the player kill themself
 			pev->health = m_HP = 0;
-			Killed( pev, GIB_NEVER );
+			Killed(pev, GIB_NEVER);
 			m_TimeTillSuicide = 0;
 		}
 	}
 
-	if( FBitSet(m_StatusFlags, PLAYER_MOVE_ATTACKING) )
+	if (FBitSet(m_StatusFlags, PLAYER_MOVE_ATTACKING))
 		m_TimeCanSteal = gpGlobals->time + 5.0;
 
-	if( m_TimeCanSteal && gpGlobals->time >= m_TimeCanSteal )
+	if (m_TimeCanSteal && gpGlobals->time >= m_TimeCanSteal)
 		m_TimeCanSteal = 0;
 
 	enddbg;
-
 }
 /* Time based Damage works as follows: 
 	1) There are several types of timebased damage:
@@ -1827,8 +1834,7 @@ void CBasePlayer::PreThink(void)
 
 /* */
 
-
-void CBasePlayer::CheckTimeBasedDamage() 
+void CBasePlayer::CheckTimeBasedDamage()
 {
 	int i;
 	BYTE bDuration = 0;
@@ -1841,7 +1847,7 @@ void CBasePlayer::CheckTimeBasedDamage()
 	// only check for time based damage approx. every 2 seconds
 	if (abs(gpGlobals->time - m_tbdPrev) < 2.0)
 		return;
-	
+
 	m_tbdPrev = gpGlobals->time;
 
 	for (i = 0; i < CDMG_TIMEBASED; i++)
@@ -1856,7 +1862,7 @@ void CBasePlayer::CheckTimeBasedDamage()
 				bDuration = PARALYZE_DURATION;
 				break;
 			case itbd_NerveGas:
-//				TakeDamage(pev, pev, NERVEGAS_DAMAGE, DMG_GENERIC);	
+				//				TakeDamage(pev, pev, NERVEGAS_DAMAGE, DMG_GENERIC);
 				bDuration = NERVEGAS_DURATION;
 				break;
 			case itbd_Poison:
@@ -1864,7 +1870,7 @@ void CBasePlayer::CheckTimeBasedDamage()
 				bDuration = POISON_DURATION;
 				break;
 			case itbd_Radiation:
-//				TakeDamage(pev, pev, RADIATION_DAMAGE, DMG_GENERIC);
+				//				TakeDamage(pev, pev, RADIATION_DAMAGE, DMG_GENERIC);
 				bDuration = RADIATION_DURATION;
 				break;
 			case itbd_DrownRecover:
@@ -1874,21 +1880,21 @@ void CBasePlayer::CheckTimeBasedDamage()
 				{
 					int idif = min(m_idrowndmg - m_idrownrestored, 10);
 
-					GiveHP( idif );
+					GiveHP(idif);
 					m_idrownrestored += idif;
 				}
-				bDuration = 4;	// get up to 5*10 = 50 points back
+				bDuration = 4; // get up to 5*10 = 50 points back
 				break;
 			case itbd_Acid:
-//				TakeDamage(pev, pev, ACID_DAMAGE, DMG_GENERIC);
+				//				TakeDamage(pev, pev, ACID_DAMAGE, DMG_GENERIC);
 				bDuration = ACID_DURATION;
 				break;
 			case itbd_SlowBurn:
-//				TakeDamage(pev, pev, SLOWBURN_DAMAGE, DMG_GENERIC);
+				//				TakeDamage(pev, pev, SLOWBURN_DAMAGE, DMG_GENERIC);
 				bDuration = SLOWBURN_DURATION;
 				break;
 			case itbd_SlowFreeze:
-//				TakeDamage(pev, pev, SLOWFREEZE_DAMAGE, DMG_GENERIC);
+				//				TakeDamage(pev, pev, SLOWFREEZE_DAMAGE, DMG_GENERIC);
 				bDuration = SLOWFREEZE_DURATION;
 				break;
 			default:
@@ -1897,25 +1903,24 @@ void CBasePlayer::CheckTimeBasedDamage()
 
 			if (m_rgbTimeBasedDamage[i])
 			{
-				// use up an antitoxin on poison or nervegas after a few seconds of damage					
+				// use up an antitoxin on poison or nervegas after a few seconds of damage
 				if (((i == itbd_NerveGas) && (m_rgbTimeBasedDamage[i] < NERVEGAS_DURATION)) ||
-					((i == itbd_Poison)   && (m_rgbTimeBasedDamage[i] < POISON_DURATION)))
+					((i == itbd_Poison) && (m_rgbTimeBasedDamage[i] < POISON_DURATION)))
 				{
 					if (m_rgItems[ITEM_ANTIDOTE])
 					{
 						m_rgbTimeBasedDamage[i] = 0;
 						m_rgItems[ITEM_ANTIDOTE]--;
-//						SetSuitUpdate("!HEV_HEAL4", FALSE, SUIT_REPEAT_OK);
+						//						SetSuitUpdate("!HEV_HEAL4", FALSE, SUIT_REPEAT_OK);
 					}
 				}
-
 
 				// decrement damage duration, detect when done.
 				if (!m_rgbTimeBasedDamage[i] || --m_rgbTimeBasedDamage[i] == 0)
 				{
 					m_rgbTimeBasedDamage[i] = 0;
 					// if we're done, clear damage bits
-					m_bitsDamageType &= ~(DMG_PARALYZE << i);	
+					m_bitsDamageType &= ~(DMG_PARALYZE << i);
 				}
 			}
 			else
@@ -1995,7 +2000,7 @@ Things powered by the battery
 // if in range of radiation source, ping geiger counter
 #define GEIGERDELAY 0.25
 
-void CBasePlayer :: UpdateGeigerCounter( void )
+void CBasePlayer ::UpdateGeigerCounter(void)
 {
 	BYTE range;
 
@@ -2004,22 +2009,22 @@ void CBasePlayer :: UpdateGeigerCounter( void )
 		return;
 
 	m_flgeigerDelay = gpGlobals->time + GEIGERDELAY;
-		
+
 	// send range to radition source to client
 
-	range = (BYTE) (m_flgeigerRange / 4);
+	range = (BYTE)(m_flgeigerRange / 4);
 
 	if (range != m_igeigerRangePrev)
 	{
 		m_igeigerRangePrev = range;
 
-		MESSAGE_BEGIN( MSG_ONE, gmsgGeigerRange, NULL, pev );
-			WRITE_BYTE( range );
+		MESSAGE_BEGIN(MSG_ONE, gmsgGeigerRange, NULL, pev);
+		WRITE_BYTE(range);
 		MESSAGE_END();
 	}
 
 	// reset counter and semaphore
-	if (!RANDOM_LONG(0,3))
+	if (!RANDOM_LONG(0, 3))
 		m_flgeigerRange = 1000;
 }
 
@@ -2027,22 +2032,22 @@ void CBasePlayer :: UpdateGeigerCounter( void )
 // UpdatePlayerSound - updates the position of the player's
 // reserved sound slot in the sound list.
 //=========================================================
-void CBasePlayer :: UpdatePlayerSound ( void )
+void CBasePlayer ::UpdatePlayerSound(void)
 {
 	int iBodyVolume;
 	int iVolume;
 	CSound *pSound;
 
-	pSound = CSoundEnt::SoundPointerForIndex( CSoundEnt :: ClientSoundIndex( edict() ) );
-	if( !pSound )
+	pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt ::ClientSoundIndex(edict()));
+	if (!pSound)
 		return;
 
 	pSound->m_SrcEntity = this;
 	pSound->m_Type = "npc";
 
-	if ( !pSound )
+	if (!pSound)
 	{
-		ALERT ( at_console, "Client lost reserved sound!\n" );
+		ALERT(at_console, "Client lost reserved sound!\n");
 		return;
 	}
 
@@ -2050,71 +2055,73 @@ void CBasePlayer :: UpdatePlayerSound ( void )
 
 	// now calculate the best target volume for the sound. If the player's weapon
 	// is louder than his body/movement, use the weapon volume, else, use the body volume.
-	
-	if ( FBitSet ( pev->flags, FL_ONGROUND ) )
-	{	
+
+	if (FBitSet(pev->flags, FL_ONGROUND))
+	{
 		// clamp the noise that can be made by the body, in case a push trigger,
-		// weapon recoil, or anything shoves the player abnormally fast. 
-		//iBodyVolume = min( pev->velocity.Length(), 512 ); 
-		if ( pev->velocity.Length() < 512 )
+		// weapon recoil, or anything shoves the player abnormally fast.
+		//iBodyVolume = min( pev->velocity.Length(), 512 );
+		if (pev->velocity.Length() < 512)
 			iBodyVolume = pev->velocity.Length();
 		else
 			iBodyVolume = 512;
-
 	}
-	else iBodyVolume = 0;
+	else
+		iBodyVolume = 0;
 
-	if ( pev->button & IN_JUMP )
+	if (pev->button & IN_JUMP)
 	{
 		iBodyVolume += 100;
 	}
 
-// convert player move speed and actions into sound audible by monsters.
+	// convert player move speed and actions into sound audible by monsters.
 	//if( Class && Class->id == CLASS_ROGUE ) m_iTargetVolume = 0;
 	//else {
-		if ( m_iTargetVolume > iBodyVolume )
-		{
-			//I'm already making more noise than my footsteps...
-			// OR in the bits for COMBAT sound if the weapon is being louder than the player. 
-			pSound->m_iType |= bits_SOUND_COMBAT;
-		}
-		else m_iTargetVolume = iBodyVolume;
+	if (m_iTargetVolume > iBodyVolume)
+	{
+		//I'm already making more noise than my footsteps...
+		// OR in the bits for COMBAT sound if the weapon is being louder than the player.
+		pSound->m_iType |= bits_SOUND_COMBAT;
+	}
+	else
+		m_iTargetVolume = iBodyVolume;
 	//}
 
-	// if target volume is greater than the player sound's current volume, we paste the new volume in 
+	// if target volume is greater than the player sound's current volume, we paste the new volume in
 	// immediately. If target is less than the current volume, current volume is not set immediately to the
 	// lower volume, rather works itself towards target volume over time. This gives monsters a much better chance
 	// to hear a sound, especially if they don't listen every frame.
 	iVolume = pSound->m_iVolume;
 
-	if ( m_iTargetVolume > iVolume )
+	if (m_iTargetVolume > iVolume)
 	{
 		iVolume = m_iTargetVolume;
 	}
-	else if ( iVolume > m_iTargetVolume )
+	else if (iVolume > m_iTargetVolume)
 	{
 		iVolume -= 250 * gpGlobals->frametime;
 
-		if ( iVolume < m_iTargetVolume ) iVolume = 0;
+		if (iVolume < m_iTargetVolume)
+			iVolume = 0;
 	}
 
-	if ( m_fNoPlayerSound )
+	if (m_fNoPlayerSound)
 	{
 		// debugging flag, lets players move around and shoot without monsters hearing.
 		iVolume = 0;
 	}
 
-	if ( gpGlobals->time > m_flStopExtraSoundTime )
+	if (gpGlobals->time > m_flStopExtraSoundTime)
 	{
-		// since the extra sound that a weapon emits only lasts for one client frame, we keep that sound around for a server frame or two 
+		// since the extra sound that a weapon emits only lasts for one client frame, we keep that sound around for a server frame or two
 		// after actual emission to make sure it gets heard.
 		m_iExtraSoundTypes = 0;
 	}
 
-	if ( pSound )
+	if (pSound)
 	{
 		pSound->m_vecOrigin = pev->origin;
-		pSound->m_iType |= ( bits_SOUND_PLAYER | m_iExtraSoundTypes );
+		pSound->m_iType |= (bits_SOUND_PLAYER | m_iExtraSoundTypes);
 		pSound->m_iVolume = iVolume;
 	}
 
@@ -2123,55 +2130,55 @@ void CBasePlayer :: UpdatePlayerSound ( void )
 	if (m_iWeaponFlash < 0)
 		m_iWeaponFlash = 0;
 
-	UTIL_MakeVectors ( pev->angles );
+	UTIL_MakeVectors(pev->angles);
 	gpGlobals->v_forward.z = 0;
 
-	// Below are a couple of useful little bits that make it easier to determine just how much noise the 
-	// player is making. 
+	// Below are a couple of useful little bits that make it easier to determine just how much noise the
+	// player is making.
 	//UTIL_ParticleEffect ( pev->origin + gpGlobals->v_forward * iVolume, g_vecZero, 255, 25 );
 	//ALERT ( at_console, "%d/%d\n", iVolume, m_iTargetVolume );
 	m_iTargetVolume = 0;
 }
-#define postthinkdbg( a ) dbg( msstring("[") + DisplayName() + "] " + a )
+#define postthinkdbg(a) dbg(msstring("[") + DisplayName() + "] " + a)
 
 void CBasePlayer::PostThink()
 {
 	startdbg;
-	postthinkdbg( "Begin" );
+	postthinkdbg("Begin");
 
-	if ( g_fGameOver )
-		goto pt_end;         // intermission or finale
+	if (g_fGameOver)
+		goto pt_end; // intermission or finale
 
-	if( !IsAlive() || FBitSet(pev->flags,FL_SPECTATOR) )
+	if (!IsAlive() || FBitSet(pev->flags, FL_SPECTATOR))
 		goto pt_end;
 
-	postthinkdbg( "Handle Tank controlling" );
+	postthinkdbg("Handle Tank controlling");
 	// Handle Tank controlling
-	if ( m_pTank != NULL )
+	if (m_pTank != NULL)
 	{ // if they've moved too far from the gun,  or selected a weapon, unuse the gun
-		if ( m_pTank->OnControls( pev ) && !pev->weaponmodel )
-		{  
-			m_pTank->Use( this, this, USE_SET, 2 );	// try fire the gun
+		if (m_pTank->OnControls(pev) && !pev->weaponmodel)
+		{
+			m_pTank->Use(this, this, USE_SET, 2); // try fire the gun
 		}
 		else
-		{  // they've moved off the platform
-			m_pTank->Use( this, this, USE_OFF, 0 );
+		{ // they've moved off the platform
+			m_pTank->Use(this, this, USE_OFF, 0);
 			m_pTank = NULL;
 		}
 	}
 
-	postthinkdbg( "Call ItemPostFrame( )" );
-// do weapon stuff
-	ItemPostFrame( );
+	postthinkdbg("Call ItemPostFrame( )");
+	// do weapon stuff
+	ItemPostFrame();
 
-// check to see if player landed hard enough to make a sound
-// falling farther than half of the maximum safe distance, but not as far a max safe distance will
-// play a bootscrape sound, and no damage will be inflicted. Fallling a distance shorter than half
-// of maximum safe distance will make no sound. Falling farther than max safe distance will play a 
-// fallpain sound, and damage will be inflicted based on how far the player fell
+	// check to see if player landed hard enough to make a sound
+	// falling farther than half of the maximum safe distance, but not as far a max safe distance will
+	// play a bootscrape sound, and no damage will be inflicted. Fallling a distance shorter than half
+	// of maximum safe distance will make no sound. Falling farther than max safe distance will play a
+	// fallpain sound, and damage will be inflicted based on how far the player fell
 
-	postthinkdbg( "Check player fall" );
-	if ( (FBitSet(pev->flags, FL_ONGROUND)) && (pev->health > 0) && m_flFallVelocity >= PLAYER_FALL_PUNCH_THRESHHOLD )
+	postthinkdbg("Check player fall");
+	if ((FBitSet(pev->flags, FL_ONGROUND)) && (pev->health > 0) && m_flFallVelocity >= PLAYER_FALL_PUNCH_THRESHHOLD)
 	{
 		float fvol = 0.5;
 
@@ -2180,39 +2187,45 @@ void CBasePlayer::PostThink()
 		if (pev->watertype == CONTENT_WATER)
 		{
 			// Did he hit the world or a non-moving entity?
-			// BUG - this happens all the time in water, especially when 
+			// BUG - this happens all the time in water, especially when
 			// BUG - water has current force
 			// if ( !pev->groundentity || VARS(pev->groundentity)->velocity.z == 0 )
-				// EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_wade1.wav", 1, ATTN_NORM);
+			// EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_wade1.wav", 1, ATTN_NORM);
 		}
-		else if ( m_flFallVelocity > PLAYER_MAX_SAFE_FALL_SPEED )
-		{// after this point, we start doing damage
-			
+		else if (m_flFallVelocity > PLAYER_MAX_SAFE_FALL_SPEED)
+		{ // after this point, we start doing damage
+
 			pev->punchangle.x += 72;
-			pev->punchangle.y += RANDOM_LONG(-90,90);
-			pev->punchangle.z += RANDOM_LONG(-90,90);
-			float flFallDamage = g_pGameRules->FlPlayerFallDamage( this );
+			pev->punchangle.y += RANDOM_LONG(-90, 90);
+			pev->punchangle.z += RANDOM_LONG(-90, 90);
+			float flFallDamage = g_pGameRules->FlPlayerFallDamage(this);
 
 			//HIT GROUND SOUNDS
-			if ( flFallDamage > pev->health )
-			{//splat
+			if (flFallDamage > pev->health)
+			{ //splat
 				// note: play on item channel because we play footstep landing on body channel
-				if( flFallDamage > pev->health+PLAYER_GIB_HEATH )
+				if (flFallDamage > pev->health + PLAYER_GIB_HEATH)
 					EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/bodysplat.wav", 1, ATTN_NORM);
 			}
-			switch ( RANDOM_LONG(0,4) )
+			switch (RANDOM_LONG(0, 4))
 			{
-				case 0:	PlaySound( CHAN_AUTO, "player/hitground1.wav", 1.0, true );
-				case 1:	PlaySound( CHAN_AUTO, "player/hitground2.wav", 1.0, true );
-				case 2:	PlaySound( CHAN_AUTO, "common/bodydrop1.wav", 1.0, true );
-				case 3:	PlaySound( CHAN_AUTO, "common/bodydrop2.wav", 1.0, true );
-				case 4:	PlaySound( CHAN_AUTO, "common/bodydrop3.wav", 1.0, true );					
+			case 0:
+				PlaySound(CHAN_AUTO, "player/hitground1.wav", 1.0, true);
+			case 1:
+				PlaySound(CHAN_AUTO, "player/hitground2.wav", 1.0, true);
+			case 2:
+				PlaySound(CHAN_AUTO, "common/bodydrop1.wav", 1.0, true);
+			case 3:
+				PlaySound(CHAN_AUTO, "common/bodydrop2.wav", 1.0, true);
+			case 4:
+				PlaySound(CHAN_AUTO, "common/bodydrop3.wav", 1.0, true);
 			}
 
 			//PAIN sounds and TakeDamage()
-			if ( flFallDamage > 0 )
+			if (flFallDamage > 0)
 			{
-				if( flFallDamage < pev->health ) {// If you didn't die, yelp in pain!
+				if (flFallDamage < pev->health)
+				{ // If you didn't die, yelp in pain!
 					//FEB2010_28 Thothie - moving script side to deal with gender
 					CallScriptEvent("game_fallpain_sound");
 				}
@@ -2220,89 +2233,92 @@ void CBasePlayer::PostThink()
 				//if( Class && Class->id == CLASS_ROGUE )
 				//	flFallDamage *= 0.5;
 
-				TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), flFallDamage, DMG_FALL ); 
+				TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), flFallDamage, DMG_FALL);
 			}
 
 			fvol = 1.0;
 		}
-		else if ( m_flFallVelocity > PLAYER_MAX_SAFE_FALL_SPEED / 2 )
+		else if (m_flFallVelocity > PLAYER_MAX_SAFE_FALL_SPEED / 2)
 		{
 			pev->punchangle.x += 20;
-			switch ( RANDOM_LONG(0,4) )
+			switch (RANDOM_LONG(0, 4))
 			{
-				case 0:	PlaySound( CHAN_AUTO, "player/hitground1.wav", 1.0, true );
-				case 1:	PlaySound( CHAN_AUTO, "player/hitground2.wav", 1.0, true );
-				case 2:	PlaySound( CHAN_AUTO, "common/bodydrop1.wav", 1.0, true );
-				case 3:	PlaySound( CHAN_AUTO, "common/bodydrop2.wav", 1.0, true );
-				case 4:	PlaySound( CHAN_AUTO, "common/bodydrop3.wav", 1.0, true );					
+			case 0:
+				PlaySound(CHAN_AUTO, "player/hitground1.wav", 1.0, true);
+			case 1:
+				PlaySound(CHAN_AUTO, "player/hitground2.wav", 1.0, true);
+			case 2:
+				PlaySound(CHAN_AUTO, "common/bodydrop1.wav", 1.0, true);
+			case 3:
+				PlaySound(CHAN_AUTO, "common/bodydrop2.wav", 1.0, true);
+			case 4:
+				PlaySound(CHAN_AUTO, "common/bodydrop3.wav", 1.0, true);
 			}
 			fvol = 0.85;
 		}
-		else if ( m_flFallVelocity < PLAYER_MIN_BOUNCE_SPEED )
+		else if (m_flFallVelocity < PLAYER_MIN_BOUNCE_SPEED)
 		{
 			fvol = 0;
 		}
 
-		if ( fvol > 0.0 )
+		if (fvol > 0.0)
 		{
 			// knock the screen around a little bit, temporary effect
-			pev->punchangle.x = m_flFallVelocity * 0.018;	// punch x axis
+			pev->punchangle.x = m_flFallVelocity * 0.018; // punch x axis
 
-			if ( RANDOM_LONG(0,1) )
+			if (RANDOM_LONG(0, 1))
 			{
 				pev->punchangle.z = m_flFallVelocity * 0.009;
 			}
-		
 		}
-    }
+	}
 
-	postthinkdbg( "Call game_animate" );
-	CallScriptEvent( "game_animate" );
+	postthinkdbg("Call game_animate");
+	CallScriptEvent("game_animate");
 
-	postthinkdbg( "Call SetAnimation" );
-	if ( IsAlive() ) 
-		SetAnimation( MONSTER_ANIM_WALK );
+	postthinkdbg("Call SetAnimation");
+	if (IsAlive())
+		SetAnimation(MONSTER_ANIM_WALK);
 
-	postthinkdbg( "Call StudioFrameAdvance" );
-	StudioFrameAdvance( );
+	postthinkdbg("Call StudioFrameAdvance");
+	StudioFrameAdvance();
 
-	postthinkdbg( "Call UpdatePlayerSound" );
+	postthinkdbg("Call UpdatePlayerSound");
 	UpdatePlayerSound();
 
-	postthinkdbg( "Call SetSpeed" );
-	SetSpeed( );
+	postthinkdbg("Call SetSpeed");
+	SetSpeed();
 
 	// Track button info so we can detect 'pressed' and 'released' buttons next frame
 	m_afButtonLast = pev->button;
 
 pt_end:
-	
-	postthinkdbg( "Call UpdateMiscPositions" );
-	UpdateMiscPositions( );
 
+	postthinkdbg("Call UpdateMiscPositions");
+	UpdateMiscPositions();
 
-	postthinkdbg( "Call Body->Think" );
-	if( Body ) Body->Think( this );
+	postthinkdbg("Call Body->Think");
+	if (Body)
+		Body->Think(this);
 
-	postthinkdbg( "Call Script Event game_think" );
-	CallScriptEvent( "game_think" );
+	postthinkdbg("Call Script Event game_think");
+	CallScriptEvent("game_think");
 
-	postthinkdbg( "End PostThink" );
-	enddbg( "CBasePlayer::PostThink()" );
+	postthinkdbg("End PostThink");
+	enddbg("CBasePlayer::PostThink()");
 }
 
-
 // checks if the spot is clear of players
-BOOL IsSpawnPointValid( CBaseEntity *pPlayer, CBaseEntity *pSpot )
+BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot)
 {
 	CBaseEntity *ent = NULL;
 
-	if ( !pSpot->IsTriggered( pPlayer ) )
+	if (!pSpot->IsTriggered(pPlayer))
 	{
 		return FALSE;
 	}
 
-/*	while ( (ent = UTIL_FindEntityInSphere( ent, pSpot->pev->origin, 128 )) != NULL )
+	/*	while ( (ent = UTIL_FindEntityInSphere( ent, pSpot->pev->origin, 128 )) != NULL )
 	{
 		// if ent is a client, don't spawn on 'em
 		if ( ent->IsPlayer() && ent != pPlayer )
@@ -2310,16 +2326,16 @@ BOOL IsSpawnPointValid( CBaseEntity *pPlayer, CBaseEntity *pSpot )
 	}*/
 	bool fBlocked = false;
 	float Range = 72;
-	Vector vMinBounds = pSpot->pev->origin - Vector( Range, Range, Range );
-	Vector vMaxBounds = pSpot->pev->origin + Vector( Range, Range, Range );
+	Vector vMinBounds = pSpot->pev->origin - Vector(Range, Range, Range);
+	Vector vMaxBounds = pSpot->pev->origin + Vector(Range, Range, Range);
 	CBaseEntity *pList[4096];
-	int count = UTIL_EntitiesInBox( pList, 4096, vMinBounds, vMaxBounds, 0 );
-	for ( int i = 0; i < count; i++ )
+	int count = UTIL_EntitiesInBox(pList, 4096, vMinBounds, vMaxBounds, 0);
+	for (int i = 0; i < count; i++)
 	{
 		CBaseEntity *pSightEnt = pList[i];
-		if( pSightEnt->pev->solid == SOLID_NOT ||
-			pSightEnt->pev->solid == SOLID_TRIGGER
-			|| pSightEnt == pPlayer ) continue;
+		if (pSightEnt->pev->solid == SOLID_NOT ||
+			pSightEnt->pev->solid == SOLID_TRIGGER || pSightEnt == pPlayer)
+			continue;
 
 		//We're blocked, quit
 		fBlocked = true;
@@ -2328,9 +2344,9 @@ BOOL IsSpawnPointValid( CBaseEntity *pPlayer, CBaseEntity *pSpot )
 
 	return TRUE;
 }
-void CBasePlayer::AddNoise( float flNoiseAmt )
+void CBasePlayer::AddNoise(float flNoiseAmt)
 {
-    m_iTargetVolume = min(m_iTargetVolume + flNoiseAmt,1500);
+	m_iTargetVolume = min(m_iTargetVolume + flNoiseAmt, 1500);
 	//if (m_iTargetVolume + flNoiseAmt<1500)
 	//	m_iTargetVolume = m_iTargetVolume + flNoiseAmt;
 	//else
@@ -2342,10 +2358,10 @@ void CBasePlayer::AddNoise( float flNoiseAmt )
 Am I elite?
 ============
 */
-bool CBasePlayer::IsElite( )
+bool CBasePlayer::IsElite()
 {
-	return m_fIsElite ;
-/*	if( FStrEq(STRING(pPlayer->DisplayName),"Dogg") ||
+	return m_fIsElite;
+	/*	if( FStrEq(STRING(pPlayer->DisplayName),"Dogg") ||
 		FStrEq(STRING(pPlayer->DisplayName),"Lanethan") ||
 		FStrEq(STRING(pPlayer->DisplayName),"Borbarad") ||
 		FStrEq(STRING(pPlayer->DisplayName),"Lord Maz") ||
@@ -2357,7 +2373,7 @@ bool CBasePlayer::IsElite( )
 	//return false;
 }
 
-CBaseEntity *GetAssaultSpawnSpot( CBasePlayer *pPlayer );
+CBaseEntity *GetAssaultSpawnSpot(CBasePlayer *pPlayer);
 
 enum spawnspot_e
 {
@@ -2365,85 +2381,105 @@ enum spawnspot_e
 	SS_FOUND,
 	SS_ALLFULL
 };
-spawnspot_e GetRandomSpawnSpot( msstring_ref Name, msstring_ref TransitionName, CBaseEntity *pPlayer, CBaseEntity **pFoundSpot )
+spawnspot_e GetRandomSpawnSpot(msstring_ref Name, msstring_ref TransitionName, CBaseEntity *pPlayer, CBaseEntity **pFoundSpot)
 {
 	mslist<CBaseEntity *> Spawnpoints;
-	if( !Name ) return SS_NOSPOT;
+	if (!Name)
+		return SS_NOSPOT;
 
 	//logfile << " " << pPlayer->DisplayName() << "Requested_Spwn_spot: " << TransitionName << "\r\n";
 
 	CBaseEntity *pSpot = NULL;
-	while( pSpot = UTIL_FindEntityByClassname( pSpot, Name ) )
+	while (pSpot = UTIL_FindEntityByClassname(pSpot, Name))
 	{
 		bool fValidSpot = true;
-		
+
 		//if TransitionName is set, check the transition name.  If trans is not set, I don't care what the tranistion is
-		if( TransitionName && !FStrEq(STRING(pSpot->pev->message),TransitionName) )
+		if (TransitionName && !FStrEq(STRING(pSpot->pev->message), TransitionName))
 		{
 			fValidSpot = false;
 			continue;
 		}
 
-		Spawnpoints.add( pSpot );
+		Spawnpoints.add(pSpot);
 	}
 
-	if( !Spawnpoints.size() )
+	if (!Spawnpoints.size())
 		return SS_NOSPOT;
 
 	//Test all spots in a random order
-	int RandSpot = 0; 
+	int RandSpot = 0;
 	pSpot = NULL;
 
-	while( Spawnpoints.size() )
+	while (Spawnpoints.size())
 	{
-		RandSpot = RANDOM_LONG(0,(Spawnpoints.size()-1));
+		RandSpot = RANDOM_LONG(0, (Spawnpoints.size() - 1));
 
 		pSpot = Spawnpoints[RandSpot];
-		if( !IsSpawnPointValid( pPlayer, pSpot ) )
+		if (!IsSpawnPointValid(pPlayer, pSpot))
 		{
 			pSpot = NULL;
-			Spawnpoints.erase( RandSpot );
+			Spawnpoints.erase(RandSpot);
 		}
-		else break;
+		else
+			break;
 	}
 
 	//All spots filled, wait.
-	if( !pSpot )
-		return SS_ALLFULL;					//Spots found, but all spots full
+	if (!pSpot)
+		return SS_ALLFULL; //Spots found, but all spots full
 
 	*pFoundSpot = pSpot;
-	return SS_FOUND;						//Spot found
+	return SS_FOUND; //Spot found
 }
 //Thothie NOV2014_09 - IsActive() - centralizing AFK checking
-bool CBasePlayer::IsActive( )
+bool CBasePlayer::IsActive()
 {
 	IScripted *iScripted = this->GetScripted();
-	if ( !iScripted ) return false;
-	if ( atoi(iScripted->GetFirstScriptVar("IS_AFK")) == 1 ) return false;
-	if ( atoi(iScripted->GetFirstScriptVar("PLR_IN_WORLD")) != 1) return false;
+	if (!iScripted)
+		return false;
+	if (atoi(iScripted->GetFirstScriptVar("IS_AFK")) == 1)
+		return false;
+	if (atoi(iScripted->GetFirstScriptVar("PLR_IN_WORLD")) != 1)
+		return false;
 	msstring CheckSteamID = this->AuthID();
-	if ( CheckSteamID.contains("UNKNOWN") ) return false;
-	if ( CheckSteamID.contains("BOT") ) return false;
-	if ( CheckSteamID.contains("HLTV") ) return false;
-	if ( this->MaxHP() < 15 ) return false;
+	if (CheckSteamID.contains("UNKNOWN"))
+		return false;
+	if (CheckSteamID.contains("BOT"))
+		return false;
+	if (CheckSteamID.contains("HLTV"))
+		return false;
+	if (this->MaxHP() < 15)
+		return false;
 	return true;
 }
 
-CBaseEntity *CBasePlayer::FindSpawnSpot( )
+CBaseEntity *CBasePlayer::FindSpawnSpot()
 {
 	//Compile a list of spots that you can spawn at, then randomly select one
-	
+
 	const char *JoinTypeText = "unknown";
-	if( m_CharacterState == CHARSTATE_UNLOADED ) JoinTypeText = "Spectate";
+	if (m_CharacterState == CHARSTATE_UNLOADED)
+		JoinTypeText = "Spectate";
 	else
 	{
-		switch( m_JoinType )
+		switch (m_JoinType)
 		{
-			case JN_TRAVEL:		JoinTypeText = "Travel"; break;
-			case JN_STARTMAP:	JoinTypeText = "Start Map"; break;
-			case JN_VISITED:	JoinTypeText = "Previously Visited"; break;
-			case JN_ELITE:		JoinTypeText = "GM"; break;
-			case JN_NOTALLOWED: JoinTypeText = "Not Allowed"; break;
+		case JN_TRAVEL:
+			JoinTypeText = "Travel";
+			break;
+		case JN_STARTMAP:
+			JoinTypeText = "Start Map";
+			break;
+		case JN_VISITED:
+			JoinTypeText = "Previously Visited";
+			break;
+		case JN_ELITE:
+			JoinTypeText = "GM";
+			break;
+		case JN_NOTALLOWED:
+			JoinTypeText = "Not Allowed";
+			break;
 		}
 	}
 
@@ -2453,55 +2489,55 @@ CBaseEntity *CBasePlayer::FindSpawnSpot( )
 	CBaseEntity *pSpot = NULL;
 	spawnspot_e Status;
 
-	if( m_CharacterState == CHARSTATE_UNLOADED ) 
+	if (m_CharacterState == CHARSTATE_UNLOADED)
 	{
-		Status = GetRandomSpawnSpot( SPAWN_SPECTATE, NULL, this, &pSpot );
-		if( Status == SS_NOSPOT )
+		Status = GetRandomSpawnSpot(SPAWN_SPECTATE, NULL, this, &pSpot);
+		if (Status == SS_NOSPOT)
 		{
-			if( IsElite() )
-				ALERT( at_console, "WARNING: Mapper did not include spawn spot: %s\n", SPAWN_SPECTATE );
-			Status = GetRandomSpawnSpot( SPAWN_GENERIC, NULL, this, &pSpot );
+			if (IsElite())
+				ALERT(at_console, "WARNING: Mapper did not include spawn spot: %s\n", SPAWN_SPECTATE);
+			Status = GetRandomSpawnSpot(SPAWN_GENERIC, NULL, this, &pSpot);
 		}
 	}
 	else
 	{
 		logfile << "m_JoinType: " << m_JoinType << endl;
-		switch( m_JoinType )
+		switch (m_JoinType)
 		{
-			case JN_VISITED:
-				m_SpawnTransition = GetOtherPlayerTransition( this );
-				//----NO BREAK---
+		case JN_VISITED:
+			m_SpawnTransition = GetOtherPlayerTransition(this);
+			//----NO BREAK---
 
-			case JN_TRAVEL:		//Transitioned to new map or died, and respawning at last transition
-			case JN_STARTMAP:	//Joined a startmap.
-								//If I joined a startmap, but I have a transition, try to use the transition first
-								//before just going straight to the char creation point
-			case JN_ELITE:		//I'm Elite - Join no matter what
-				if( m_SpawnTransition )	
-					Status = GetRandomSpawnSpot( SPAWN_GENERIC, m_SpawnTransition, this, &pSpot );
-				else 
-					Status = SS_NOSPOT;
+		case JN_TRAVEL:	  //Transitioned to new map or died, and respawning at last transition
+		case JN_STARTMAP: //Joined a startmap.
+						  //If I joined a startmap, but I have a transition, try to use the transition first
+						  //before just going straight to the char creation point
+		case JN_ELITE:	  //I'm Elite - Join no matter what
+			if (m_SpawnTransition)
+				Status = GetRandomSpawnSpot(SPAWN_GENERIC, m_SpawnTransition, this, &pSpot);
+			else
+				Status = SS_NOSPOT;
 
-				if( Status == SS_NOSPOT && m_JoinType == JN_STARTMAP )
-					Status = GetRandomSpawnSpot( SPAWN_BEGIN, NULL, this, &pSpot );
-				if( Status == SS_NOSPOT && m_JoinType == JN_ELITE )
-					Status = GetRandomSpawnSpot( SPAWN_GENERIC, NULL, this, &pSpot );
-				break;
-			default:
+			if (Status == SS_NOSPOT && m_JoinType == JN_STARTMAP)
+				Status = GetRandomSpawnSpot(SPAWN_BEGIN, NULL, this, &pSpot);
+			if (Status == SS_NOSPOT && m_JoinType == JN_ELITE)
+				Status = GetRandomSpawnSpot(SPAWN_GENERIC, NULL, this, &pSpot);
+			break;
+		default:
 
-				break;
+			break;
 		}
 	}
-			
-	if( Status > SS_NOSPOT )
+
+	if (Status > SS_NOSPOT)
 	{
 		logfile << "Found useable spawn spots, testing...\r\n";
 
-		if( Status == SS_ALLFULL )
+		if (Status == SS_ALLFULL)
 		{
 			//All spots filled, wait.
 			SpawnCheckTime = gpGlobals->time + 2.0;
-			SendEventMsg( HUDEVENT_UNABLE, "Waiting to spawn...\n" );
+			SendEventMsg(HUDEVENT_UNABLE, "Waiting to spawn...\n");
 			logfile << "All spawn spots filled!\r\n";
 			return NULL;
 		}
@@ -2516,29 +2552,30 @@ CBaseEntity *CBasePlayer::FindSpawnSpot( )
 		logfile << "NO valid spawn spots for " << JoinTypeText << " (Trans: " << TransitionText << ")!!!\r\n";
 		bool fKickPlayer = true;
 
-		if( m_CharacterState == CHARSTATE_LOADED )
+		if (m_CharacterState == CHARSTATE_LOADED)
 		{
-			if( m_MapStatus == FIRST_MAP )
-				ClientPrint( pev, at_console, "* You cannot create a new character on this map! *\n" );
-			else if( m_MapStatus == NEW_MAP )
-				ClientPrint( pev, at_console, "* Mapper did not include transition link: %s *\n", TransitionText.c_str() );
+			if (m_MapStatus == FIRST_MAP)
+				ClientPrint(pev, at_console, "* You cannot create a new character on this map! *\n");
+			else if (m_MapStatus == NEW_MAP)
+				ClientPrint(pev, at_console, "* Mapper did not include transition link: %s *\n", TransitionText.c_str());
 		}
-		
-		if( IsElite() )
+
+		if (IsElite())
 		{
-			pSpot = UTIL_FindEntityByClassname( NULL, SPAWN_GENERIC );
-			if( !pSpot ) ALERT( at_console, "Map has no %s.\n", SPAWN_GENERIC );
+			pSpot = UTIL_FindEntityByClassname(NULL, SPAWN_GENERIC);
+			if (!pSpot)
+				ALERT(at_console, "Map has no %s.\n", SPAWN_GENERIC);
 			fKickPlayer = false;
 		}
 
-		if( fKickPlayer )
+		if (fKickPlayer)
 		{
 			msstring PlayerName = DisplayName();
-			ALERT( at_logged, "Kicking %s:  %s's char is on map: %s Trans: %s\n", PlayerName.c_str(), PlayerName.c_str(), m_cEnterMap, TransitionText.c_str() );
+			ALERT(at_logged, "Kicking %s:  %s's char is on map: %s Trans: %s\n", PlayerName.c_str(), PlayerName.c_str(), m_cEnterMap, TransitionText.c_str());
 			char cKickString[256];
-			sprintf( cKickString, 
-				     "Disconnected.\n*** Your character is not on this map. ***\n*** Your character is on the map: %s ***\n", m_cEnterMap );
-			KickPlayer( cKickString );
+			sprintf(cKickString,
+					"Disconnected.\n*** Your character is not on this map. ***\n*** Your character is on the map: %s ***\n", m_cEnterMap);
+			KickPlayer(cKickString);
 			return NULL;
 		}
 	}
@@ -2551,22 +2588,22 @@ CBaseEntity *CBasePlayer::FindSpawnSpot( )
 //Map must have a ms_player_begin in order for people to create characters there!
 class CSpawnPointBegin : public CPointEntity
 {
-	void Spawn( )
+	void Spawn()
 	{
 		MSGlobals::CanCreateCharOnMap = true;
-		CPointEntity::Spawn( );
+		CPointEntity::Spawn();
 	}
 };
 
-LINK_ENTITY_TO_CLASS( ms_player_spec, CPointEntity );
-LINK_ENTITY_TO_CLASS( ms_player_spawn, CPointEntity );
-LINK_ENTITY_TO_CLASS( ms_player_begin, CSpawnPointBegin );
+LINK_ENTITY_TO_CLASS(ms_player_spec, CPointEntity);
+LINK_ENTITY_TO_CLASS(ms_player_spawn, CPointEntity);
+LINK_ENTITY_TO_CLASS(ms_player_begin, CSpawnPointBegin);
 
-void CBasePlayer::Spawn( void )
+void CBasePlayer::Spawn(void)
 {
 	startdbg;
 
-	dbg( "Call Precache" );
+	dbg("Call Precache");
 	//Master Sword spawn code
 	//Note: The player will sometimes have items/packs when this is called
 	Precache();
@@ -2574,42 +2611,42 @@ void CBasePlayer::Spawn( void )
 	bool SpawnPlayer = m_CharacterState == CHARSTATE_LOADED;
 	bool fRespawnPlayer = (pev->deadflag > DEAD_NO); //Respawn me
 
-	//MiB Jul2008a (JAN2010) - If this is the first spawn, call 'wear' on all items worn.  
-	//This fixes the bug where you would have to re-equip packs (etc)  
+	//MiB Jul2008a (JAN2010) - If this is the first spawn, call 'wear' on all items worn.
+	//This fixes the bug where you would have to re-equip packs (etc)
 	//For them to show to other players.
 	//-
 	//Thothie - no good, reactivates item, causing conflicts
 	//Thothie - yeah, but we really, really need it now, attempting to compensate
-	if ( !fRespawnPlayer )  
-	{ 
-		 for (int i = 0; i < Gear.size(); i++)  
-		{ 
-			CGenericItem *cur_item = Gear[i];  
+	if (!fRespawnPlayer)
+	{
+		for (int i = 0; i < Gear.size(); i++)
+		{
+			CGenericItem *cur_item = Gear[i];
 
-			if ( cur_item->IsWorn() )
+			if (cur_item->IsWorn())
 			{
 				//Thothie FEB2010_01 Pass gender/race with show
 				static msstringlist Params;
 				Params.clearitems();
-				Params.add( m_Race );
-				Params.add( (m_Gender==0) ? "male" : "female" );
-				Params.add( "game_show" );
-				cur_item->CallScriptEvent( "game_show", &Params );
+				Params.add(m_Race);
+				Params.add((m_Gender == 0) ? "male" : "female");
+				Params.add("game_show");
+				cur_item->CallScriptEvent("game_show", &Params);
 			}
-		} 
+		}
 	}
-	
+
 	//Initialize if not done already
-	dbg( "Call InitialSpawn" );
-	InitialSpawn( );
+	dbg("Call InitialSpawn");
+	InitialSpawn();
 
-	pev->model = IdealModel( );
-	SetModel( pev->model ); //Set the default model
+	pev->model = IdealModel();
+	SetModel(pev->model); //Set the default model
 
-	dbg( "Call game_spawn" );
-	CallScriptEvent( "game_spawn" );
+	dbg("Call game_spawn");
+	CallScriptEvent("game_spawn");
 
-	dbg( "Init player" );
+	dbg("Init player");
 	m_PrefHand = RIGHT_HAND; // Right handed (unsettable for now)
 	m_Framerate = 1.0f;
 	CheckAreaTime = gpGlobals->time + 0.5;
@@ -2618,80 +2655,80 @@ void CBasePlayer::Spawn( void )
 	m_StatusFlags = 0;
 
 	m_flFieldOfView = 0.1;
-	ClearConditions( MONSTER_OPENCONTAINER );
+	ClearConditions(MONSTER_OPENCONTAINER);
 
-	if( fRespawnPlayer )
+	if (fRespawnPlayer)
 	{
 		m_MaxHP = MaxHP();
 		m_MaxMP = MaxMP();
-		pev->health	= m_HP = pev->max_health = m_MaxHP;
-		m_MP	= m_MaxMP;
-		CallScriptEvent( "game_respawn" ); //Thothie MAR2008a
+		pev->health = m_HP = pev->max_health = m_MaxHP;
+		m_MP = m_MaxMP;
+		CallScriptEvent("game_respawn"); //Thothie MAR2008a
 	}
 
-	Stamina		= MaxStamina( );
+	Stamina = MaxStamina();
 	//-----------------------------
 
-	pev->classname		= MAKE_STRING("player");
-	pev->armorvalue		= 0;
-	pev->takedamage		= DAMAGE_AIM;
-	pev->solid			= SOLID_SLIDEBOX;
-	pev->movetype		= MOVETYPE_WALK;
-	pev->flags			= FL_CLIENT;
-	pev->air_finished	= gpGlobals->time + 12;
-	pev->dmg			= 2;				// initial water damage
-	pev->effects		= 0;
+	pev->classname = MAKE_STRING("player");
+	pev->armorvalue = 0;
+	pev->takedamage = DAMAGE_AIM;
+	pev->solid = SOLID_SLIDEBOX;
+	pev->movetype = MOVETYPE_WALK;
+	pev->flags = FL_CLIENT;
+	pev->air_finished = gpGlobals->time + 12;
+	pev->dmg = 2; // initial water damage
+	pev->effects = 0;
 
-	pev->deadflag		= DEAD_NO;
-	pev->dmg_take		= 0;
-	pev->dmg_save		= 0;
-	pev->friction		= 1.0;
-	pev->gravity		= 1.0;
-	pev->rendermode		= 0;
-	pev->renderamt		= 0;
-	m_bitsHUDDamage		= -1;
-	m_bitsDamageType	= 0;
-	m_afPhysicsFlags	= 0;
+	pev->deadflag = DEAD_NO;
+	pev->dmg_take = 0;
+	pev->dmg_save = 0;
+	pev->friction = 1.0;
+	pev->gravity = 1.0;
+	pev->rendermode = 0;
+	pev->renderamt = 0;
+	m_bitsHUDDamage = -1;
+	m_bitsDamageType = 0;
+	m_afPhysicsFlags = 0;
 
-	g_engfuncs.pfnSetPhysicsKeyValue( edict(), "slj", "0" );
-	g_engfuncs.pfnSetPhysicsKeyValue( edict(), "hl", "1" );
+	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "slj", "0");
+	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "hl", "1");
 
-	m_iFOV				= 0;// init field of view.
-	m_iClientFOV		= -1; // make sure fov reset is sent
-	m_iClientHP			= -1;// reset HP
-	m_iClientMaxHP		= -1;// reset MaxHP
-	m_iClientMP			= -1;// reset MP
-	m_iClientMaxMP		= -1;// reset MaxMP
-	m_ClientCurrentHand = -1;// reset Hand
-	m_ClientGender		= -1;// reset Gender
+	m_iFOV = 0;				  // init field of view.
+	m_iClientFOV = -1;		  // make sure fov reset is sent
+	m_iClientHP = -1;		  // reset HP
+	m_iClientMaxHP = -1;	  // reset MaxHP
+	m_iClientMP = -1;		  // reset MP
+	m_iClientMaxMP = -1;	  // reset MaxMP
+	m_ClientCurrentHand = -1; // reset Hand
+	m_ClientGender = -1;	  // reset Gender
 
-	m_flNextDecalTime	= 0;// let this player decal as soon as he spawns.
+	m_flNextDecalTime = 0; // let this player decal as soon as he spawns.
 
-	m_flgeigerDelay = gpGlobals->time + 2.0;	// wait a few seconds until user-defined message registrations
-												// are recieved by all clients
-	
-	m_flTimeStepSound	= 0;
+	m_flgeigerDelay = gpGlobals->time + 2.0; // wait a few seconds until user-defined message registrations
+											 // are recieved by all clients
+
+	m_flTimeStepSound = 0;
 	m_iStepLeft = 0;
-	m_flFieldOfView		= 0.5;// some monsters use this to determine whether or not the player is looking at them.
+	m_flFieldOfView = 0.5; // some monsters use this to determine whether or not the player is looking at them.
 
-	m_bloodColor	= BLOOD_COLOR_RED;
-	m_flNextAttack	= UTIL_WeaponTimeBase();
+	m_bloodColor = BLOOD_COLOR_RED;
+	m_flNextAttack = UTIL_WeaponTimeBase();
 
 	// dont let uninitialized value here hurt the player
 	m_flFallVelocity = 0;
 
 	//Find a spot for the player and create a portal
 
-	//If m_MapStatus == OLD_MAP, then the server has recieved 
+	//If m_MapStatus == OLD_MAP, then the server has recieved
 	//this player's coordinates, or the player has already spawned once.
 
-	if( !MoveToSpawnSpot( ) )
+	if (!MoveToSpawnSpot())
 	{
-		pev->origin = Vector( 0, 0, 0 );
+		pev->origin = Vector(0, 0, 0);
 		m_iHideHUD = HIDEHUD_ALL;
 	}
 
-	UTIL_SetOrigin( pev, pev->origin );
+	UTIL_SetOrigin(pev, pev->origin);
 
 	/*if( !pentSpawnSpot ) 
 	{
@@ -2705,35 +2742,36 @@ void CBasePlayer::Spawn( void )
 	else {
 	}*/
 
-	dbg( "Create spawn portal" );
-	if( m_MapStatus == FIRST_MAP && !fRespawnPlayer ) {
+	dbg("Create spawn portal");
+	if (m_MapStatus == FIRST_MAP && !fRespawnPlayer)
+	{
 		//***!!!*** Setup some kind of cool portal***!!!***
 		CPortal *pPortal = GetClassPtr((CPortal *)NULL);
 		pPortal->pev->origin = pev->origin;
-		pPortal->Spawn2( );
+		pPortal->Spawn2();
 	}
 
-	dbg( "Call Setsize" );
-	SetSize( pev->flags );
+	dbg("Call Setsize");
+	SetSize(pev->flags);
 
-    pev->view_ofs = VEC_VIEW;
-	m_HackedGunPos		= Vector( 0, 32, 0 );
+	pev->view_ofs = VEC_VIEW;
+	m_HackedGunPos = Vector(0, 32, 0);
 
-	if ( m_iPlayerSound == SOUNDLIST_EMPTY )
-		ALERT ( at_console, "Couldn't alloc player sound slot!\n" );
+	if (m_iPlayerSound == SOUNDLIST_EMPTY)
+		ALERT(at_console, "Couldn't alloc player sound slot!\n");
 
-	m_fNoPlayerSound = FALSE;// normal sound behavior.
+	m_fNoPlayerSound = FALSE; // normal sound behavior.
 
 	m_pLastItem = NULL;
 	m_fInitHUD = TRUE;
-	m_iClientHideHUD = -1;  // force this to be recalculated
+	m_iClientHideHUD = -1; // force this to be recalculated
 	m_fWeapon = FALSE;
 	m_pClientActiveItem = NULL;
-	
-	if( !SpawnPlayer ) 
-	{ 
+
+	if (!SpawnPlayer)
+	{
 		//If it hasn't loaded your character yet, don't spawn
-		dbg( "Spawn in observer mode" );
+		dbg("Spawn in observer mode");
 		pev->solid = SOLID_NOT;
 		pev->movetype = MOVETYPE_NOCLIP;
 
@@ -2742,39 +2780,40 @@ void CBasePlayer::Spawn( void )
 		//UTIL_SetOrigin( pev, Vector( 4000, 4000, 4000 ) );
 
 		pev->takedamage = DAMAGE_NO;
-		SetBits( pev->effects, EF_NODRAW );
-		SetBits( pev->flags, FL_NOTARGET );
+		SetBits(pev->effects, EF_NODRAW);
+		SetBits(pev->flags, FL_NOTARGET);
 		m_afPhysicsFlags |= PFLAG_OBSERVER;
 		m_iHideHUD = HIDEHUD_ALL;
-		EnableControl( FALSE ); //So you can't move
+		EnableControl(FALSE); //So you can't move
 
-		dbg( "Call PreLoadChars" );
+		dbg("Call PreLoadChars");
 
 		//Load the list of characters either from file or from the Central Server
-		if( !m_LoadedInitialChars )
+		if (!m_LoadedInitialChars)
 		{
-			PreLoadChars( );
+			PreLoadChars();
 			m_LoadedInitialChars = true;
 		}
 	}
-	else {
-		dbg( "Spawn in regular mode" );
-		CallScriptEvent( "game_player_putinworld" ); //Thothie MAR2008a
+	else
+	{
+		dbg("Spawn in regular mode");
+		CallScriptEvent("game_player_putinworld"); //Thothie MAR2008a
 		//debug
-		Print(">>>>> spawn: m_NextTransition: %s m_SpawnTransition: %s m_OldTransition: %s\n", m_SpawnTransition, m_SpawnTransition, m_OldTransition );
+		Print(">>>>> spawn: m_NextTransition: %s m_SpawnTransition: %s m_OldTransition: %s\n", m_SpawnTransition, m_SpawnTransition, m_OldTransition);
 
-		ClearBits( pev->flags, FL_NOTARGET );
+		ClearBits(pev->flags, FL_NOTARGET);
 		//SetBits( pev->effects, EF_NODRAW ); //Thothie - making char invisible for new body
-		UTIL_ScreenFade( this, Vector(0,0,0), 1, 0, 0, FFADE_IN );
-		CinematicCamera( FALSE );  //Returns you to normal viewing
+		UTIL_ScreenFade(this, Vector(0, 0, 0), 1, 0, 0, FFADE_IN);
+		CinematicCamera(FALSE); //Returns you to normal viewing
 		LockSpeed = FALSE;
 		m_SkillLevel = -1; //Force a score screen update
 		//Call the client dll spawn function in UpdateClientData
-		SetBits( m_MsgFlags, MSGFLAG_SPAWN );
+		SetBits(m_MsgFlags, MSGFLAG_SPAWN);
 		m_iHideHUD = 0; //Unhide HUD, if hidden
-		EnableControl( TRUE );
-		UTIL_SetOrigin( pev, pev->origin );
-		
+		EnableControl(TRUE);
+		UTIL_SetOrigin(pev, pev->origin);
+
 		//Shuriken - This should send an Exp message for all the players' stats.
 		//I have no idea how costly it is to send this many message each time a player joins
 		//so you might be better off just axing this and letting them update on monster kills.
@@ -2794,123 +2833,138 @@ void CBasePlayer::Spawn( void )
 
 		//If the map status was first map, leave it
 		//Otherwise set it to old map, so I can respawn
-		if( m_MapStatus != FIRST_MAP ) m_MapStatus = OLD_MAP;
+		if (m_MapStatus != FIRST_MAP)
+			m_MapStatus = OLD_MAP;
 
 		//Display greeting
-		dbg( "Display server greeting" );
-		clientaddr_t &ClientInfo = g_NewClients[entindex()-1];
-		if( !ClientInfo.fDisplayedGreeting )
+		dbg("Display server greeting");
+		clientaddr_t &ClientInfo = g_NewClients[entindex() - 1];
+		if (!ClientInfo.fDisplayedGreeting)
 		{
 			msstring InfoString;
 			msstring_ref PKString = NULL, SaveString = NULL, CharString = NULL;
-			if( MSGlobals::PKAllowedinTown ) PKString = "Player killing is allowed outside of town";
-			else if( MSGlobals::PKAllowed ) PKString = "Player killing is allowed anywhere";
-			else PKString = "This server does not allow player killing";
+			if (MSGlobals::PKAllowedinTown)
+				PKString = "Player killing is allowed outside of town";
+			else if (MSGlobals::PKAllowed)
+				PKString = "Player killing is allowed anywhere";
+			else
+				PKString = "This server does not allow player killing";
 
-			if( MSGlobals::GameType != GAMETYPE_ADVENTURE ) SaveString = "Challenge mode: Your character will not be saved!";
+			if (MSGlobals::GameType != GAMETYPE_ADVENTURE)
+				SaveString = "Challenge mode: Your character will not be saved!";
 
-			if( MSGlobals::ServerSideChar != GAMETYPE_ADVENTURE ) CharString = "Characters are stored on the server";
+			if (MSGlobals::ServerSideChar != GAMETYPE_ADVENTURE)
+				CharString = "Characters are stored on the server";
 
 			InfoString = PKString;
-			if( SaveString ) { InfoString += "\n"; InfoString += SaveString; }
-			if( CharString ) { InfoString += "\n"; InfoString += CharString; }
+			if (SaveString)
+			{
+				InfoString += "\n";
+				InfoString += SaveString;
+			}
+			if (CharString)
+			{
+				InfoString += "\n";
+				InfoString += CharString;
+			}
 
-			SendHUDMsg( "Welcome to Master Sword", InfoString );
+			SendHUDMsg("Welcome to Master Sword", InfoString);
 			ClientInfo.fDisplayedGreeting = true;
 		}
 	}
-	m_pLastAnimHandler = NULL;   // Set these
-	m_pAnimHandler = &gAnimWalk; // or it crashes
-	m_fSequenceFinished = TRUE; //So it knows to begin the first animation
-	pev->sequence = LookupSequence( "stand" ); //LookupActivity( ACT_IDLE )
-	BlockButton( IN_ATTACK );		//Make it inconsequential if the player is still holding down the button
+	m_pLastAnimHandler = NULL;				 // Set these
+	m_pAnimHandler = &gAnimWalk;			 // or it crashes
+	m_fSequenceFinished = TRUE;				 //So it knows to begin the first animation
+	pev->sequence = LookupSequence("stand"); //LookupActivity( ACT_IDLE )
+	BlockButton(IN_ATTACK);					 //Make it inconsequential if the player is still holding down the button
 
-	dbg( "Initialize Body" );
-	if( Body ) Body->Set( BPS_RDRNORM, 0 );
+	dbg("Initialize Body");
+	if (Body)
+		Body->Set(BPS_RDRNORM, 0);
 
 	//Give player hands
-	dbg( "Give player hands SpawnPlayer PlayerHands" );
-	if( SpawnPlayer && !PlayerHands ) 
+	dbg("Give player hands SpawnPlayer PlayerHands");
+	if (SpawnPlayer && !PlayerHands)
 	{
-		dbg( "Give player hands CGenericItem *pPlayerHands" );
-		CGenericItem *pPlayerHands = NewGenericItem( "fist_bare" );
-		if( pPlayerHands )
+		dbg("Give player hands CGenericItem *pPlayerHands");
+		CGenericItem *pPlayerHands = NewGenericItem("fist_bare");
+		if (pPlayerHands)
 		{
-			dbg( "Give player hands pPlayerHands GiveTo" );
-			pPlayerHands->GiveTo( this, false, false );
+			dbg("Give player hands pPlayerHands GiveTo");
+			pPlayerHands->GiveTo(this, false, false);
 		}
 		else
 		{
-			dbg( "Give player hands MSErrorConsoleText" );
-			MSErrorConsoleText( "CBasePlayer::Spawn()", "Couldn't find item \"fist_bare\"!" );
+			dbg("Give player hands MSErrorConsoleText");
+			MSErrorConsoleText("CBasePlayer::Spawn()", "Couldn't find item \"fist_bare\"!");
 		}
 	}
-	
-	CustomTitle = " NONESET "; 
 
-	//MiB - Putting this before Shuri's message just in case the exp crap prematurely destroys the function 
-	//Set the player's net name to be the DisplayName. I stole this code from when a player types 'name' in console, 
-	//As it fixes the glitch of having "evil" instead of "evil squirrel". I figure 
-	//The same code here will do the same, but without the client getting involved 
-	g_engfuncs.pfnSetClientKeyValue( entindex(), g_engfuncs.pfnGetInfoKeyBuffer( edict() ), "name", (char *)m_DisplayName ); 
-	m_NetName = DisplayName(); 
-	pev->netname = MAKE_STRING(m_NetName.c_str()); 
+	CustomTitle = " NONESET ";
 
-	dbg( "Shurik3n: Send Skills on spawn" );
+	//MiB - Putting this before Shuri's message just in case the exp crap prematurely destroys the function
+	//Set the player's net name to be the DisplayName. I stole this code from when a player types 'name' in console,
+	//As it fixes the glitch of having "evil" instead of "evil squirrel". I figure
+	//The same code here will do the same, but without the client getting involved
+	g_engfuncs.pfnSetClientKeyValue(entindex(), g_engfuncs.pfnGetInfoKeyBuffer(edict()), "name", (char *)m_DisplayName);
+	m_NetName = DisplayName();
+	pev->netname = MAKE_STRING(m_NetName.c_str());
+
+	dbg("Shurik3n: Send Skills on spawn");
 	//Shurik3n AUG2007a - attempts to fix 100% bug
-	for(int i = 0; i < SKILL_MAX_STATS; i++)
-	{ 
-		CStat *pStat = FindStat( i + SKILL_FIRSTSKILL ); 
-		for(int p = 0; p < (signed)pStat->m_SubStats.size();p++)
-		{ 
-			CSubStat &SubStat = pStat->m_SubStats[p]; 
-			if(SubStat.Value > 25)
-			{ 
-				MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_EXP], NULL, pev ); 
-				WRITE_BYTE( i ); 
-				WRITE_BYTE( p ); 
-				WRITE_LONG( SubStat.Exp ); 
-				MESSAGE_END(); 
-			} 
-		} 
+	for (int i = 0; i < SKILL_MAX_STATS; i++)
+	{
+		CStat *pStat = FindStat(i + SKILL_FIRSTSKILL);
+		for (int p = 0; p < (signed)pStat->m_SubStats.size(); p++)
+		{
+			CSubStat &SubStat = pStat->m_SubStats[p];
+			if (SubStat.Value > 25)
+			{
+				MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_EXP], NULL, pev);
+				WRITE_BYTE(i);
+				WRITE_BYTE(p);
+				WRITE_LONG(SubStat.Exp);
+				MESSAGE_END();
+			}
+		}
 	}
 
-	dbg( "Call SwitchToBestHand" );
-	SwitchToBestHand( );
+	dbg("Call SwitchToBestHand");
+	SwitchToBestHand();
 
-	dbg( "Call g_pGameRules->PlayerSpawn" );
-	g_pGameRules->PlayerSpawn( this );
+	dbg("Call g_pGameRules->PlayerSpawn");
+	g_pGameRules->PlayerSpawn(this);
 
-	dbg( "Call MSGlobals::GameScript game_playerspawn" );
-	if( MSGlobals::GameScript )
+	dbg("Call MSGlobals::GameScript game_playerspawn");
+	if (MSGlobals::GameScript)
 	{
 		msstringlist Parameters;
-		Parameters.add( EntToString(this) );
-		MSGlobals::GameScript->CallScriptEvent( "game_playerspawn", &Parameters );
+		Parameters.add(EntToString(this));
+		MSGlobals::GameScript->CallScriptEvent("game_playerspawn", &Parameters);
 	}
 
-	enddbg( "CBasePlayer::Spawn()" );
+	enddbg("CBasePlayer::Spawn()");
 }
 
-bool CBasePlayer::MoveToSpawnSpot( )
+bool CBasePlayer::MoveToSpawnSpot()
 {
 	CBaseEntity *pSpawnSpot = NULL;
 	startdbg;
 
-	dbg( "Call FindSpawnSpot" );
+	dbg("Call FindSpawnSpot");
 
-	if( pSpawnSpot = FindSpawnSpot( ) )
+	if (pSpawnSpot = FindSpawnSpot())
 	{
-		pev->origin = pSpawnSpot->pev->origin + Vector(0,0,1);
-		pev->v_angle  = g_vecZero;
+		pev->origin = pSpawnSpot->pev->origin + Vector(0, 0, 1);
+		pev->v_angle = g_vecZero;
 		pev->velocity = g_vecZero;
 		pev->angles = pSpawnSpot->pev->angles;
 		pev->punchangle = g_vecZero;
 		pev->fixangle = TRUE;
-		if( pSpawnSpot->pev->target )
-			FireTargets( STRING(pSpawnSpot->pev->target), this, this, USE_TOGGLE, 0 );
+		if (pSpawnSpot->pev->target)
+			FireTargets(STRING(pSpawnSpot->pev->target), this, this, USE_TOGGLE, 0);
 	}
-	
+
 	//Thothie - need a loop around here, causing every wearable item the character has to execute it's "game_wear" function
 	enddbg;
 	return pSpawnSpot ? true : false;
@@ -2922,10 +2976,10 @@ void PlayerPrecache()
 	//remove?
 	//iBeam = PRECACHE_MODEL( "sprites/smoke.spr" );
 
-// player gib sounds
-	PRECACHE_SOUND("common/bodysplat.wav");		               
+	// player gib sounds
+	PRECACHE_SOUND("common/bodysplat.wav");
 
-// player pain sounds
+	// player pain sounds
 	PRECACHE_SOUND("player/pl_pain2.wav");
 	PRECACHE_SOUND("player/pl_pain4.wav");
 	PRECACHE_SOUND("player/pl_pain5.wav");
@@ -2954,7 +3008,6 @@ void PlayerPrecache()
 	PRECACHE_SOUND("player/breathe_fast3.wav");
 	PRECACHE_SOUND("player/breathe_slow1a.wav");
 	PRECACHE_SOUND("player/breathe_slow1b.wav");*/
-	
 
 	PRECACHE_SOUND("player/femaledeath.wav");
 	PRECACHE_SOUND("player/femalechesthit1.wav");
@@ -2972,44 +3025,44 @@ void PlayerPrecache()
 	PRECACHE_SOUND("player/femalejab2.wav");
 
 	//Breathing, for client-side playback
-/*	PRECACHE_SOUND("player/femalebreathe_fast1.wav");
+	/*	PRECACHE_SOUND("player/femalebreathe_fast1.wav");
 	PRECACHE_SOUND("player/femalebreathe_fast2.wav");
 	PRECACHE_SOUND("player/femalebreathe_fast3.wav");
 	PRECACHE_SOUND("player/femalebreathe_slow1a.wav");
 	PRECACHE_SOUND("player/femalebreathe_slow1b.wav");*/
 
 	//PRECACHE_MODEL( "models/player.mdl"  );
-	PRECACHE_MODEL( MODEL_HUMAN_REF  );
+	PRECACHE_MODEL(MODEL_HUMAN_REF);
 	//PRECACHE_MODEL( MODEL_HUMAN_MALE1 ); //Thothie MAR2012_27 - why are we precache'ing this?
 
 	//foreach( n, HumanModels )
 	//{
 	//	PRECACHE_MODEL( ModelList[n][0] );
-		//PRECACHE_MODEL( ModelList[n][1] );
+	//PRECACHE_MODEL( ModelList[n][1] );
 	//}
-	
+
 	//Precache the player script
 
 	CScript PlayerScript;
-	PlayerScript.Spawn( PLAYER_SCRIPT, NULL, NULL, true );
+	PlayerScript.Spawn(PLAYER_SCRIPT, NULL, NULL, true);
 }
 
-void CBasePlayer :: Precache( void )
+void CBasePlayer ::Precache(void)
 {
 	// in the event that the player JUST spawned, and the level node graph
 	// was loaded, fix all of the node graph pointers before the game starts.
-	
+
 	// !!!BUGBUG - now that we have multiplayer, this needs to be moved!
-	if ( WorldGraph.m_fGraphPresent && !WorldGraph.m_fGraphPointersSet )
+	if (WorldGraph.m_fGraphPresent && !WorldGraph.m_fGraphPointersSet)
 	{
-		if ( !WorldGraph.FSetGraphPointers() )
+		if (!WorldGraph.FSetGraphPointers())
 		{
-			ALERT ( at_console, "**Graph pointers were not set!\n");
+			ALERT(at_console, "**Graph pointers were not set!\n");
 		}
 		else
 		{
-			ALERT ( at_console, "**Graph Pointers Set!\n" );
-		} 
+			ALERT(at_console, "**Graph Pointers Set!\n");
+		}
 	}
 
 	// SOUNDS / MODELS ARE PRECACHED in ClientPrecache() (game specific)
@@ -3029,32 +3082,28 @@ void CBasePlayer :: Precache( void )
 	// Make sure any necessary user messages have been registered
 	LinkUserMessages();
 
-	m_iUpdateTime = 5;  // won't update for 1/2 a second
+	m_iUpdateTime = 5; // won't update for 1/2 a second
 
-	if ( gInitHUD )
+	if (gInitHUD)
 		m_fInitHUD = TRUE;
 }
 
-
-int CBasePlayer::Save( CSave &save )
+int CBasePlayer::Save(CSave &save)
 {
 	//if ( !CBaseMonster::Save(save) )
-		return 0;
+	return 0;
 
 	//return save.WriteFields( "PLAYER", this, m_playerSaveData, ARRAYSIZE(m_playerSaveData) );
 }
-
 
 //
 // Marks everything as new so the player will resend this to the hud.
 //
 void CBasePlayer::RenewItems(void)
 {
-
 }
 
-
-int CBasePlayer::Restore( CRestore &restore )
+int CBasePlayer::Restore(CRestore &restore)
 {
 	return 0;
 	/*if ( !CBaseMonster::Restore(restore) )
@@ -3099,29 +3148,28 @@ int CBasePlayer::Restore( CRestore &restore )
 	return status;*/
 }
 
-const char *CBasePlayer::TeamID( void )
+const char *CBasePlayer::TeamID(void)
 {
-	return GetPartyName( );
+	return GetPartyName();
 }
-const char *CBasePlayer::GetPartyName( void )
+const char *CBasePlayer::GetPartyName(void)
 {
-	if( !pev ||			// Not fully connected yet
-		!m_pTeam )		// No team
-			return "";
+	if (!pev ||	  // Not fully connected yet
+		!m_pTeam) // No team
+		return "";
 
 	// return their team name
-	return m_pTeam->TeamName( );
+	return m_pTeam->TeamName();
 }
 
-ulong CBasePlayer::GetPartyID( void )
+ulong CBasePlayer::GetPartyID(void)
 {
-	if( !pev ||			// Not fully connected yet
-		!m_pTeam )		// No team
-			return 0;
+	if (!pev ||	  // Not fully connected yet
+		!m_pTeam) // No team
+		return 0;
 
 	return m_pTeam->m_ID;
 }
-
 
 //==============================================
 // !!!UNDONE:ultra temporary SprayCan entity to apply
@@ -3130,15 +3178,15 @@ ulong CBasePlayer::GetPartyID( void )
 class CSprayCan : public CBaseEntity
 {
 public:
-	void	Spawn ( entvars_t *pevOwner );
-	void	Think( void );
+	void Spawn(entvars_t *pevOwner);
+	void Think(void);
 
-	virtual int	ObjectCaps( void ) { return FCAP_DONT_SAVE; }
+	virtual int ObjectCaps(void) { return FCAP_DONT_SAVE; }
 };
 
-void CSprayCan::Spawn ( entvars_t *pevOwner )
+void CSprayCan::Spawn(entvars_t *pevOwner)
 {
-	pev->origin = pevOwner->origin + Vector ( 0 , 0 , 32 );
+	pev->origin = pevOwner->origin + Vector(0, 0, 32);
 	pev->angles = pevOwner->v_angle;
 	pev->owner = ENT(pevOwner);
 	pev->frame = 0;
@@ -3147,13 +3195,13 @@ void CSprayCan::Spawn ( entvars_t *pevOwner )
 	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/sprayer.wav", 1, ATTN_NORM);
 }
 
-void CSprayCan::Think( void )
+void CSprayCan::Think(void)
 {
-	TraceResult	tr;	
+	TraceResult tr;
 	int playernum;
 	int nFrames;
 	CBasePlayer *pPlayer;
-	
+
 	pPlayer = (CBasePlayer *)GET_PRIVATE(pev->owner);
 
 	if (pPlayer)
@@ -3162,56 +3210,56 @@ void CSprayCan::Think( void )
 		nFrames = -1;
 
 	playernum = ENTINDEX(pev->owner);
-	
+
 	// ALERT(at_console, "Spray by player %i, %i of %i\n", playernum, (int)(pev->frame + 1), nFrames);
 
 	UTIL_MakeVectors(pev->angles);
-	UTIL_TraceLine ( pev->origin, pev->origin + gpGlobals->v_forward * 128, ignore_monsters, pev->owner, & tr);
+	UTIL_TraceLine(pev->origin, pev->origin + gpGlobals->v_forward * 128, ignore_monsters, pev->owner, &tr);
 
 	// No customization present.
 	if (nFrames == -1)
 	{
-		UTIL_DecalTrace( &tr, DECAL_LAMBDA6 );
-		UTIL_Remove( this );
+		UTIL_DecalTrace(&tr, DECAL_LAMBDA6);
+		UTIL_Remove(this);
 	}
 	else
 	{
-		UTIL_PlayerDecalTrace( &tr, playernum, pev->frame, TRUE );
+		UTIL_PlayerDecalTrace(&tr, playernum, pev->frame, TRUE);
 		// Just painted last custom frame.
-		if ( pev->frame++ >= (nFrames - 1))
-			UTIL_Remove( this );
+		if (pev->frame++ >= (nFrames - 1))
+			UTIL_Remove(this);
 	}
 
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
-class	CBloodSplat : public CBaseEntity
+class CBloodSplat : public CBaseEntity
 {
 public:
-	void	Spawn ( entvars_t *pevOwner );
-	void	Spray ( void );
+	void Spawn(entvars_t *pevOwner);
+	void Spray(void);
 };
 
-void CBloodSplat::Spawn ( entvars_t *pevOwner )
+void CBloodSplat::Spawn(entvars_t *pevOwner)
 {
-	pev->origin = pevOwner->origin + Vector ( 0 , 0 , 32 );
+	pev->origin = pevOwner->origin + Vector(0, 0, 32);
 	pev->angles = pevOwner->v_angle;
 	pev->owner = ENT(pevOwner);
 
-	SetThink ( &CBloodSplat::Spray );
+	SetThink(&CBloodSplat::Spray);
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
-void CBloodSplat::Spray ( void )
+void CBloodSplat::Spray(void)
 {
-	TraceResult	tr;	
-	
-	if ( g_Language != LANGUAGE_GERMAN )
+	TraceResult tr;
+
+	if (g_Language != LANGUAGE_GERMAN)
 	{
 		UTIL_MakeVectors(pev->angles);
-		UTIL_TraceLine ( pev->origin, pev->origin + gpGlobals->v_forward * 128, ignore_monsters, pev->owner, & tr);
+		UTIL_TraceLine(pev->origin, pev->origin + gpGlobals->v_forward * 128, ignore_monsters, pev->owner, &tr);
 
-		UTIL_BloodDecalTrace( &tr, BLOOD_COLOR_RED );
+		UTIL_BloodDecalTrace(&tr, BLOOD_COLOR_RED);
 	}
 	SetThink(&CBaseEntity::SUB_Remove);
 	pev->nextthink = gpGlobals->time + 0.1;
@@ -3219,63 +3267,59 @@ void CBloodSplat::Spray ( void )
 
 //==============================================
 
-
-
-CBaseEntity *CBasePlayer::GiveNamedItem( const char *pszName )
+CBaseEntity *CBasePlayer::GiveNamedItem(const char *pszName)
 {
 	//First, search through all items with pszName as a substring
 	//If not found, use pszName as the full item name
 
-	if( !pszName || !strlen(pszName) ) return NULL;
-
+	if (!pszName || !strlen(pszName))
+		return NULL;
 
 	msstring_ref WeaponScript = NULL;
-	 for (int i = 0; i < CGenericItemMgr::ItemCount(); i++) 
+	for (int i = 0; i < CGenericItemMgr::ItemCount(); i++)
 	{
-		GenItem_t &GlobalItem = *CGenericItemMgr::Item( i );
-		if( strstr(GlobalItem.pItem->ItemName,pszName) )
+		GenItem_t &GlobalItem = *CGenericItemMgr::Item(i);
+		if (strstr(GlobalItem.pItem->ItemName, pszName))
 		{
 			WeaponScript = GlobalItem.pItem->ItemName;
 			break;
 		}
 	}
 
-	if( !WeaponScript )
+	if (!WeaponScript)
 		return NULL;
 
-	CGenericItem *pItem = NewGenericItem( WeaponScript );
+	CGenericItem *pItem = NewGenericItem(WeaponScript);
 
 	//Couldn't search for item, see if exact name was specified
-	if( !pItem ) pItem = NewGenericItem( pszName );
+	if (!pItem)
+		pItem = NewGenericItem(pszName);
 
-	if( !pItem )
+	if (!pItem)
 	{
-		ALERT( at_console, "Item %s doesn't exist!", pszName );
+		ALERT(at_console, "Item %s doesn't exist!", pszName);
 		return NULL;
 	}
 
-	pItem->GiveTo( this );
+	pItem->GiveTo(this);
 	pItem->pev->origin = pev->origin;
 
 	return pItem;
 }
 
-
-
-CBaseEntity *FindEntityForward( CBaseEntity *pMe )
+CBaseEntity *FindEntityForward(CBaseEntity *pMe)
 {
 	TraceResult tr;
 
 	UTIL_MakeVectors(pMe->pev->v_angle);
-	UTIL_TraceLine(pMe->pev->origin + pMe->pev->view_ofs,pMe->pev->origin + pMe->pev->view_ofs + gpGlobals->v_forward * 8192,dont_ignore_monsters, pMe->edict(), &tr );
-	if ( tr.flFraction != 1.0 && !FNullEnt( tr.pHit) )
+	UTIL_TraceLine(pMe->pev->origin + pMe->pev->view_ofs, pMe->pev->origin + pMe->pev->view_ofs + gpGlobals->v_forward * 8192, dont_ignore_monsters, pMe->edict(), &tr);
+	if (tr.flFraction != 1.0 && !FNullEnt(tr.pHit))
 	{
-		CBaseEntity *pHit = CBaseEntity::Instance( tr.pHit );
+		CBaseEntity *pHit = CBaseEntity::Instance(tr.pHit);
 		return pHit;
 	}
 	return NULL;
 }
-
 
 /*BOOL CBasePlayer :: FlashlightIsOn( void )
 {
@@ -3345,17 +3389,17 @@ ImpulseCommands
 ============
 */
 
-void CBasePlayer::ImpulseCommands( )
+void CBasePlayer::ImpulseCommands()
 {
-	TraceResult	tr;// UNDONE: kill me! This is temporary for PreAlpha CDs
+	TraceResult tr; // UNDONE: kill me! This is temporary for PreAlpha CDs
 
 	// Handle use events
 	PlayerUse();
-		
+
 	int iImpulse = (int)pev->impulse;
 	switch (iImpulse)
 	{
-/*	case 100:
+		/*	case 100:
         // temporary flashlight for level designers
         if ( FlashlightIsOn() )
 		{
@@ -3367,64 +3411,64 @@ void CBasePlayer::ImpulseCommands( )
 		}
 		break;*/
 
-	case	201:// paint decal
-		
-		if ( gpGlobals->time < m_flNextDecalTime )
+	case 201: // paint decal
+
+		if (gpGlobals->time < m_flNextDecalTime)
 		{
 			// too early!
 			break;
 		}
 
 		UTIL_MakeVectors(pev->v_angle);
-		UTIL_TraceLine ( pev->origin + pev->view_ofs, pev->origin + pev->view_ofs + gpGlobals->v_forward * 128, ignore_monsters, ENT(pev), & tr);
+		UTIL_TraceLine(pev->origin + pev->view_ofs, pev->origin + pev->view_ofs + gpGlobals->v_forward * 128, ignore_monsters, ENT(pev), &tr);
 
-		if ( tr.flFraction != 1.0 )
-		{// line hit something, so paint a decal
+		if (tr.flFraction != 1.0)
+		{ // line hit something, so paint a decal
 			m_flNextDecalTime = gpGlobals->time + CVAR_GET_FLOAT("decalfrequency");
 			CSprayCan *pCan = GetClassPtr((CSprayCan *)NULL);
-			pCan->Spawn( pev );
+			pCan->Spawn(pev);
 		}
 
 		break;
-/*	case    204:  //  Demo recording, update client dll specific data again.
+		/*	case    204:  //  Demo recording, update client dll specific data again.
 		ForceClientDllUpdate(); 
 		break;*/
 	default:
 		// check all of the cheat impulse commands now
-		CheatImpulseCommands( iImpulse );
+		CheatImpulseCommands(iImpulse);
 		break;
 	}
-	
+
 	pev->impulse = 0;
 }
 
 //=========================================================
 //=========================================================
-void CBasePlayer::CheatImpulseCommands( int iImpulse )
+void CBasePlayer::CheatImpulseCommands(int iImpulse)
 {
-#if !defined( HLDEMO_BUILD )
-	if ( !IsElite() ) return;
+#if !defined(HLDEMO_BUILD)
+	if (!IsElite())
+		return;
 
 	CBaseEntity *pEntity;
 	TraceResult tr;
 
-	switch ( iImpulse )
+	switch (iImpulse)
 	{
 	case 76:
+	{
+		if (!giPrecacheGrunt)
 		{
-			if (!giPrecacheGrunt)
-			{
-				giPrecacheGrunt = 1;
-				ALERT(at_console, "You must now restart to use Grunt-o-matic.\n");
-			}
-			else
-			{
-				UTIL_MakeVectors( Vector( 0, pev->v_angle.y, 0 ) );
-				Create("monster_human_grunt", pev->origin + gpGlobals->v_forward * 128, pev->angles);
-			}
-			break;
+			giPrecacheGrunt = 1;
+			ALERT(at_console, "You must now restart to use Grunt-o-matic.\n");
 		}
-
+		else
+		{
+			UTIL_MakeVectors(Vector(0, pev->v_angle.y, 0));
+			Create("monster_human_grunt", pev->origin + gpGlobals->v_forward * 128, pev->angles);
+		}
+		break;
+	}
 
 	case 101:
 		gEvilImpulse101 = TRUE;
@@ -3436,16 +3480,16 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 
 	case 102:
 		// Gibbage!!!
-		CGib::SpawnRandomGibs( pev, 1, 1 );
+		CGib::SpawnRandomGibs(pev, 1, 1);
 		break;
 
 	case 103:
 		// What the hell are you doing?
-		pEntity = FindEntityForward( this );
-		if( pEntity && pEntity->IsMSMonster() )
+		pEntity = FindEntityForward(this);
+		if (pEntity && pEntity->IsMSMonster())
 		{
 			CMSMonster *pMonster = (CMSMonster *)pEntity;
-			if( pMonster )
+			if (pMonster)
 				pMonster->ReportAIState();
 		}
 		break;
@@ -3455,104 +3499,101 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		gGlobalState.DumpGlobals();
 		break;
 
-	case	105:// player makes no sound for monsters to hear.
+	case 105: // player makes no sound for monsters to hear.
+	{
+		if (m_fNoPlayerSound)
 		{
-			if ( m_fNoPlayerSound )
-			{
-				ALERT ( at_console, "Player is audible\n" );
-				m_fNoPlayerSound = FALSE;
-			}
-			else
-			{
-				ALERT ( at_console, "Player is silent\n" );
-				m_fNoPlayerSound = TRUE;
-			}
-			break;
+			ALERT(at_console, "Player is audible\n");
+			m_fNoPlayerSound = FALSE;
 		}
+		else
+		{
+			ALERT(at_console, "Player is silent\n");
+			m_fNoPlayerSound = TRUE;
+		}
+		break;
+	}
 
 	case 106:
 		// Give me the classname and targetname of this entity.
-		pEntity = FindEntityForward( this );
-		if ( pEntity )
+		pEntity = FindEntityForward(this);
+		if (pEntity)
 		{
-			ALERT ( at_console, "Classname: %s", STRING( pEntity->pev->classname ) );
-			
-			if ( !FStringNull ( pEntity->pev->targetname ) )
+			ALERT(at_console, "Classname: %s", STRING(pEntity->pev->classname));
+
+			if (!FStringNull(pEntity->pev->targetname))
 			{
-				ALERT ( at_console, " - Targetname: %s\n", STRING( pEntity->pev->targetname ) );
+				ALERT(at_console, " - Targetname: %s\n", STRING(pEntity->pev->targetname));
 			}
 			else
 			{
-				ALERT ( at_console, " - TargetName: No Targetname\n" );
+				ALERT(at_console, " - TargetName: No Targetname\n");
 			}
 
-			ALERT ( at_console, "Model: %s\n", STRING( pEntity->pev->model ) );
-			if ( pEntity->pev->globalname )
-				ALERT ( at_console, "Globalname: %s\n", STRING( pEntity->pev->globalname ) );
+			ALERT(at_console, "Model: %s\n", STRING(pEntity->pev->model));
+			if (pEntity->pev->globalname)
+				ALERT(at_console, "Globalname: %s\n", STRING(pEntity->pev->globalname));
 		}
 		break;
 
 	case 107:
-		{
-			TraceResult tr;
+	{
+		TraceResult tr;
 
-			edict_t		*pWorld = g_engfuncs.pfnPEntityOfEntIndex( 0 );
+		edict_t *pWorld = g_engfuncs.pfnPEntityOfEntIndex(0);
 
-			Vector start = pev->origin + pev->view_ofs;
-			Vector end = start + gpGlobals->v_forward * 1024;
-			UTIL_TraceLine( start, end, ignore_monsters, edict(), &tr );
-			if ( tr.pHit )
-				pWorld = tr.pHit;
-			const char *pTextureName = TRACE_TEXTURE( pWorld, start, end );
-			if ( pTextureName )
-				ALERT( at_console, "Texture: %s\n", pTextureName );
-		}
-		break;
-	case	195:// show shortest paths for entire level to nearest node
-		{
-			Create("node_viewer_fly", pev->origin, pev->angles);
-		}
-		break;
-	case	196:// show shortest paths for entire level to nearest node
-		{
-			Create("node_viewer_large", pev->origin, pev->angles);
-		}
-		break;
-	case	197:// show shortest paths for entire level to nearest node
-		{
-			Create("node_viewer_human", pev->origin, pev->angles);
-		}
-		break;
-	case	199:// show nearest node and all connections
-		{
-			ALERT ( at_console, "%d\n", WorldGraph.FindNearestNode ( pev->origin, bits_NODE_GROUP_REALM ) );
-			WorldGraph.ShowNodeConnections ( WorldGraph.FindNearestNode ( pev->origin, bits_NODE_GROUP_REALM ) );
-		}
-		break;
-	case	202:// Random blood splatter
+		Vector start = pev->origin + pev->view_ofs;
+		Vector end = start + gpGlobals->v_forward * 1024;
+		UTIL_TraceLine(start, end, ignore_monsters, edict(), &tr);
+		if (tr.pHit)
+			pWorld = tr.pHit;
+		const char *pTextureName = TRACE_TEXTURE(pWorld, start, end);
+		if (pTextureName)
+			ALERT(at_console, "Texture: %s\n", pTextureName);
+	}
+	break;
+	case 195: // show shortest paths for entire level to nearest node
+	{
+		Create("node_viewer_fly", pev->origin, pev->angles);
+	}
+	break;
+	case 196: // show shortest paths for entire level to nearest node
+	{
+		Create("node_viewer_large", pev->origin, pev->angles);
+	}
+	break;
+	case 197: // show shortest paths for entire level to nearest node
+	{
+		Create("node_viewer_human", pev->origin, pev->angles);
+	}
+	break;
+	case 199: // show nearest node and all connections
+	{
+		ALERT(at_console, "%d\n", WorldGraph.FindNearestNode(pev->origin, bits_NODE_GROUP_REALM));
+		WorldGraph.ShowNodeConnections(WorldGraph.FindNearestNode(pev->origin, bits_NODE_GROUP_REALM));
+	}
+	break;
+	case 202: // Random blood splatter
 		UTIL_MakeVectors(pev->v_angle);
-		UTIL_TraceLine ( pev->origin + pev->view_ofs, pev->origin + pev->view_ofs + gpGlobals->v_forward * 128, ignore_monsters, ENT(pev), & tr);
+		UTIL_TraceLine(pev->origin + pev->view_ofs, pev->origin + pev->view_ofs + gpGlobals->v_forward * 128, ignore_monsters, ENT(pev), &tr);
 
-		if ( tr.flFraction != 1.0 )
-		{// line hit something, so paint a decal
+		if (tr.flFraction != 1.0)
+		{ // line hit something, so paint a decal
 			CBloodSplat *pBlood = GetClassPtr((CBloodSplat *)NULL);
-			pBlood->Spawn( pev );
+			pBlood->Spawn(pev);
 		}
 		break;
-	case	203:// remove creature.
-		pEntity = FindEntityForward( this );
-		if ( pEntity )
+	case 203: // remove creature.
+		pEntity = FindEntityForward(this);
+		if (pEntity)
 		{
-			if ( pEntity->pev->takedamage )
+			if (pEntity->pev->takedamage)
 				pEntity->SetThink(&CBasePlayer::SUB_Remove);
 		}
 		break;
 	}
-#endif	// HLDEMO_BUILD
+#endif // HLDEMO_BUILD
 }
-
-
-
 
 /*
 ============
@@ -3565,7 +3606,6 @@ void CBasePlayer::ItemPreFrame()
 {
 }
 
-
 /*
 ============
 ItemPostFrame
@@ -3575,18 +3615,18 @@ Called every frame by the player PostThink
 */
 void CBasePlayer::ItemPostFrame()
 {
-	if( m_afPhysicsFlags&PFLAG_OBSERVER ) return;
+	if (m_afPhysicsFlags & PFLAG_OBSERVER)
+		return;
 
 	// check if the player is using a tank
-	if ( m_pTank != NULL )
+	if (m_pTank != NULL)
 		return;
 
 	ImpulseCommands();
 
-	if( ActiveItem( ) ) 
-		ActiveItem( )->ItemPostFrame( );
+	if (ActiveItem())
+		ActiveItem()->ItemPostFrame();
 }
-
 
 /*
 =========================================================
@@ -3604,119 +3644,129 @@ extern cvar_t msallowkickvote;
 extern cvar_t msallowtimevote;
 extern cvar_t ms_serverchar;
 
-void CBasePlayer :: UpdateClientData( void )
+void CBasePlayer ::UpdateClientData(void)
 {
 	startdbg;
-	dbg( "Begin" );
+	dbg("Begin");
 
 	bool fConnectedThisFrame = false;
 
 	//Init HUD message MUST be first!
-	if( m_fInitHUD )
+	if (m_fInitHUD)
 	{
 		//Thothie nothing changed here, but somewhere whithin we are getting:
 		//Error (SERVER): Error: CBasePlayer::UpdateClientData --> Call InitHUD
 		//Maybe caused by a script, not sure
-		dbg( "Init HUD" );
+		dbg("Init HUD");
 		m_fInitHUD = FALSE;
 		gInitHUD = FALSE;
-		
-		MESSAGE_BEGIN( MSG_ONE, gmsgResetHUD, NULL, pev );
-			WRITE_BYTE( 0 );
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgResetHUD, NULL, pev);
+		WRITE_BYTE(0);
 		MESSAGE_END();
 
-		if ( !m_fGameHUDInitialized )
+		if (!m_fGameHUDInitialized)
 		{
-			dbg( "Send InitHUD MSG" );
-			MESSAGE_BEGIN( MSG_ONE, gmsgInitHUD, NULL, pev );
-				WRITE_STRING( CVAR_GET_STRING("hostname") );
-				WRITE_STRING( STRING(gpGlobals->mapname) );
+			dbg("Send InitHUD MSG");
+			MESSAGE_BEGIN(MSG_ONE, gmsgInitHUD, NULL, pev);
+			WRITE_STRING(CVAR_GET_STRING("hostname"));
+			WRITE_STRING(STRING(gpGlobals->mapname));
 
-				//Find the proper IP address to send to this player.  I
-				//If he matches my lan address, I'll send that one.
-				//If otherwise send MS_IP
-				/*msstring PlayerInterface = g_NetCode.GetServerIPForPlayer( this );
+			//Find the proper IP address to send to this player.  I
+			//If he matches my lan address, I'll send that one.
+			//If otherwise send MS_IP
+			/*msstring PlayerInterface = g_NetCode.GetServerIPForPlayer( this );
 				PlayerInterface += msstring_ref(msstring(":") + (int)g_NetCode.s.FilePort);
 				logfile << "Sending server IP to " << DisplayName() << ": " << PlayerInterface.c_str() << "\r\n";
 				WRITE_STRING( PlayerInterface.c_str() );*/
-				for (int i = 0; i < CLPERMENT_TOTAL; i++) 
-					WRITE_SHORT(MSGlobals::ClEntities[i]);
+			for (int i = 0; i < CLPERMENT_TOTAL; i++)
+				WRITE_SHORT(MSGlobals::ClEntities[i]);
 
-				byte Flags = 0;
-				if( IsLocalHost( ) ) Flags |= (1<<0);								//Player is localhost in listen server?
-				if( MSGlobals::IsLanGame ) Flags |= (1<<1);							//Lan game?
-				if( MSGlobals::CanCreateCharOnMap ) Flags |= (1<<2);				//Can create chars on this map?
-				if( MSGlobals::GameType == GAMETYPE_ADVENTURE ) Flags |= (1<<3);	//Saving character allowed?
-				if( MSGlobals::ServerSideChar ) Flags |= (1<<4);					//Server-side characters?
-				if( GetOtherPlayerTransition( this ) ) Flags |= (1<<5);				//Other players are on and eligible to join?
-				if( MSGlobals::LegalMap ) Flags |= (1<<6);							//Playing a legal map from the dev team.
-				WRITE_BYTE( Flags );
-				WRITE_STRING( GETPLAYERAUTHID(edict()) );
+			byte Flags = 0;
+			if (IsLocalHost())
+				Flags |= (1 << 0); //Player is localhost in listen server?
+			if (MSGlobals::IsLanGame)
+				Flags |= (1 << 1); //Lan game?
+			if (MSGlobals::CanCreateCharOnMap)
+				Flags |= (1 << 2); //Can create chars on this map?
+			if (MSGlobals::GameType == GAMETYPE_ADVENTURE)
+				Flags |= (1 << 3); //Saving character allowed?
+			if (MSGlobals::ServerSideChar)
+				Flags |= (1 << 4); //Server-side characters?
+			if (GetOtherPlayerTransition(this))
+				Flags |= (1 << 5); //Other players are on and eligible to join?
+			if (MSGlobals::LegalMap)
+				Flags |= (1 << 6); //Playing a legal map from the dev team.
+			WRITE_BYTE(Flags);
+			WRITE_STRING(GETPLAYERAUTHID(edict()));
 
-				//Send allowed votes
-				byte VotesAllowed = 0;
-				if( msallowkickvote.value ) SetBits( VotesAllowed, (1<<0) );
-				if( msallowtimevote.value ) SetBits( VotesAllowed, (1<<1) );
-				WRITE_BYTE( VotesAllowed );							//Type of votes allowed
-				WRITE_BYTE( (int)ms_serverchar.value );				//Number of characters allowed
+			//Send allowed votes
+			byte VotesAllowed = 0;
+			if (msallowkickvote.value)
+				SetBits(VotesAllowed, (1 << 0));
+			if (msallowtimevote.value)
+				SetBits(VotesAllowed, (1 << 1));
+			WRITE_BYTE(VotesAllowed);			  //Type of votes allowed
+			WRITE_BYTE((int)ms_serverchar.value); //Number of characters allowed
 			MESSAGE_END();
 
-			if( MSGlobals::CanCreateCharOnMap ) m_CanJoin = true;	//Player can join this map
+			if (MSGlobals::CanCreateCharOnMap)
+				m_CanJoin = true; //Player can join this map
 
 			//Central server info (on/off, name)
-			MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev );
-				WRITE_BYTE( 6 );
-				if( MSCentral::Enabled( ) )
-				{
-					WRITE_BYTE( 1 );
-					WRITE_BYTE( MSCentral::m_Online ? 1 : 0 );
-					WRITE_STRING( MSCentral::m_NetworkName );
-				}
-				else
-					WRITE_BYTE( 0 );
+			MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev);
+			WRITE_BYTE(6);
+			if (MSCentral::Enabled())
+			{
+				WRITE_BYTE(1);
+				WRITE_BYTE(MSCentral::m_Online ? 1 : 0);
+				WRITE_STRING(MSCentral::m_NetworkName);
+			}
+			else
+				WRITE_BYTE(0);
 			MESSAGE_END();
 
 			m_fGameHUDInitialized = TRUE;
-			dbg( "Call InitHUD" );
-			InitHUD( );
+			dbg("Call InitHUD");
+			InitHUD();
 			fConnectedThisFrame = true;
 		}
 
 		InitStatusBar();
-		FireTargets( "game_playerspawn", this, this, USE_TOGGLE, 0 );
+		FireTargets("game_playerspawn", this, this, USE_TOGGLE, 0);
 	}
 
-	dbg( "Other Messages" );
-	if( FBitSet(m_iHideHUD, HIDEHUD_ALL) )
+	dbg("Other Messages");
+	if (FBitSet(m_iHideHUD, HIDEHUD_ALL))
 		return;
 
 	//pev->renderfx = pev->body; //JAN2010 - MiB Aug2008a - body doesn't pass properly, but renderfx does. We now use it for submodel work.
 
-	if( FBitSet(m_MsgFlags,MSGFLAG_SPAWN) )
+	if (FBitSet(m_MsgFlags, MSGFLAG_SPAWN))
 	{
 		//Call the client spawn function
-		ClearBits( m_MsgFlags, MSGFLAG_SPAWN );
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev );
-			WRITE_BYTE( 0 );
+		ClearBits(m_MsgFlags, MSGFLAG_SPAWN);
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev);
+		WRITE_BYTE(0);
 		MESSAGE_END();
 
 		//Send all quickslots
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev );	//Send the quickslots
-			WRITE_BYTE( 21 );
-			 for (int i = 0; i < MAX_QUICKSLOTS; i++) 
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev); //Send the quickslots
+		WRITE_BYTE(21);
+		for (int i = 0; i < MAX_QUICKSLOTS; i++)
+		{
+			quickslot_t &QuickSlot = m_QuickSlots[i];
+			WRITE_BYTE(QuickSlot.Active ? 1 : 0);
+			if (QuickSlot.Active)
 			{
-				quickslot_t &QuickSlot = m_QuickSlots[i];
-				WRITE_BYTE( QuickSlot.Active ? 1 : 0 );
-				if( QuickSlot.Active )
-				{
-					WRITE_BYTE( QuickSlot.Type );
-					WRITE_LONG( QuickSlot.ID );
-				}
+				WRITE_BYTE(QuickSlot.Type);
+				WRITE_LONG(QuickSlot.ID);
 			}
+		}
 		MESSAGE_END();
 	}
 
-/*	if ( m_iFatigue != iFatigue ) {
+	/*	if ( m_iFatigue != iFatigue ) {
 		MESSAGE_BEGIN( MSG_ONE, gmsgFatigue, NULL, pev );
 			WRITE_BYTE( 0 );
 			WRITE_BYTE( iFatigue );
@@ -3729,20 +3779,20 @@ void CBasePlayer :: UpdateClientData( void )
 			WRITE_BYTE( MaxFatigue() );
 		MESSAGE_END();
 		m_iMaxFatigue = MaxFatigue();
-	}*/	
+	}*/
 
 	//Send new items
-	 for (int i = 0; i < Gear.size(); i++) 
+	for (int i = 0; i < Gear.size(); i++)
 	{
-		CGenericItem *pItem = Gear[ i ];
+		CGenericItem *pItem = Gear[i];
 
-		clientitem_t ClientItem( pItem );
+		clientitem_t ClientItem(pItem);
 
-		bool fInCache = false, fCached = false; 
+		bool fInCache = false, fCached = false;
 
-		 for (int n = 0; n < m_ClientItems.size(); n++) 
-			if( m_ClientItems[n].ID == pItem->m_iId )
-			{ 
+		for (int n = 0; n < m_ClientItems.size(); n++)
+			if (m_ClientItems[n].ID == pItem->m_iId)
+			{
 				fInCache = true;
 
 				/*bool Same = true;
@@ -3755,133 +3805,134 @@ void CBasePlayer :: UpdateClientData( void )
 				}*/
 
 				//if( Same )
-				if( !memcmp(&m_ClientItems[n], &ClientItem, sizeof(clientitem_t) ) )
+				if (!memcmp(&m_ClientItems[n], &ClientItem, sizeof(clientitem_t)))
 					//Found this item in the cache with the exact same properties... do not update
-					fCached = true; 
+					fCached = true;
 				else
 					//Found this item, but some properties are different... resend the item and update the cache now
-					memcpy( &m_ClientItems[n], &ClientItem, sizeof(clientitem_t) );
+					memcpy(&m_ClientItems[n], &ClientItem, sizeof(clientitem_t));
 				break;
 			}
 
-		if( fCached )
+		if (fCached)
 			continue;
 
 		//Send the item
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_ITEM], NULL, pev );
-			WRITE_BYTE( fInCache ? 1 : 0 );							//0 == New | 1 == Update existing
-			SendGenericItem( this, pItem, false );
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_ITEM], NULL, pev);
+		WRITE_BYTE(fInCache ? 1 : 0); //0 == New | 1 == Update existing
+		SendGenericItem(this, pItem, false);
 		MESSAGE_END();
 		//Save the item
-		SaveChar( );
+		SaveChar();
 
-		if( !fInCache ) //If it's a completely new item...
+		if (!fInCache) //If it's a completely new item...
 		{
 			//Thothie FEB2011_16 Sort items
 			pItem->Container_StackItems();
 
 			//If it's a container, send its conents
-			pItem->Container_SendContents( );
+			pItem->Container_SendContents();
 
 			//Update the cache with this item
-			// clientitem_t &CachedItem = 
-			m_ClientItems.add( ClientItem );
+			// clientitem_t &CachedItem =
+			m_ClientItems.add(ClientItem);
 		}
 	}
 
 	//Update and delete old items
-	 for (int i = 0; i < m_ClientItems.size(); i++) 
+	for (int i = 0; i < m_ClientItems.size(); i++)
 	{
 		ulong ClientItemID = m_ClientItems[i].ID;
 
-		if( Gear.GetItem( ClientItemID ) )
+		if (Gear.GetItem(ClientItemID))
 			continue;
 
 		//Send a remove item message
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_ITEM], NULL, pev );
-			WRITE_BYTE( 2 );
-			WRITE_LONG( ClientItemID );
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_ITEM], NULL, pev);
+		WRITE_BYTE(2);
+		WRITE_LONG(ClientItemID);
 		MESSAGE_END();
 		//Remove the item from save
-		SaveChar( );
+		SaveChar();
 
-		m_ClientItems.erase( i-- );	//Have to decrement i after the call so I don't skip items
+		m_ClientItems.erase(i--); //Have to decrement i after the call so I don't skip items
 	}
 
 	//Active Hand
-	if( m_CurrentHand != m_ClientCurrentHand )
+	if (m_CurrentHand != m_ClientCurrentHand)
 	{
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_HANDS], NULL, pev );
-			WRITE_BYTE( m_CurrentHand );
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_HANDS], NULL, pev);
+		WRITE_BYTE(m_CurrentHand);
 		MESSAGE_END();
 
 		m_ClientCurrentHand = m_CurrentHand;
 	}
 
-	 for (int i = 0; i < m_Stats.size(); i++) 
+	for (int i = 0; i < m_Stats.size(); i++)
 	{
 		CStat &Stat = m_Stats[i];
-		if( Stat.Changed( ) )
+		if (Stat.Changed())
 		{
-			MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_SETSTAT], NULL, pev );
-				WRITE_BYTE( 1 );
-				WRITE_BYTE( i );
-				 for (int r = 0; r < Stat.m_SubStats.size(); r++) 
-				{
-					WRITE_BYTE( Stat.m_SubStats[r].Value );
-					if( Stat.m_Type == CStat::STAT_SKILL ) WRITE_SHORT( Stat.m_SubStats[r].Exp );
-				}
+			MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_SETSTAT], NULL, pev);
+			WRITE_BYTE(1);
+			WRITE_BYTE(i);
+			for (int r = 0; r < Stat.m_SubStats.size(); r++)
+			{
+				WRITE_BYTE(Stat.m_SubStats[r].Value);
+				if (Stat.m_Type == CStat::STAT_SKILL)
+					WRITE_SHORT(Stat.m_SubStats[r].Exp);
+			}
 			MESSAGE_END();
 
-			Stat.Update( );
+			Stat.Update();
 		}
 	}
 
 	//MiB Modded JAN2010_15 - Gold Change on Spawn.rtf
-	if( m_Gold.m_Changed ) 
+	if (m_Gold.m_Changed)
 	{
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_SETSTAT], NULL, pev );
-			WRITE_BYTE( 3 );
-			WRITE_BYTE( 1 );
-			WRITE_LONG( m_Gold );
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_SETSTAT], NULL, pev);
+		WRITE_BYTE(3);
+		WRITE_BYTE(1);
+		WRITE_LONG(m_Gold);
 		MESSAGE_END();
 		m_Gold.m_Changed = false;
 	}
 
-	if( m_Gender != m_ClientGender ) 
+	if (m_Gender != m_ClientGender)
 	{
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_SETSTAT], NULL, pev );
-			WRITE_BYTE( 10 );
-			WRITE_BYTE( m_Gender );
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_SETSTAT], NULL, pev);
+		WRITE_BYTE(10);
+		WRITE_BYTE(m_Gender);
 		MESSAGE_END();
 
 		m_ClientGender = m_Gender;
 	}
 
 	// MIB FEB2015_21 [RACE_MENU] - Send client race, if needed
-	if( m_Race != m_ClientRace )
+	if (m_Race != m_ClientRace)
 	{
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_SETSTAT], NULL, pev );
-			WRITE_BYTE( 11 );
-			WRITE_STRING( m_Race );
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_SETSTAT], NULL, pev);
+		WRITE_BYTE(11);
+		WRITE_STRING(m_Race);
 		MESSAGE_END();
 
 		m_ClientRace = m_Race;
 	}
 
-	if ( m_iHideHUD != m_iClientHideHUD )
+	if (m_iHideHUD != m_iClientHideHUD)
 	{
-		MESSAGE_BEGIN( MSG_ONE, gmsgHideWeapon, NULL, pev );
-			WRITE_BYTE( m_iHideHUD );
+		MESSAGE_BEGIN(MSG_ONE, gmsgHideWeapon, NULL, pev);
+		WRITE_BYTE(m_iHideHUD);
 		MESSAGE_END();
 
 		m_iClientHideHUD = m_iHideHUD;
 	}
 
-	if ( m_iFOV != m_iClientFOV )
+	if (m_iFOV != m_iClientFOV)
 	{
-		MESSAGE_BEGIN( MSG_ONE, gmsgSetFOV, NULL, pev );
-			WRITE_BYTE( m_iFOV );
+		MESSAGE_BEGIN(MSG_ONE, gmsgSetFOV, NULL, pev);
+		WRITE_BYTE(m_iFOV);
 		MESSAGE_END();
 
 		// cache FOV change at end of function, so weapon updates can see that FOV has changed
@@ -3897,36 +3948,58 @@ void CBasePlayer :: UpdateClientData( void )
 	}*/
 
 	int Msg = 0, Amt = 0, *pLastAmt = NULL, Type = 0;
-	 for (int i = 0; i < 4; i++) 
+	for (int i = 0; i < 4; i++)
 	{
-		switch( i )
+		switch (i)
 		{
-			case 0: Msg = g_netmsg[NETMSG_HP]; Amt = m_HP		; pLastAmt = &m_iClientHP	; Type = 0; break;
-			case 1: Msg = g_netmsg[NETMSG_HP]; Amt = MaxHP( )	; pLastAmt = &m_iClientMaxHP; Type = 1; break;
-			case 2: Msg = g_netmsg[NETMSG_MP]; Amt = m_MP		; pLastAmt = &m_iClientMP	; Type = 0; break;
-			case 3: Msg = g_netmsg[NETMSG_MP]; Amt = MaxMP( )	; pLastAmt = &m_iClientMaxMP; Type = 1; break;
+		case 0:
+			Msg = g_netmsg[NETMSG_HP];
+			Amt = m_HP;
+			pLastAmt = &m_iClientHP;
+			Type = 0;
+			break;
+		case 1:
+			Msg = g_netmsg[NETMSG_HP];
+			Amt = MaxHP();
+			pLastAmt = &m_iClientMaxHP;
+			Type = 1;
+			break;
+		case 2:
+			Msg = g_netmsg[NETMSG_MP];
+			Amt = m_MP;
+			pLastAmt = &m_iClientMP;
+			Type = 0;
+			break;
+		case 3:
+			Msg = g_netmsg[NETMSG_MP];
+			Amt = MaxMP();
+			pLastAmt = &m_iClientMaxMP;
+			Type = 1;
+			break;
 		}
 
-		if( Amt == *pLastAmt )
+		if (Amt == *pLastAmt)
 			continue;
 
 		//MIB JUN2010_14 - "MP and HP sends Fix.rtf"
-		if ( i == 0 )
+		if (i == 0)
 		{
-			if ( gpGlobals->time - m_timeLastSentHP < 0.5 )
+			if (gpGlobals->time - m_timeLastSentHP < 0.5)
 				continue;
 			m_timeLastSentHP = gpGlobals->time;
 		}
-		else if ( i == 2 )
+		else if (i == 2)
 		{
-			if ( gpGlobals->time - m_timeLastSentMP < 0.5 )
+			if (gpGlobals->time - m_timeLastSentMP < 0.5)
 				continue;
 			m_timeLastSentMP = gpGlobals->time;
 		}
 
-		MESSAGE_BEGIN( MSG_ONE, Msg, NULL, pev );
-			if( Amt > (signed short)(MAXSHORT/2) ) Amt = (MAXSHORT/2);
-			WRITE_SHORT( Amt ); WRITE_BYTE( Type );
+		MESSAGE_BEGIN(MSG_ONE, Msg, NULL, pev);
+		if (Amt > (signed short)(MAXSHORT / 2))
+			Amt = (MAXSHORT / 2);
+		WRITE_SHORT(Amt);
+		WRITE_BYTE(Type);
 		MESSAGE_END();
 
 		*pLastAmt = Amt;
@@ -3965,73 +4038,76 @@ void CBasePlayer :: UpdateClientData( void )
 	*/
 	//[/end] MiB JAN2010_26 - Slowing down how often these send
 
-	if( m_ClPlayersKilled != m_PlayersKilled )
+	if (m_ClPlayersKilled != m_PlayersKilled)
 	{
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev );
-			WRITE_BYTE( 8 );
-			WRITE_SHORT( m_PlayersKilled );
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev);
+		WRITE_BYTE(8);
+		WRITE_SHORT(m_PlayersKilled);
 		MESSAGE_END();
 		m_ClPlayersKilled = m_PlayersKilled;
 	}
 
 	//Update the kill waited time every 10 secs
-	if( abs(m_TimeWaitedToForgetKill - m_ClTimeWaitedToForgetKill) > 10 )
+	if (abs(m_TimeWaitedToForgetKill - m_ClTimeWaitedToForgetKill) > 10)
 	{
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev );
-			WRITE_BYTE( 9 );
-			WRITE_COORD( m_TimeWaitedToForgetKill );
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev);
+		WRITE_BYTE(9);
+		WRITE_COORD(m_TimeWaitedToForgetKill);
 		MESSAGE_END();
 		m_ClTimeWaitedToForgetKill = m_TimeWaitedToForgetKill;
 		///ALERT( at_console, "%s - Time: %2.f/%i\n", STRING(DisplayName), m_TimeWaitedToForgetKill, m_PlayersKilled * 10 );
 	}
 
 	//Update the steal waited time every 10 secs
-	if( abs(m_TimeWaitedToForgetSteal - m_ClTimeWaitedToForgetSteal) > 10 )
+	if (abs(m_TimeWaitedToForgetSteal - m_ClTimeWaitedToForgetSteal) > 10)
 	{
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev );
-			WRITE_BYTE( 13 );
-			WRITE_COORD( m_TimeWaitedToForgetSteal );
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev);
+		WRITE_BYTE(13);
+		WRITE_COORD(m_TimeWaitedToForgetSteal);
 		MESSAGE_END();
 		m_ClTimeWaitedToForgetSteal = m_TimeWaitedToForgetSteal;
 		///ALERT( at_console, "%s - Time: %2.f/%i\n", STRING(DisplayName), m_TimeWaitedToForgetKill, m_PlayersKilled * 10 );
 	}
 
 	//Update player actions list
-	ClearBits( m_StatusFlags, PLAYER_MOVE_NORUN|PLAYER_MOVE_NOJUMP|PLAYER_MOVE_NODUCK|PLAYER_MOVE_NOATTACK|PLAYER_MOVE_NOMOVE );
+	ClearBits(m_StatusFlags, PLAYER_MOVE_NORUN | PLAYER_MOVE_NOJUMP | PLAYER_MOVE_NODUCK | PLAYER_MOVE_NOATTACK | PLAYER_MOVE_NOMOVE);
 
-	 for (int i = 0; i < m_Scripts.size(); i++) 
+	for (int i = 0; i < m_Scripts.size(); i++)
 	{
 		CScript *Script = m_Scripts[i];
-		if( !Script->VarExists( "game.effect.type" ) )
+		if (!Script->VarExists("game.effect.type"))
 			continue;
 
 		//Update stuff based on effect script variables.
 		//To check for a 'true' blocking value make sure that it has explicitly set to "0".  If it was never set at all, assume false.
 		int EffectFlags = 0;
-		if( !strcmp(Script->GetVar( "game.effect.canmove" ),"0") ) SetBits( EffectFlags, PLAYER_MOVE_NOMOVE );
-		if( !strcmp(Script->GetVar( "game.effect.canrun" ),"0") ) SetBits( EffectFlags, PLAYER_MOVE_NORUN );
-		if( !strcmp(Script->GetVar( "game.effect.canjump" ),"0") ) SetBits( EffectFlags, PLAYER_MOVE_NOJUMP );
-		if( !strcmp(Script->GetVar( "game.effect.canduck" ),"0") ) SetBits( EffectFlags, PLAYER_MOVE_NODUCK );
-		if( !strcmp(Script->GetVar( "game.effect.canattack" ),"0") ) SetBits( EffectFlags, PLAYER_MOVE_NOATTACK );
+		if (!strcmp(Script->GetVar("game.effect.canmove"), "0"))
+			SetBits(EffectFlags, PLAYER_MOVE_NOMOVE);
+		if (!strcmp(Script->GetVar("game.effect.canrun"), "0"))
+			SetBits(EffectFlags, PLAYER_MOVE_NORUN);
+		if (!strcmp(Script->GetVar("game.effect.canjump"), "0"))
+			SetBits(EffectFlags, PLAYER_MOVE_NOJUMP);
+		if (!strcmp(Script->GetVar("game.effect.canduck"), "0"))
+			SetBits(EffectFlags, PLAYER_MOVE_NODUCK);
+		if (!strcmp(Script->GetVar("game.effect.canattack"), "0"))
+			SetBits(EffectFlags, PLAYER_MOVE_NOATTACK);
 
-		SetBits( m_StatusFlags, EffectFlags );	//Add the movement blocking flags from this effect to the player's list
+		SetBits(m_StatusFlags, EffectFlags); //Add the movement blocking flags from this effect to the player's list
 
-		if( strcmp(Script->GetVar( "game.effect.updateplayer" ),"1") )
+		if (strcmp(Script->GetVar("game.effect.updateplayer"), "1"))
 			continue;
 
 		//logfile << "DEBUG: ApplyEffect->Client " << Script->GetVar("game.effect.displayname") << "\n";
 
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev );
-			WRITE_BYTE( 16 );
-			WRITE_BYTE( 1 );
-			WRITE_STRING( Script->GetVar("game.effect.id") );
-			WRITE_STRING( Script->GetVar("game.effect.displayname") );
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev);
+		WRITE_BYTE(16);
+		WRITE_BYTE(1);
+		WRITE_STRING(Script->GetVar("game.effect.id"));
+		WRITE_STRING(Script->GetVar("game.effect.displayname"));
 		MESSAGE_END();
 
-		Script->SetVar( "game.effect.updateplayer", 0 );
+		Script->SetVar("game.effect.updateplayer", 0);
 	}
-
-
 
 	/*if (pev->dmg_take || pev->dmg_save || m_bitsHUDDamage != m_bitsDamageType)
 	{
@@ -4069,10 +4145,10 @@ void CBasePlayer :: UpdateClientData( void )
 
 	if (m_iTrain & TRAIN_NEW)
 	{
-		ASSERT( gmsgTrain > 0 );
+		ASSERT(gmsgTrain > 0);
 		// send "health" update message
-		MESSAGE_BEGIN( MSG_ONE, gmsgTrain, NULL, pev );
-			WRITE_BYTE(m_iTrain & 0xF);
+		MESSAGE_BEGIN(MSG_ONE, gmsgTrain, NULL, pev);
+		WRITE_BYTE(m_iTrain & 0xF);
 		MESSAGE_END();
 
 		m_iTrain &= ~TRAIN_NEW;
@@ -4089,15 +4165,14 @@ void CBasePlayer :: UpdateClientData( void )
 		m_flNextSBarUpdateTime = gpGlobals->time + 0.2;
 	}*/
 
-	enddbg( "CBasePlayer::UpdateClientData()" );
+	enddbg("CBasePlayer::UpdateClientData()");
 }
-
 
 //=========================================================
 // FBecomeProne - Overridden for the player to set the proper
 // physics flags when a barnacle grabs player.
 //=========================================================
-BOOL CBasePlayer :: FBecomeProne ( void )
+BOOL CBasePlayer ::FBecomeProne(void)
 {
 	m_afPhysicsFlags |= PFLAG_ONBARNACLE;
 	return TRUE;
@@ -4108,28 +4183,27 @@ BOOL CBasePlayer :: FBecomeProne ( void )
 // by Barnacle victims when the barnacle pulls their head
 // into its mouth. For the player, just die.
 //=========================================================
-void CBasePlayer :: BarnacleVictimBitten ( entvars_t *pevBarnacle )
+void CBasePlayer ::BarnacleVictimBitten(entvars_t *pevBarnacle)
 {
-	TakeDamage ( pevBarnacle, pevBarnacle, pev->health + pev->armorvalue, DMG_SLASH | DMG_ALWAYSGIB );
+	TakeDamage(pevBarnacle, pevBarnacle, pev->health + pev->armorvalue, DMG_SLASH | DMG_ALWAYSGIB);
 }
 
 //=========================================================
 // BarnacleVictimReleased - overridden for player who has
-// physics flags concerns. 
+// physics flags concerns.
 //=========================================================
-void CBasePlayer :: BarnacleVictimReleased ( void )
+void CBasePlayer ::BarnacleVictimReleased(void)
 {
 	m_afPhysicsFlags &= ~PFLAG_ONBARNACLE;
 }
 
-
 //=========================================================
-// Illumination 
+// Illumination
 // return player light level plus virtual muzzle flash
 //=========================================================
-int CBasePlayer :: Illumination( void )
+int CBasePlayer ::Illumination(void)
 {
-	int iIllum = CBaseEntity::Illumination( );
+	int iIllum = CBaseEntity::Illumination();
 
 	iIllum += m_iWeaponFlash;
 	if (iIllum > 255)
@@ -4137,38 +4211,35 @@ int CBasePlayer :: Illumination( void )
 	return iIllum;
 }
 
-
-void CBasePlayer :: EnableControl(BOOL fControl)
+void CBasePlayer ::EnableControl(BOOL fControl)
 {
 	if (!fControl)
 		pev->flags |= FL_FROZEN;
 	else
 		pev->flags &= ~FL_FROZEN;
-
 }
 
-
-#define DOT_1DEGREE   0.9998476951564
-#define DOT_2DEGREE   0.9993908270191
-#define DOT_3DEGREE   0.9986295347546
-#define DOT_4DEGREE   0.9975640502598
-#define DOT_5DEGREE   0.9961946980917
-#define DOT_6DEGREE   0.9945218953683
-#define DOT_7DEGREE   0.9925461516413
-#define DOT_8DEGREE   0.9902680687416
-#define DOT_9DEGREE   0.9876883405951
-#define DOT_10DEGREE  0.9848077530122
-#define DOT_15DEGREE  0.9659258262891
-#define DOT_20DEGREE  0.9396926207859
-#define DOT_25DEGREE  0.9063077870367
+#define DOT_1DEGREE 0.9998476951564
+#define DOT_2DEGREE 0.9993908270191
+#define DOT_3DEGREE 0.9986295347546
+#define DOT_4DEGREE 0.9975640502598
+#define DOT_5DEGREE 0.9961946980917
+#define DOT_6DEGREE 0.9945218953683
+#define DOT_7DEGREE 0.9925461516413
+#define DOT_8DEGREE 0.9902680687416
+#define DOT_9DEGREE 0.9876883405951
+#define DOT_10DEGREE 0.9848077530122
+#define DOT_15DEGREE 0.9659258262891
+#define DOT_20DEGREE 0.9396926207859
+#define DOT_25DEGREE 0.9063077870367
 
 //=========================================================
 // Autoaim
 // set crosshair position to point to enemey
 //=========================================================
-Vector CBasePlayer :: GetAutoaimVector( float flDelta )
+Vector CBasePlayer ::GetAutoaimVector(float flDelta)
 {
-	UTIL_MakeVectors( pev->v_angle + pev->punchangle );
+	UTIL_MakeVectors(pev->v_angle + pev->punchangle);
 	return gpGlobals->v_forward;
 
 	/*if (g_iSkillLevel == SKILL_HARD)
@@ -4249,7 +4320,6 @@ Vector CBasePlayer :: GetAutoaimVector( float flDelta )
 	UTIL_MakeVectors( pev->v_angle + pev->punchangle + m_vecAutoAim );
 	return gpGlobals->v_forward;*/
 }
-
 
 /*Vector CBasePlayer :: AutoaimDeflection( Vector &vecSrc, float flDist, float flDelta  )
 {
@@ -4374,13 +4444,12 @@ Vector CBasePlayer :: GetAutoaimVector( float flDelta )
 	return Vector( 0, 0, 0 );
 }*/
 
-
-void CBasePlayer :: ResetAutoaim( )
+void CBasePlayer ::ResetAutoaim()
 {
 	if (m_vecAutoAim.x != 0 || m_vecAutoAim.y != 0)
 	{
-		m_vecAutoAim = Vector( 0, 0, 0 );
-		SET_CROSSHAIRANGLE( edict(), 0, 0 );
+		m_vecAutoAim = Vector(0, 0, 0);
+		SET_CROSSHAIRANGLE(edict(), 0, 0);
 	}
 	m_fOnTarget = FALSE;
 }
@@ -4393,7 +4462,7 @@ SetCustomDecalFrames
   Note:  -1 means no custom frames present.
 =============
 */
-void CBasePlayer :: SetCustomDecalFrames( int nFrames )
+void CBasePlayer ::SetCustomDecalFrames(int nFrames)
 {
 	if (nFrames > 0 &&
 		nFrames < 8)
@@ -4409,7 +4478,7 @@ GetCustomDecalFrames
   Returns the # of custom frames this player's custom clan logo contains.
 =============
 */
-int CBasePlayer :: GetCustomDecalFrames( void )
+int CBasePlayer ::GetCustomDecalFrames(void)
 {
 	return m_nCustomSprayFrames;
 }
@@ -4417,259 +4486,263 @@ int CBasePlayer :: GetCustomDecalFrames( void )
 class CStripWeapons : public CPointEntity
 {
 public:
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 private:
 };
 
-LINK_ENTITY_TO_CLASS( player_weaponstrip, CStripWeapons );
+LINK_ENTITY_TO_CLASS(player_weaponstrip, CStripWeapons);
 
-void CStripWeapons :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CStripWeapons ::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	CBasePlayer *pPlayer = NULL;
 
-	if ( pActivator && pActivator->IsPlayer() )
+	if (pActivator && pActivator->IsPlayer())
 	{
 		pPlayer = (CBasePlayer *)pActivator;
 	}
-	else if ( !g_pGameRules->IsDeathmatch() )
+	else if (!g_pGameRules->IsDeathmatch())
 	{
-		pPlayer = (CBasePlayer *)CBaseEntity::Instance( g_engfuncs.pfnPEntityOfEntIndex( 1 ) );
+		pPlayer = (CBasePlayer *)CBaseEntity::Instance(g_engfuncs.pfnPEntityOfEntIndex(1));
 	}
 
-	if ( pPlayer )
-		pPlayer->RemoveAllItems( FALSE );
+	if (pPlayer)
+		pPlayer->RemoveAllItems(FALSE);
 }
-
 
 class CRevertSaved : public CPointEntity
 {
 public:
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void	EXPORT MessageThink( void );
-	void	EXPORT LoadThink( void );
-	void	KeyValue( KeyValueData *pkvd );
+	void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	void EXPORT MessageThink(void);
+	void EXPORT LoadThink(void);
+	void KeyValue(KeyValueData *pkvd);
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
-	static	TYPEDESCRIPTION m_SaveData[];
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	static TYPEDESCRIPTION m_SaveData[];
 
-	inline	float	Duration( void ) { return pev->dmg_take; }
-	inline	float	HoldTime( void ) { return pev->dmg_save; }
-	inline	float	MessageTime( void ) { return m_messageTime; }
-	inline	float	LoadTime( void ) { return m_loadTime; }
+	inline float Duration(void) { return pev->dmg_take; }
+	inline float HoldTime(void) { return pev->dmg_save; }
+	inline float MessageTime(void) { return m_messageTime; }
+	inline float LoadTime(void) { return m_loadTime; }
 
-	inline	void	SetDuration( float duration ) { pev->dmg_take = duration; }
-	inline	void	SetHoldTime( float hold ) { pev->dmg_save = hold; }
-	inline	void	SetMessageTime( float time ) { m_messageTime = time; }
-	inline	void	SetLoadTime( float time ) { m_loadTime = time; }
+	inline void SetDuration(float duration) { pev->dmg_take = duration; }
+	inline void SetHoldTime(float hold) { pev->dmg_save = hold; }
+	inline void SetMessageTime(float time) { m_messageTime = time; }
+	inline void SetLoadTime(float time) { m_loadTime = time; }
 
 private:
-	float	m_messageTime;
-	float	m_loadTime;
+	float m_messageTime;
+	float m_loadTime;
 };
 
-LINK_ENTITY_TO_CLASS( player_loadsaved, CRevertSaved );
+LINK_ENTITY_TO_CLASS(player_loadsaved, CRevertSaved);
 
-TYPEDESCRIPTION	CRevertSaved::m_SaveData[] = 
-{
-	DEFINE_FIELD( CRevertSaved, m_messageTime, FIELD_FLOAT ),	// These are not actual times, but durations, so save as floats
-	DEFINE_FIELD( CRevertSaved, m_loadTime, FIELD_FLOAT ),
+TYPEDESCRIPTION CRevertSaved::m_SaveData[] =
+	{
+		DEFINE_FIELD(CRevertSaved, m_messageTime, FIELD_FLOAT), // These are not actual times, but durations, so save as floats
+		DEFINE_FIELD(CRevertSaved, m_loadTime, FIELD_FLOAT),
 };
 
-IMPLEMENT_SAVERESTORE( CRevertSaved, CPointEntity );
+IMPLEMENT_SAVERESTORE(CRevertSaved, CPointEntity);
 
-void CRevertSaved :: KeyValue( KeyValueData *pkvd )
+void CRevertSaved ::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "duration"))
 	{
-		SetDuration( atof(pkvd->szValue) );
+		SetDuration(atof(pkvd->szValue));
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "holdtime"))
 	{
-		SetHoldTime( atof(pkvd->szValue) );
+		SetHoldTime(atof(pkvd->szValue));
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "messagetime"))
 	{
-		SetMessageTime( atof(pkvd->szValue) );
+		SetMessageTime(atof(pkvd->szValue));
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "loadtime"))
 	{
-		SetLoadTime( atof(pkvd->szValue) );
+		SetLoadTime(atof(pkvd->szValue));
 		pkvd->fHandled = TRUE;
 	}
-	else 
-		CPointEntity::KeyValue( pkvd );
+	else
+		CPointEntity::KeyValue(pkvd);
 }
 
-void CRevertSaved :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CRevertSaved ::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-	UTIL_ScreenFadeAll( pev->rendercolor, Duration(), HoldTime(), pev->renderamt, FFADE_OUT );
+	UTIL_ScreenFadeAll(pev->rendercolor, Duration(), HoldTime(), pev->renderamt, FFADE_OUT);
 	pev->nextthink = gpGlobals->time + MessageTime();
 	SetThink(&CRevertSaved::MessageThink);
 }
 
-
-void CRevertSaved :: MessageThink( void )
+void CRevertSaved ::MessageThink(void)
 {
-	UTIL_ShowMessageAll( STRING(pev->message) );
+	UTIL_ShowMessageAll(STRING(pev->message));
 	float nextThink = LoadTime() - MessageTime();
-	if ( nextThink > 0 ) 
+	if (nextThink > 0)
 	{
 		pev->nextthink = gpGlobals->time + nextThink;
-		SetThink( &CRevertSaved::LoadThink );
+		SetThink(&CRevertSaved::LoadThink);
 	}
 	else
 		LoadThink();
 }
 
-
-void CRevertSaved :: LoadThink( void )
+void CRevertSaved ::LoadThink(void)
 {
-	if ( !gpGlobals->deathmatch )
+	if (!gpGlobals->deathmatch)
 	{
 		SERVER_COMMAND("reload\n");
 	}
 }
 
-
 //=========================================================
 // Multiplayer intermission spots.
 //=========================================================
-class CInfoIntermission:public CPointEntity
+class CInfoIntermission : public CPointEntity
 {
-	void Spawn( void );
-	void Think( void );
+	void Spawn(void);
+	void Think(void);
 };
 
-void CInfoIntermission::Spawn( void )
+void CInfoIntermission::Spawn(void)
 {
-	UTIL_SetOrigin( pev, pev->origin );
+	UTIL_SetOrigin(pev, pev->origin);
 	pev->solid = SOLID_NOT;
 	pev->effects = EF_NODRAW;
 	pev->v_angle = g_vecZero;
 
-	pev->nextthink = gpGlobals->time + 2;// let targets spawn!
-
+	pev->nextthink = gpGlobals->time + 2; // let targets spawn!
 }
 
-void CInfoIntermission::Think ( void )
+void CInfoIntermission::Think(void)
 {
 	edict_t *pTarget;
 
 	// find my target
-	pTarget = FIND_ENTITY_BY_TARGETNAME( NULL, STRING(pev->target) );
+	pTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target));
 
-	if ( !FNullEnt(pTarget) )
+	if (!FNullEnt(pTarget))
 	{
-		pev->v_angle = UTIL_VecToAngles( (pTarget->v.origin - pev->origin).Normalize() );
+		pev->v_angle = UTIL_VecToAngles((pTarget->v.origin - pev->origin).Normalize());
 		pev->v_angle.x = -pev->v_angle.x;
 	}
 }
 
-LINK_ENTITY_TO_CLASS( info_intermission, CInfoIntermission );
+LINK_ENTITY_TO_CLASS(info_intermission, CInfoIntermission);
 
-void CBasePlayer::UpdateMiscPositions(void) 
+void CBasePlayer::UpdateMiscPositions(void)
 {
-	if( gpGlobals->time > TimeUpdateIDInfo )
+	if (gpGlobals->time > TimeUpdateIDInfo)
 	{
 		TimeUpdateIDInfo = gpGlobals->time + 1.0; //0.4
 
 		//Find my current target
 		Vector vForward;
-		UTIL_MakeVectorsPrivate( pev->v_angle + pev->punchangle, vForward, NULL, NULL );
+		UTIL_MakeVectorsPrivate(pev->v_angle + pev->punchangle, vForward, NULL, NULL);
 		Vector vEndPos = EyePosition() + vForward * 2048;
 
 		TraceResult tr;
 		gpGlobals->trace_flags |= FTRACE_SIMPLEBOX;
-		UTIL_TraceLine( EyePosition(), vEndPos, dont_ignore_monsters, edict(), &tr );
+		UTIL_TraceLine(EyePosition(), vEndPos, dont_ignore_monsters, edict(), &tr);
 		CBaseEntity *pTarget = NULL;
-		if( tr.flFraction < 1.0 )
+		if (tr.flFraction < 1.0)
 		{
-			pTarget = MSInstance( tr.pHit );
-			if( pTarget && pTarget->Classify( ) == CLASS_NONE ) 
+			pTarget = MSInstance(tr.pHit);
+			if (pTarget && pTarget->Classify() == CLASS_NONE)
 				pTarget = NULL;
 		}
-		
-		CBaseEntity *pOldTarget = RetrieveEntity( ENT_TARGET );
-		StoreEntity( pTarget, ENT_TARGET );
-		if( pTarget && pTarget != pOldTarget && pTarget->GetScripted( ) )
+
+		CBaseEntity *pOldTarget = RetrieveEntity(ENT_TARGET);
+		StoreEntity(pTarget, ENT_TARGET);
+		if (pTarget && pTarget != pOldTarget && pTarget->GetScripted())
 		{
 			static msstringlist Params;
-			Params.clearitems( );
-			Params.add( EntToString(this) );
-			((CScriptedEnt *)pTarget)->CallScriptEvent( "game_targeted_by_player", &Params );
+			Params.clearitems();
+			Params.add(EntToString(this));
+			((CScriptedEnt *)pTarget)->CallScriptEvent("game_targeted_by_player", &Params);
 		}
-
 
 		//Update HUD entity info (player/monster/item names)
 		int EntriesSent = 0;
 		float Range = 1024;
-		Vector vMinBounds = pev->origin - Vector( Range, Range, Range );
-		Vector vMaxBounds = pev->origin + Vector( Range, Range, Range );
+		Vector vMinBounds = pev->origin - Vector(Range, Range, Range);
+		Vector vMaxBounds = pev->origin + Vector(Range, Range, Range);
 		CBaseEntity *pList[4096];
-		int count = UTIL_EntitiesInBox( pList, 4096, vMinBounds, vMaxBounds, 0 );
-		for ( int i = 0; i < count && EntriesSent < 2; i++ ) //only send 2 at a time now
+		int count = UTIL_EntitiesInBox(pList, 4096, vMinBounds, vMaxBounds, 0);
+		for (int i = 0; i < count && EntriesSent < 2; i++) //only send 2 at a time now
 		{
 			CBaseEntity *pSightEnt = pList[i];
-			if( !pSightEnt ||
-				pSightEnt == this || 
-				pSightEnt->pev->movetype == MOVETYPE_FOLLOW ) continue;
-			if( !pSightEnt->IsPlayer() &&
-				!pSightEnt->MyMonsterPointer() )
-					continue;
+			if (!pSightEnt ||
+				pSightEnt == this ||
+				pSightEnt->pev->movetype == MOVETYPE_FOLLOW)
+				continue;
+			if (!pSightEnt->IsPlayer() &&
+				!pSightEnt->MyMonsterPointer())
+				continue;
 
-			if( pSightEnt->IsMSItem() /*&& pSightEnt->MSMoveType != MOVETYPE_ARROW */)
+			if (pSightEnt->IsMSItem() /*&& pSightEnt->MSMoveType != MOVETYPE_ARROW */)
 				continue;
 
 			entinfo_t EntData;
 			EntData.entindex = ENTINDEX(pSightEnt->edict());
-			EntData.Name = pSightEnt->DisplayName( );
+			EntData.Name = pSightEnt->DisplayName();
 			EntData.Type = ENT_NEUTRAL;
-			if( pSightEnt->IsMSMonster() )
+			if (pSightEnt->IsMSMonster())
 			{
-				if( pSightEnt->IsPlayer() )
+				if (pSightEnt->IsPlayer())
 				{
 					CBasePlayer *pTestPlayer = (CBasePlayer *)pSightEnt;
-					if( pTestPlayer->m_TimeWaitedToForgetSteal )
+					if (pTestPlayer->m_TimeWaitedToForgetSteal)
 					{
 						EntData.Name += " [THIEF]";
 						EntData.Type = ENT_HOSTILE;
 					}
 				}
-				if( EntData.Type == ENT_NEUTRAL )
+				if (EntData.Type == ENT_NEUTRAL)
 				{
-					int iRelationship = IRelationship( pSightEnt );
-					if( iRelationship == RELATIONSHIP_AL ) EntData.Type = ENT_FRIENDLY;
-					else if( iRelationship == RELATIONSHIP_HT ) EntData.Type = ENT_HOSTILE;
-					else if( iRelationship == RELATIONSHIP_DL ) EntData.Type = ENT_WARY;
-					else if( iRelationship == RELATIONSHIP_NM ) EntData.Type = ENT_DEADLY;
+					int iRelationship = IRelationship(pSightEnt);
+					if (iRelationship == RELATIONSHIP_AL)
+						EntData.Type = ENT_FRIENDLY;
+					else if (iRelationship == RELATIONSHIP_HT)
+						EntData.Type = ENT_HOSTILE;
+					else if (iRelationship == RELATIONSHIP_DL)
+						EntData.Type = ENT_WARY;
+					else if (iRelationship == RELATIONSHIP_NM)
+						EntData.Type = ENT_DEADLY;
 
 					//Thothie DEC2012_12 - boss hud ID
 					IScripted *pScripted = pSightEnt->GetScripted();
-					if ( atoi(pScripted->GetFirstScriptVar("NPC_IS_BOSS")) > 0 ) EntData.Type = ENT_BOSS;
+					if (atoi(pScripted->GetFirstScriptVar("NPC_IS_BOSS")) > 0)
+						EntData.Type = ENT_BOSS;
 				}
 			}
 
 			entinfo_t *pSlot = NULL;
 			for (int e = 0; e < m_EntInfo.size(); e++) // Find the slot for this entity
-				if( m_EntInfo[e].entindex == EntData.entindex ) 
-					{ pSlot = &m_EntInfo[e]; break;  }
-	
-			if( !pSlot )											//Slot not found
-				if( m_EntInfo.size() < 1024 )						//Create a new slot
-					pSlot = &m_EntInfo.add( entinfo_t() );
-				else												//Too many entities - overwrite the furthest one away
+				if (m_EntInfo[e].entindex == EntData.entindex)
+				{
+					pSlot = &m_EntInfo[e];
+					break;
+				}
+
+			if (!pSlot)						 //Slot not found
+				if (m_EntInfo.size() < 1024) //Create a new slot
+					pSlot = &m_EntInfo.add(entinfo_t());
+				else //Too many entities - overwrite the furthest one away
 				{
 					int iFarthestDist = -1, iFarthestEnt = 0;
-					 for (int e = 0; e < m_EntInfo.size(); e++) 
+					for (int e = 0; e < m_EntInfo.size(); e++)
 					{
 						CBaseEntity *pEntity = MSInstance(INDEXENT(m_EntInfo[e].entindex));
-						if( !pEntity ) continue;
-						if( (pEntity->pev->origin - pev->origin).Length() > iFarthestDist )
+						if (!pEntity)
+							continue;
+						if ((pEntity->pev->origin - pev->origin).Length() > iFarthestDist)
 						{
 							iFarthestDist = (pEntity->pev->origin - pev->origin).Length();
 							iFarthestEnt = e;
@@ -4679,23 +4752,23 @@ void CBasePlayer::UpdateMiscPositions(void)
 					pSlot = &m_EntInfo[iFarthestEnt];
 				}
 
-			if( pSlot &&
-				(	pSlot->entindex != EntData.entindex  ||
-					pSlot->Name != EntData.Name ||
-					pSlot->Type != EntData.Type )	 )
+			if (pSlot &&
+				(pSlot->entindex != EntData.entindex ||
+				 pSlot->Name != EntData.Name ||
+				 pSlot->Type != EntData.Type))
 			{
 				//ALERT( at_console, "(Send) %s\n", EntData.Name );
 				*pSlot = EntData;
-				MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_ENTINFO], NULL, pev );
-					WRITE_SHORT( EntData.entindex );
-					WRITE_STRING( EntData.Name );
-					WRITE_BYTE( EntData.Type );
+				MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_ENTINFO], NULL, pev);
+				WRITE_SHORT(EntData.entindex);
+				WRITE_STRING(EntData.Name);
+				WRITE_BYTE(EntData.Type);
 				MESSAGE_END();
 				EntriesSent++;
 			}
 		}
 	}
-	
+
 	/*if( RestoreVModelTime && gpGlobals->time >= RestoreVModelTime ) {
 		pev->viewmodel = lastvmodel;
 		if( Hand[iCurrentHand] ) {
@@ -4708,7 +4781,7 @@ void CBasePlayer::UpdateMiscPositions(void)
 		}
 		RestoreVModelTime = 0;
 	}*/
-	
+
 	/*if( StatusFlags&PLAYER_MOVE_SPECTATE ) ;
 	else if( StatusFlags&PLAYER_MOVE_SPECTATE_MOVE ) { 
 		//Effectively disable movement control
@@ -4725,7 +4798,7 @@ void CBasePlayer::UpdateMiscPositions(void)
 		MoveAngle = g_vecZero;
 		MoveSpeed = 0;
 	}*/
-	
+
 	/*if( FBitSet( SkillInfo.SkillsActivated, SKILL_ROGUE_FADE ) )
 	{
 		if( SkillInfo.TimeEndFade == -1 )
@@ -4856,88 +4929,94 @@ void CBasePlayer::UpdateMiscPositions(void)
 	char *pszAreaName;
 	CBaseEntity *pArea = NULL, *pFirstArea = NULL, *pFoundArea = NULL;
 
-	if( gpGlobals->time >= CheckAreaTime ) 
+	if (gpGlobals->time >= CheckAreaTime)
 	{
 		CheckAreaTime = gpGlobals->time + 1.5; //0.2
 
 		//TransitionArea
 		pszAreaName = "msarea_transition";
 		pArea = NULL, pFirstArea = NULL, pFoundArea = NULL;
-		pArea = UTIL_FindEntityByClassname( NULL, pszAreaName );
+		pArea = UTIL_FindEntityByClassname(NULL, pszAreaName);
 		pFirstArea = pArea;
-		do {
-			if( !FNullEnt(pArea) ) {
-				if( pArea->Intersects( this ) ) {
-					pArea->OnControls( pev );
+		do
+		{
+			if (!FNullEnt(pArea))
+			{
+				if (pArea->Intersects(this))
+				{
+					pArea->OnControls(pev);
 					pFoundArea = pArea;
 					break;
 				}
 			}
-			pArea = UTIL_FindEntityByClassname( pArea, pszAreaName );
-		}	while( pArea != pFirstArea );
+			pArea = UTIL_FindEntityByClassname(pArea, pszAreaName);
+		} while (pArea != pFirstArea);
 
-		if( !pFoundArea && CurrentTransArea ) ((CBaseEntity *)CurrentTransArea)->DeathNotice( pev );
+		if (!pFoundArea && CurrentTransArea)
+			((CBaseEntity *)CurrentTransArea)->DeathNotice(pev);
 
 		//TownArea
 		pszAreaName = "msarea_town";
 		pArea = NULL, pFirstArea = NULL, pFoundArea = NULL;
-		pArea = UTIL_FindEntityByClassname( NULL, pszAreaName );
+		pArea = UTIL_FindEntityByClassname(NULL, pszAreaName);
 		pFirstArea = pArea;
-		do {
-			if( !FNullEnt(pArea) ) {
-				if( pArea->Intersects( this ) ) {
-					pArea->OnControls( pev );
+		do
+		{
+			if (!FNullEnt(pArea))
+			{
+				if (pArea->Intersects(this))
+				{
+					pArea->OnControls(pev);
 					pFoundArea = pArea;
 					break;
 				}
 			}
-			pArea = UTIL_FindEntityByClassname( pArea, pszAreaName );
-		}	while( pArea != pFirstArea );
+			pArea = UTIL_FindEntityByClassname(pArea, pszAreaName);
+		} while (pArea != pFirstArea);
 
 		m_fInTownArea = MSGlobals::InvertTownAreaPKFlag;
 
-		if( !pFoundArea && CurrentTownArea )
-		{   // Leave town area
-			CurrentTownArea->DeathNotice( pev );
+		if (!pFoundArea && CurrentTownArea)
+		{ // Leave town area
+			CurrentTownArea->DeathNotice(pev);
 		}
-		else if( CurrentTownArea && CurrentTownArea->MSQuery(entindex()) )
+		else if (CurrentTownArea && CurrentTownArea->MSQuery(entindex()))
 			//Enter active town area
 			m_fInTownArea = !MSGlobals::InvertTownAreaPKFlag;
 
-
 		//Update Player info when it changes
-		if( m_CharacterState == CHARSTATE_LOADED )
+		if (m_CharacterState == CHARSTATE_LOADED)
 		{
 			scoreinfo_t Info;
-			Info.TitleIndex = GetPlayerTitleIdx(GetFullTitle( ));
+			Info.TitleIndex = GetPlayerTitleIdx(GetFullTitle());
 			Info.SkillLevel = SkillAvg();
 			Info.InTransition = CurrentTransArea ? true : false;
-			if( memcmp( &Info, &m_ScoreInfoCache, sizeof(scoreinfo_t) ) )
+			if (memcmp(&Info, &m_ScoreInfoCache, sizeof(scoreinfo_t)))
 			{
 				pev->frags = m_MaxHP; //FEB2008a - Report HP to Scoreboard
-				for( int i = 1; i <= gpGlobals->maxClients; i++ )
+				for (int i = 1; i <= gpGlobals->maxClients; i++)
 				{
-					CBasePlayer *pSendPlayer = (CBasePlayer *)UTIL_PlayerByIndex( i );
-					if( pSendPlayer )
+					CBasePlayer *pSendPlayer = (CBasePlayer *)UTIL_PlayerByIndex(i);
+					if (pSendPlayer)
 					{
 						//Send Player info
-						MSGSend_PlayerInfo( pSendPlayer, this );
+						MSGSend_PlayerInfo(pSendPlayer, this);
 
 						//Send Party info
 						//MSGSend_PlayerTeam( pSendPlayer, this );
 					}
 				}
-				memcpy( &m_ScoreInfoCache, &Info, sizeof(scoreinfo_t) );
+				memcpy(&m_ScoreInfoCache, &Info, sizeof(scoreinfo_t));
 			} //endif memcmp( &Info, &m_ScoreInfoCache, sizeof(scoreinfo_t)
-			//} //endif !Cheater
-			/*if ( fileresult == 0 )
+			  //} //endif !Cheater
+			  /*if ( fileresult == 0 )
 			{
 				ALERT( at_console, "Cannot save character while ent_mod is installed.\n" );
 				int fileresult = 0;
 				fileresult = rename( "./models/p_phaser2.mdl","p_phaser.mdl"); //cover tracks
 				//ent_mod cheater
 			}*/
-		} //endif m_CharacterState == CHARSTATE_LOADED )
+		}	  //endif m_CharacterState == CHARSTATE_LOADED )
 	}
 
 	//NoSaveArea - This area is time-critial, update every frame
@@ -4958,12 +5037,11 @@ void CBasePlayer::UpdateMiscPositions(void)
 
 	if( !pFoundArea && CurrentNoSaveArea ) ((CBaseEntity *)CurrentNoSaveArea)->DeathNotice( pev );*/
 
-
 	//Check pkill forget time (must wait 30 mins per kill to drop one kill)
-	if( m_PlayersKilled > 0 )
+	if (m_PlayersKilled > 0)
 	{
 		m_TimeWaitedToForgetKill += gpGlobals->frametime;
-		if( m_TimeWaitedToForgetKill > m_PlayersKilled * (60.0 * 30.0) )
+		if (m_TimeWaitedToForgetKill > m_PlayersKilled * (60.0 * 30.0))
 		{
 			m_PlayersKilled--;
 			m_TimeWaitedToForgetKill = 0;
@@ -4971,10 +5049,11 @@ void CBasePlayer::UpdateMiscPositions(void)
 	}
 
 	//Update Steal time
-	if( m_TimeWaitedToForgetSteal )
+	if (m_TimeWaitedToForgetSteal)
 	{
 		m_TimeWaitedToForgetSteal += gpGlobals->frametime;
-		if( m_TimeWaitedToForgetSteal > 180 ) m_TimeWaitedToForgetSteal = 0;
+		if (m_TimeWaitedToForgetSteal > 180)
+			m_TimeWaitedToForgetSteal = 0;
 	}
 
 	//Idly gain health
@@ -4991,19 +5070,20 @@ void CBasePlayer::UpdateMiscPositions(void)
 	}*/
 
 	//Update everything
-//	UpdateRoundTime( );
-//	UpdateMana( );
+	//	UpdateRoundTime( );
+	//	UpdateMana( );
 }
 
-
-enum transtype_e {
+enum transtype_e
+{
 	TRANS_GETGROUND,
 	TRANS_STEAL,
 	TRANS_STEALITEM,
 	TRANS_STEALPACKITEM,
 	TRANS_GIVE,
 };
-struct itemdesc_t {
+struct itemdesc_t
+{
 	int iEntIndex;
 	CBaseEntity *pItem;
 	itemtype_e ItemType;
@@ -5016,7 +5096,8 @@ struct itemdesc_t {
 #define MAX_GET_ITEMS 9
 #define PICKUPITEM_DISTANCE 68.0 //Search and pickup dist might have to be different
 #define SEARCH_DISTANCE 64.0
-struct itemtrans_t {
+struct itemtrans_t
+{
 	transtype_e TransType;
 	int ItemTotal;
 	itemdesc_t ItemList[MAX_GET_ITEMS];
@@ -5025,23 +5106,25 @@ struct itemtrans_t {
 /*
 	GetAnyItems - Look for items in front of you and give a list of them
 */
-void CBasePlayer::GetAnyItems() 
+void CBasePlayer::GetAnyItems()
 {
 	CBaseEntity *pObject = NULL;
 	int ItemCount = 0, MenuCount = 0;
 	char cItemList[256], cTemp[256];
 	itemtrans_t itItemTransaction;
-	memset( &itItemTransaction, 0, sizeof(itemtrans_t) );
+	memset(&itItemTransaction, 0, sizeof(itemtrans_t));
 
-	strcpy( cItemList, "Gather items:\n\n" );
-	
-	while( pObject = UTIL_FindEntityInSphere(pObject, EyePosition(), SEARCH_DISTANCE) )
+	strcpy(cItemList, "Gather items:\n\n");
+
+	while (pObject = UTIL_FindEntityInSphere(pObject, EyePosition(), SEARCH_DISTANCE))
 	{
-		if( pObject == this || !FVisible(pObject) || !FInViewCone(pObject) ) continue;
+		if (pObject == this || !FVisible(pObject) || !FInViewCone(pObject))
+			continue;
 
-		if( pObject->IsMSMonster() && ((CMSMonster *)pObject)->IsLootable( this ) )
+		if (pObject->IsMSMonster() && ((CMSMonster *)pObject)->IsLootable(this))
 		{
-			if( !(int)((CMSMonster *)pObject)->m_Gold ) continue;
+			if (!(int)((CMSMonster *)pObject)->m_Gold)
+				continue;
 
 			//Gather corpse gold
 			itItemTransaction.ItemList[ItemCount].iEntIndex = pObject->entindex();
@@ -5049,22 +5132,23 @@ void CBasePlayer::GetAnyItems()
 			itItemTransaction.ItemTotal++;
 
 			ItemCount++;
-			if( ItemCount == MAX_GET_ITEMS ) break; //max of 10 items
+			if (ItemCount == MAX_GET_ITEMS)
+				break; //max of 10 items
 			continue;
 		}
 
-		if ( FBitSet(pObject->MSProperties(),ITEM_NOPICKUP) )
+		if (FBitSet(pObject->MSProperties(), ITEM_NOPICKUP))
 			continue;
 
 		bool ALLOW = true;
-		 for (int i = 0; i < pObject->scriptedArrays.size(); i++) 
+		for (int i = 0; i < pObject->scriptedArrays.size(); i++)
 		{
-			if ( pObject->scriptedArrays[i].Name == "PICKUP_ALLOW_LIST" )
+			if (pObject->scriptedArrays[i].Name == "PICKUP_ALLOW_LIST")
 			{
 				ALLOW = false;
-				 for (int j = 0; j < pObject->scriptedArrays[i].Vals.size(); j++) 
+				for (int j = 0; j < pObject->scriptedArrays[i].Vals.size(); j++)
 				{
-					if ( EntToString(this) == pObject->scriptedArrays[i].Vals[j] )
+					if (EntToString(this) == pObject->scriptedArrays[i].Vals[j])
 					{
 						ALLOW = true;
 						break;
@@ -5074,47 +5158,51 @@ void CBasePlayer::GetAnyItems()
 			}
 		}
 
-		if ( !ALLOW )
+		if (!ALLOW)
 		{
 			CGenericItem *pItem = (CGenericItem *)pObject;
 			static msstringlist Params;
-			Params.clearitems( );
-			Params.add( EntToString(this) );
-			pItem->CallScriptEvent("game_restricted",&Params);
+			Params.clearitems();
+			Params.add(EntToString(this));
+			pItem->CallScriptEvent("game_restricted", &Params);
 			continue;
 		}
 
-		if( FBitSet(pObject->MSProperties(),ITEM_PROJECTILE) ||
-			!FBitSet(pObject->MSProperties(),ITEM_GENERIC) ) continue;
+		if (FBitSet(pObject->MSProperties(), ITEM_PROJECTILE) ||
+			!FBitSet(pObject->MSProperties(), ITEM_GENERIC))
+			continue;
 
 		//Found valid item
 		bool fAddToList = true;
 		CGenericItem *pItem = (CGenericItem *)pObject;
 
-		if( pItem->pev->owner )
+		if (pItem->pev->owner)
 		{
-			if( !pItem->m_pOwner || pItem->m_pOwner->IsAlive() ) continue;
-			else if( pItem->m_pOwner && pItem->m_pOwner->IsAlive() ) continue;
+			if (!pItem->m_pOwner || pItem->m_pOwner->IsAlive())
+				continue;
+			else if (pItem->m_pOwner && pItem->m_pOwner->IsAlive())
+				continue;
 		}
-		else if( pItem->m_NotUseable ) continue;
-		
+		else if (pItem->m_NotUseable)
+			continue;
+
 		//Group groupable items
-		if( FBitSet(pItem->MSProperties(),ITEM_GROUPABLE) )
+		if (FBitSet(pItem->MSProperties(), ITEM_GROUPABLE))
 		{
 			CBaseEntity *pTestItem;
-			for( int i = 0; i < ItemCount; i++ )
+			for (int i = 0; i < ItemCount; i++)
 			{
 				itemdesc_t *pOwnerDesc = NULL;
 				pTestItem = itItemTransaction.ItemList[i].pItem;
-				if( FBitSet(pTestItem->MSProperties(),ITEM_GENERIC) &&
-					FBitSet(pTestItem->MSProperties(),ITEM_GROUPABLE) &&
-					FStrEq(((CGenericItem *)pTestItem)->ItemName,pItem->ItemName) )
+				if (FBitSet(pTestItem->MSProperties(), ITEM_GENERIC) &&
+					FBitSet(pTestItem->MSProperties(), ITEM_GROUPABLE) &&
+					FStrEq(((CGenericItem *)pTestItem)->ItemName, pItem->ItemName))
 				{
 					pOwnerDesc = &itItemTransaction.ItemList[i];
-					if( ((CGenericItem *)pTestItem)->iQuantity + 
-						pOwnerDesc->iGroupedItemTotal + 
-						pItem->iQuantity < min(pItem->iMaxGroupable,256) 
-						)
+					if (((CGenericItem *)pTestItem)->iQuantity +
+							pOwnerDesc->iGroupedItemTotal +
+							pItem->iQuantity <
+						min(pItem->iMaxGroupable, 256))
 					{
 						pOwnerDesc->GroupListEntidx[pOwnerDesc->iGroupedItems] = pItem->entindex();
 						pOwnerDesc->pGroupList[pOwnerDesc->iGroupedItems++] = pItem;
@@ -5125,83 +5213,89 @@ void CBasePlayer::GetAnyItems()
 			}
 		}
 
-		if( !fAddToList ) continue;
+		if (!fAddToList)
+			continue;
 
 		itItemTransaction.ItemList[ItemCount].iEntIndex = pItem->entindex();
 		itItemTransaction.ItemList[ItemCount].pItem = pItem;
 		itItemTransaction.ItemTotal++;
 
 		ItemCount++;
-		if( ItemCount == MAX_GET_ITEMS ) break; //max of 10 items
+		if (ItemCount == MAX_GET_ITEMS)
+			break; //max of 10 items
 	}
 
-	if( !ItemCount ) return;
+	if (!ItemCount)
+		return;
 
 	ItemCount = 1; //Thothie DEC2010_11 - trying to end item dup exploit
 
 	//If you only see one item laying on the ground, grab it
-	if( ItemCount == 1 ) 
+	if (ItemCount == 1)
 	{
 		CBaseEntity *pEnt = itItemTransaction.ItemList[0].pItem;
-		if( pEnt->IsMSMonster() ) {
+		if (pEnt->IsMSMonster())
+		{
 			//Gather corpse gold
 			CMSMonster *pMonster = (CMSMonster *)pEnt;
 			//Thothie - AUG2007b - minor hud color change
-			SendEventMsg( HUDEVENT_GREEN, UTIL_VarArgs("You pick up %i gold coins from %s", (int)pMonster->m_Gold, SPEECH::NPCName(pMonster)) );
+			SendEventMsg(HUDEVENT_GREEN, UTIL_VarArgs("You pick up %i gold coins from %s", (int)pMonster->m_Gold, SPEECH::NPCName(pMonster)));
 			//SendInfoMsg( "You pick up %i gold coins from %s", (int)pMonster->m_Gold, SPEECH::NPCName(pMonster) );
-			GiveGold( pMonster->m_Gold, false );
+			GiveGold(pMonster->m_Gold, false);
 			pMonster->m_Gold = 0;
 			return;
 		}
-		else {
+		else
+		{
 			//Only single items can be picked up without a menu
 			CGenericItem *pItem = (CGenericItem *)itItemTransaction.ItemList[0].pItem;
-			if( (!FBitSet(pItem->MSProperties(),ITEM_GROUPABLE) || itItemTransaction.ItemList[0].iGroupedItems == 0) )
+			if ((!FBitSet(pItem->MSProperties(), ITEM_GROUPABLE) || itItemTransaction.ItemList[0].iGroupedItems == 0))
 			{
-				if( pItem->GiveTo(this) )
-					SendInfoMsg( "You pick up %s", SPEECH_GetItemName( pItem ) );
+				if (pItem->GiveTo(this))
+					SendInfoMsg("You pick up %s", SPEECH_GetItemName(pItem));
 				return;
 			}
 		}
 	}
 
-	 for (int i = 0; i < ItemCount; i++) 
+	for (int i = 0; i < ItemCount; i++)
 	{
 		CBaseEntity *pEnt = itItemTransaction.ItemList[i].pItem;
-		if( pEnt->IsMSMonster() ) {
+		if (pEnt->IsMSMonster())
+		{
 			char cTemp2[64];
-			sprintf( cTemp2, "%s%s%s", pEnt->DisplayPrefix.c_str(), pEnt->DisplayPrefix.len() ? " " : "", pEnt->DisplayName() );
-			sprintf( cTemp, "%i. %i gold coins from %s\n", ++MenuCount, (int)((CMSMonster *)pEnt)->m_Gold, cTemp2 );
-			strcat( cItemList, cTemp );
+			sprintf(cTemp2, "%s%s%s", pEnt->DisplayPrefix.c_str(), pEnt->DisplayPrefix.len() ? " " : "", pEnt->DisplayName());
+			sprintf(cTemp, "%i. %i gold coins from %s\n", ++MenuCount, (int)((CMSMonster *)pEnt)->m_Gold, cTemp2);
+			strcat(cItemList, cTemp);
 		}
-		else {
+		else
+		{
 			CGenericItem *pItem = (CGenericItem *)itItemTransaction.ItemList[i].pItem;
 			itItemTransaction.ItemList[i].iGroupedItemTotal += pItem->iQuantity;
 			int iSave = pItem->iQuantity;
 			pItem->iQuantity = itItemTransaction.ItemList[i].iGroupedItemTotal;
-			sprintf( cTemp, "%i. %s\n", ++MenuCount, SPEECH_GetItemName( pItem, true ) );
+			sprintf(cTemp, "%i. %s\n", ++MenuCount, SPEECH_GetItemName(pItem, true));
 			pItem->iQuantity = iSave;
-			strcat( cItemList, cTemp );
+			strcat(cItemList, cTemp);
 		}
 	}
 
-	sprintf( cTemp, "\n%i. Nothing\n", ++MenuCount ); 
-	strcat( cItemList, cTemp );
+	sprintf(cTemp, "\n%i. Nothing\n", ++MenuCount);
+	strcat(cItemList, cTemp);
 
 	//Now create the menu showing available items
 	TCallbackMenu *cbMenu = msnew(TCallbackMenu);
 	cbMenu->m_MenuCallback = (MenuCallback)&CBasePlayer::TransactionCallback;
 	cbMenu->pevOwner = pev;
 	cbMenu->vData = msnew(itemtrans_t);
-	strcpy( cbMenu->cMenuText, cItemList );
-	cbMenu->iValidslots = pow(2,(ItemCount+1)) - 1;
+	strcpy(cbMenu->cMenuText, cItemList);
+	cbMenu->iValidslots = pow(2, (ItemCount + 1)) - 1;
 	itItemTransaction.TransType = TRANS_GETGROUND;
-	memcpy( cbMenu->vData, &itItemTransaction, sizeof(itemtrans_t) );
-	ShowMenu( "", 0 );
-	SendMenu( MENU_USERDEFINED, cbMenu );
-
+	memcpy(cbMenu->vData, &itItemTransaction, sizeof(itemtrans_t));
+	ShowMenu("", 0);
+	SendMenu(MENU_USERDEFINED, cbMenu);
 }
-void CBasePlayer :: StealAnyItems( CBaseEntity *pVictim )
+void CBasePlayer ::StealAnyItems(CBaseEntity *pVictim)
 {
 	/*if( m_fInTownArea )
 	{
@@ -5348,62 +5442,68 @@ void CBasePlayer :: StealAnyItems( CBaseEntity *pVictim )
 }
 //
 // OfferItem - Offers an item or gold to another monster or player
-// ¯¯¯¯¯¯¯¯¯
-void CBasePlayer :: OfferItem( offerinfo_t &OfferInfo ) 
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void CBasePlayer ::OfferItem(offerinfo_t &OfferInfo)
 {
 	edict_t *peEnt = INDEXENT(OfferInfo.SrcMonsterIDX);
 	CBaseEntity *pEnt = (CBaseEntity *)GET_PRIVATE(peEnt);
-	if( !pEnt ) return;
+	if (!pEnt)
+		return;
 
-	if( !pEnt->MyMonsterPointer() ) return;
+	if (!pEnt->MyMonsterPointer())
+		return;
 
 	CMSMonster *pMonster = (CMSMonster *)pEnt;
-	memcpy( &pMonster->m_OfferInfo, &OfferInfo, sizeof(offerinfo_t) );
+	memcpy(&pMonster->m_OfferInfo, &OfferInfo, sizeof(offerinfo_t));
 	pMonster->m_OfferInfo.SrcMonsterIDX = entindex();
 	pMonster->m_OfferInfo.pSrcMonster = this;
 
 	CBasePlayer *pDestPlayer = NULL;
-	if( pMonster->IsPlayer() ) pDestPlayer = (CBasePlayer *)pMonster;
+	if (pMonster->IsPlayer())
+		pDestPlayer = (CBasePlayer *)pMonster;
 
 	msstringlist Parameters;
-	if( OfferInfo.ItemType == ITEM_GOLD )
+	if (OfferInfo.ItemType == ITEM_GOLD)
 	{
 		int iGoldAmt = (int)OfferInfo.pItemData;
-		if( pDestPlayer )
-			pDestPlayer->SendHUDMsg( "Receive Gold", msstring(DisplayName()) + " offers you " + iGoldAmt + " gold coins.  Press enter (accept) to recieve them." );
+		if (pDestPlayer)
+			pDestPlayer->SendHUDMsg("Receive Gold", msstring(DisplayName()) + " offers you " + iGoldAmt + " gold coins.  Press enter (accept) to recieve them.");
 		else
 		{
-			pMonster->StoreEntity( this, ENT_LASTOFFERITEM );
-			pMonster->SetScriptVar( "game.offer.gold", iGoldAmt ); //old
-			Parameters.add( UTIL_VarArgs("%i",iGoldAmt) );
-			pMonster->CallScriptEvent( "game_recvoffer_gold" );
+			pMonster->StoreEntity(this, ENT_LASTOFFERITEM);
+			pMonster->SetScriptVar("game.offer.gold", iGoldAmt); //old
+			Parameters.add(UTIL_VarArgs("%i", iGoldAmt));
+			pMonster->CallScriptEvent("game_recvoffer_gold");
 		}
 	}
-	else if( OfferInfo.ItemType == ITEM_NORMAL )
+	else if (OfferInfo.ItemType == ITEM_NORMAL)
 	{
-		if( pDestPlayer )
-			pDestPlayer->SendHUDMsg( "Receive Item", msstring(DisplayName()) + " offers you " + SPEECH_GetItemName( (CGenericItem *)OfferInfo.pItemData2) + ".\nPress enter (accept) to recieve them." );
+		if (pDestPlayer)
+			pDestPlayer->SendHUDMsg("Receive Item", msstring(DisplayName()) + " offers you " + SPEECH_GetItemName((CGenericItem *)OfferInfo.pItemData2) + ".\nPress enter (accept) to recieve them.");
 		else
 		{
-			pMonster->StoreEntity( this, ENT_LASTOFFERITEM );
+			pMonster->StoreEntity(this, ENT_LASTOFFERITEM);
 			msstring ItemName = ((CGenericItem *)OfferInfo.pItemData2)->ItemName;
 
-			pMonster->SetScriptVar( "game.offer.item", ItemName.c_str() ); //old
-			Parameters.add( ItemName.c_str() );
-			pMonster->CallScriptEvent( "game_recvoffer_item", &Parameters );
+			pMonster->SetScriptVar("game.offer.item", ItemName.c_str()); //old
+			Parameters.add(ItemName.c_str());
+			pMonster->CallScriptEvent("game_recvoffer_item", &Parameters);
 		}
 	}
 }
 
-#define ERROR_CANTPICKUP SendEventMsg( HUDEVENT_UNABLE, "You cannot pick up that item." );
+#define ERROR_CANTPICKUP SendEventMsg(HUDEVENT_UNABLE, "You cannot pick up that item.");
 void StealNoticeCheck(CBasePlayer *pPlayer, CMSMonster *pVictim, bool fStealSucces);
-void CBasePlayer::TransactionCallback(CBasePlayer *pPlayer, int slot, TCallbackMenu *pcbMenu) {
-	if (!pcbMenu)  return;
+void CBasePlayer::TransactionCallback(CBasePlayer *pPlayer, int slot, TCallbackMenu *pcbMenu)
+{
+	if (!pcbMenu)
+		return;
 
 	itemtrans_t *pTransaction = (itemtrans_t *)pcbMenu->vData;
 
 	//slot == -1: Free this menu data, the menu got cancelled
-	if (slot < 0 || slot >= pTransaction->ItemTotal) goto freememory;
+	if (slot < 0 || slot >= pTransaction->ItemTotal)
+		goto freememory;
 
 	switch (pTransaction->TransType)
 	{
@@ -5412,16 +5512,23 @@ void CBasePlayer::TransactionCallback(CBasePlayer *pPlayer, int slot, TCallbackM
 		itemdesc_t *pItemDesc = &pTransaction->ItemList[slot];
 		CBaseEntity *pEnt = pItemDesc->pItem;
 		edict_t *peTemp = INDEXENT(pItemDesc->iEntIndex);
-		if (!peTemp || peTemp->pvPrivateData != pEnt) {
+		if (!peTemp || peTemp->pvPrivateData != pEnt)
+		{
 			ERROR_CANTPICKUP
-				break;
+			break;
 		}
 		CBaseEntity *pObject = NULL;
 		while ((pObject = UTIL_FindEntityInSphere(pObject, Center(), SEARCH_DISTANCE)) != NULL)
-			if (pObject == pEnt) break;
-		if (!pObject) { SendEventMsg(HUDEVENT_UNABLE, "You are too far from it!"); break; }
+			if (pObject == pEnt)
+				break;
+		if (!pObject)
+		{
+			SendEventMsg(HUDEVENT_UNABLE, "You are too far from it!");
+			break;
+		}
 
-		if (pEnt->MyMonsterPointer()) {
+		if (pEnt->MyMonsterPointer())
+		{
 			//Gather corpse gold
 			CMSMonster *pMonster = (CMSMonster *)pEnt;
 			SendInfoMsg("You pick up %i gold coins from %s", (int)pMonster->m_Gold, SPEECH::NPCName(pMonster));
@@ -5447,7 +5554,8 @@ void CBasePlayer::TransactionCallback(CBasePlayer *pPlayer, int slot, TCallbackM
 						pItemDesc->pGroupList[i]->SUB_Remove();
 				}
 		}
-		else pItem->iQuantity = iOldQuantity;
+		else
+			pItem->iQuantity = iOldQuantity;
 	}
 	break;
 	case TRANS_STEAL:
@@ -5481,11 +5589,11 @@ void CBasePlayer::TransactionCallback(CBasePlayer *pPlayer, int slot, TCallbackM
 		}
 		if( !pMonster->IsPlayer() ) LearnSkill( MAKE_STRING("stealing"), STATPROP_SKILL, 15 );
 		*/}
-	break;
-	case TRANS_STEALITEM:
-	case TRANS_STEALPACKITEM:
-	{
-		/*if( FBitSet(StatusFlags,PLAYER_MOVE_ATTACKING) ) break;
+		break;
+		case TRANS_STEALITEM:
+		case TRANS_STEALPACKITEM:
+		{
+			/*if( FBitSet(StatusFlags,PLAYER_MOVE_ATTACKING) ) break;
 		edict_t *peTemp = INDEXENT((int)pTransaction->pvExtra);
 		if( !peTemp || !peTemp->pvPrivateData || !((CMSMonster *)CBaseEntity::Instance(peTemp))->MyMonsterPointer() ) {
 		ERROR_CANTPICKUP
@@ -5543,15 +5651,15 @@ void CBasePlayer::TransactionCallback(CBasePlayer *pPlayer, int slot, TCallbackM
 		StealNoticeCheck( this, pMonster, false );
 		m_TimeCanSteal = gpGlobals->time + 3.0;
 		}*/
-	}
-	break;
-	}
+		}
+		break;
+		}
 
 freememory:
 	delete pTransaction;
 }
 
-void StealNoticeCheck( CBasePlayer *pPlayer, CMSMonster *pVictim, bool fStealSucces )
+void StealNoticeCheck(CBasePlayer *pPlayer, CMSMonster *pVictim, bool fStealSucces)
 {
 	/*
 	//The thief can roll 0 which means he's noticed no matter what, but the victim
@@ -5610,12 +5718,15 @@ void StealNoticeCheck( CBasePlayer *pPlayer, CMSMonster *pVictim, bool fStealSuc
 	*/
 }
 
-int	CBasePlayer :: GiveGold( int iAmount, bool fVerbose ) {
-	if( fVerbose ) SendInfoMsg( "You recieve %i gold coins", iAmount );
-	return CMSMonster::GiveGold( iAmount, fVerbose );
+int CBasePlayer ::GiveGold(int iAmount, bool fVerbose)
+{
+	if (fVerbose)
+		SendInfoMsg("You recieve %i gold coins", iAmount);
+	return CMSMonster::GiveGold(iAmount, fVerbose);
 }
-void CBasePlayer :: ShowMenu( char *pszText, int bitsValidSlots,
-			  int nDisplayTime, BOOL fNeedMore ) {
+void CBasePlayer ::ShowMenu(char *pszText, int bitsValidSlots,
+							int nDisplayTime, BOOL fNeedMore)
+{
 	//bitsValidSlots == 0 means hide the menu
 	//Can only send 128 bytes at a time!!
 	char *pszPtr = pszText;
@@ -5623,111 +5734,119 @@ void CBasePlayer :: ShowMenu( char *pszText, int bitsValidSlots,
 	unsigned int n = 0, i = 0; //i is to prevent a recursive while()
 	BOOL bLclNeedMore;
 
-	while( n < strlen(pszText) && i++ < 200 ) {
+	while (n < strlen(pszText) && i++ < 200)
+	{
 		bLclNeedMore = fNeedMore;
-		if( strlen(&pszText[n]) > 128 ) { 
-			strncpy( cTemp, &pszText[n], 127 ); 
-			cTemp[127] = 0; 
+		if (strlen(&pszText[n]) > 128)
+		{
+			strncpy(cTemp, &pszText[n], 127);
+			cTemp[127] = 0;
 			n += 127;
 			bLclNeedMore = TRUE;
 		}
-		else { 
-			strcpy( cTemp, &pszText[n] );
+		else
+		{
+			strcpy(cTemp, &pszText[n]);
 			n += strlen(cTemp);
 		}
 
-		MESSAGE_BEGIN( MSG_ONE, gmsgShowMenu, NULL, pev );
-			WRITE_SHORT( bitsValidSlots );
-			WRITE_CHAR( nDisplayTime );
-			WRITE_BYTE( bLclNeedMore );
-			WRITE_STRING( cTemp );
+		MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, NULL, pev);
+		WRITE_SHORT(bitsValidSlots);
+		WRITE_CHAR(nDisplayTime);
+		WRITE_BYTE(bLclNeedMore);
+		WRITE_STRING(cTemp);
 		MESSAGE_END();
 	}
-	if( i >= 200 ) ALERT( at_console, "ERROR: CBasePlayer :ShowMenu() - Menu loops forever!\n" );
+	if (i >= 200)
+		ALERT(at_console, "ERROR: CBasePlayer :ShowMenu() - Menu loops forever!\n");
 }
 
-void CBasePlayer :: PainSound() {
-	
+void CBasePlayer ::PainSound()
+{
+
 	//Thothie FEB2010_28 - moving script side to deal with gender
 	//if( !RANDOM_LONG(0,5) ) return;
 	msstringlist Params;
 
-	switch ( m_LastHitGroup )
+	switch (m_LastHitGroup)
 	{
 	case HITGROUP_GENERIC:
 		Params.add("generic");
-		CallScriptEvent("game_hitbodypart",&Params);
+		CallScriptEvent("game_hitbodypart", &Params);
 		break;
 	case HITGROUP_HEAD:
 		Params.add("head");
-		CallScriptEvent("game_hitbodypart",&Params);
+		CallScriptEvent("game_hitbodypart", &Params);
 		break;
 	case HITGROUP_CHEST:
 		Params.add("chest");
-		CallScriptEvent("game_hitbodypart",&Params);
+		CallScriptEvent("game_hitbodypart", &Params);
 		break;
 	case HITGROUP_STOMACH:
 		Params.add("stomach");
-		CallScriptEvent("game_hitbodypart",&Params);
+		CallScriptEvent("game_hitbodypart", &Params);
 		break;
 	case HITGROUP_LEFTARM:
 		Params.add("larm");
-		CallScriptEvent("game_hitbodypart",&Params);
+		CallScriptEvent("game_hitbodypart", &Params);
 		break;
 	case HITGROUP_RIGHTARM:
 		Params.add("rarm");
-		CallScriptEvent("game_hitbodypart",&Params);
+		CallScriptEvent("game_hitbodypart", &Params);
 		break;
 	case HITGROUP_LEFTLEG:
 		Params.add("lleg");
-		CallScriptEvent("game_hitbodypart",&Params);
+		CallScriptEvent("game_hitbodypart", &Params);
 		break;
 	case HITGROUP_RIGHTLEG:
 		Params.add("rleg");
-		CallScriptEvent("game_hitbodypart",&Params);
+		CallScriptEvent("game_hitbodypart", &Params);
 		break;
 	default:
 		break;
 	}
 }
-void CBasePlayer::StruckSound( CBaseEntity *pInflicter, CBaseEntity *pAttacker, float flDamage, TraceResult *ptr, int bitsDamageType )
+void CBasePlayer::StruckSound(CBaseEntity *pInflicter, CBaseEntity *pAttacker, float flDamage, TraceResult *ptr, int bitsDamageType)
 {
 	char cSound[128];
-	sprintf( cSound, "weapons/cbar_hitbod%i.wav", RANDOM_LONG(1,3) );
-	EMIT_SOUND_DYN(edict(), CHAN_BODY, cSound, 1, ATTN_NORM, 0, 80 + RANDOM_LONG(-10,25)); 
+	sprintf(cSound, "weapons/cbar_hitbod%i.wav", RANDOM_LONG(1, 3));
+	EMIT_SOUND_DYN(edict(), CHAN_BODY, cSound, 1, ATTN_NORM, 0, 80 + RANDOM_LONG(-10, 25));
 }
 //
 // Trade - Manage trading with others
-// ¯¯¯¯¯
-void CBasePlayer::Trade( )
+// ï¿½ï¿½ï¿½ï¿½ï¿½
+void CBasePlayer::Trade()
 {
-	if( !HasConditions( MONSTER_TRADING ) ) return;
+	if (!HasConditions(MONSTER_TRADING))
+		return;
 
-	CMSMonster :: Trade( );
+	CMSMonster ::Trade();
 
 	//End trade
-	if( m_hEnemy == NULL ) {
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_VGUIMENU], NULL, pev );
-			WRITE_BYTE( 0 );
+	if (m_hEnemy == NULL)
+	{
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_VGUIMENU], NULL, pev);
+		WRITE_BYTE(0);
 		MESSAGE_END();
 	}
 }
-tradeinfo_t *CBasePlayer::TradeItem( tradeinfo_t *ptiTradeInfo )
+tradeinfo_t *CBasePlayer::TradeItem(tradeinfo_t *ptiTradeInfo)
 {
-	if( !HasConditions(MONSTER_TRADING) || m_hEnemy == NULL ) return NULL;
-	
-	if( ptiTradeInfo->pCustomer == this )
+	if (!HasConditions(MONSTER_TRADING) || m_hEnemy == NULL)
+		return NULL;
+
+	if (ptiTradeInfo->pCustomer == this)
 	{
 		CMSMonster *pVendor = (CMSMonster *)(CBaseEntity *)m_hEnemy;
 
 		//JAN2010_20 MIB - Vendor report
-		if ( ptiTradeInfo->iStatus == TRADE_BUY &&
-			!strcmp( pVendor->GetFirstScriptVar( "NPC_CHECK_LEVEL" ), "1") )
+		if (ptiTradeInfo->iStatus == TRADE_BUY &&
+			!strcmp(pVendor->GetFirstScriptVar("NPC_CHECK_LEVEL"), "1"))
 		{
-			CGenericItem *pItem = NewGenericItem( ptiTradeInfo->ItemName );
+			CGenericItem *pItem = NewGenericItem(ptiTradeInfo->ItemName);
 			//Make sure the item has attacks (Things like apples do not)
 			msstring ItemScriptName = pItem->m_Name;
-			if ( pItem->m_Attacks.size() )
+			if (pItem->m_Attacks.size())
 			{
 				int ReqSkill, CurSkill;
 				msstring StatName;
@@ -5751,52 +5870,52 @@ tradeinfo_t *CBasePlayer::TradeItem( tradeinfo_t *ptiTradeInfo )
 				*/
 
 				ReqSkill = pItem->m_Attacks[0].RequiredSkill;
-				CStat *pStat = FindStat( pItem->m_Attacks[0].StatExp );
-				CSubStat *pSubStat = pItem->m_Attacks[0].PropExp != -1 ? &pStat->m_SubStats[ pItem->m_Attacks[0].PropExp ] : NULL;
+				CStat *pStat = FindStat(pItem->m_Attacks[0].StatExp);
+				CSubStat *pSubStat = pItem->m_Attacks[0].PropExp != -1 ? &pStat->m_SubStats[pItem->m_Attacks[0].PropExp] : NULL;
 				CurSkill = pSubStat ? pSubStat->Value : pStat->Value();
 				StatName = pStat->m_Name.c_str();
-				if ( pSubStat )
+				if (pSubStat)
 				{
 					StatName += ".";
-					StatName += SkillTypeList[ pItem->m_Attacks[0].PropExp ];
+					StatName += SkillTypeList[pItem->m_Attacks[0].PropExp];
 				}
 
-				if ( CurSkill < ReqSkill )
+				if (CurSkill < ReqSkill)
 				{
 					//If the player lacks the skill to use the weapon, inform vendor
 					//and abort trade. Vendor will ask confirmation and complete trade
 					//himself.
 					msstringlist Params;
 					Params.clearitems();
-					Params.add( EntToString( this ) );
-					Params.add( pItem->m_DisplayName );
-					Params.add( ItemScriptName );
-					
-					storeitem_t *sItem = pVendor->OpenStore->GetItem( ptiTradeInfo->ItemName );
+					Params.add(EntToString(this));
+					Params.add(pItem->m_DisplayName);
+					Params.add(ItemScriptName);
+
+					storeitem_t *sItem = pVendor->OpenStore->GetItem(ptiTradeInfo->ItemName);
 					//Params.add( msstring() = sItem->iCost ); //Pull item cost from the store
-															//So we know the cost AFTER adjustment
+					//So we know the cost AFTER adjustment
 					//Params.add( msstring() = ReqSkill );
-				
+
 					//REALLY didn't want to do this.. Really ugly, but needs to be done :/
 					//Turn   Axe Handling to axehandling, Blunt Arms to bluntarms, etc
 					char stat_name[256];
-					strcpy( stat_name, StatName.c_str() );
-					_strlwr( stat_name );
-					 for (int i = 0; i < sizeof(stat_name); i++) 
+					strcpy(stat_name, StatName.c_str());
+					_strlwr(stat_name);
+					for (int i = 0; i < sizeof(stat_name); i++)
 					{
-						if ( stat_name[i] == 0 )
+						if (stat_name[i] == 0)
 							break;
 
-						if ( stat_name[i] == ' ' )
+						if (stat_name[i] == ' ')
 						{
-							memcpy( &stat_name[i] , &stat_name[i+1], sizeof(stat_name) - i );
+							memcpy(&stat_name[i], &stat_name[i + 1], sizeof(stat_name) - i);
 							--i;
 						}
 					}
 
-					Params.add( stat_name );
+					Params.add(stat_name);
 
-					pVendor->CallScriptEvent( "game_confirm_buy" , &Params );
+					pVendor->CallScriptEvent("game_confirm_buy", &Params);
 					pItem->SUB_Remove();
 					return NULL; //Abort. Don't tell the catholics.
 				}
@@ -5804,91 +5923,97 @@ tradeinfo_t *CBasePlayer::TradeItem( tradeinfo_t *ptiTradeInfo )
 			pItem->SUB_Remove();
 		}
 
-		tradeinfo_t *ptiTradeAnswer = pVendor->TradeItem( ptiTradeInfo );
-		if( !ptiTradeAnswer ) goto EndTrade;
+		tradeinfo_t *ptiTradeAnswer = pVendor->TradeItem(ptiTradeInfo);
+		if (!ptiTradeAnswer)
+			goto EndTrade;
 
-		if( ptiTradeAnswer->iStatus == ptiTradeInfo->iStatus )
+		if (ptiTradeAnswer->iStatus == ptiTradeInfo->iStatus)
 		{
-			if( ptiTradeAnswer->iStatus == TRADE_BUY )
+			if (ptiTradeAnswer->iStatus == TRADE_BUY)
 			{
-				if( ptiTradeAnswer->pItem )
+				if (ptiTradeAnswer->pItem)
 				{
 					//The vendor is going to sell me the item
 					bool fCanGetItem = true;
-		
-					if( NewItemHand( ptiTradeAnswer->pItem, true, true ) < 0 &&		//Check for hand space, with verbose on
-						!CanPutInAnyPack( ptiTradeAnswer->pItem, true ) )			//Check for pack space
-							fCanGetItem = false;
-					if( m_Gold < ptiTradeAnswer->iPrice ) {
-						SendEventMsg( HUDEVENT_UNABLE, msstring("You can't afford ") + SPEECH_GetItemName( ptiTradeAnswer->pItem ) + "." );
+
+					if (NewItemHand(ptiTradeAnswer->pItem, true, true) < 0 && //Check for hand space, with verbose on
+						!CanPutInAnyPack(ptiTradeAnswer->pItem, true))		  //Check for pack space
+						fCanGetItem = false;
+					if (m_Gold < ptiTradeAnswer->iPrice)
+					{
+						SendEventMsg(HUDEVENT_UNABLE, msstring("You can't afford ") + SPEECH_GetItemName(ptiTradeAnswer->pItem) + ".");
 						fCanGetItem = false;
 					}
 
 					//Thothie DEC2012_16 - fix exploit where player could get infinite items by repeating console buy command
-					if( fCanGetItem )
-					{ 
-						if ( ptiTradeAnswer->psiStoreItem->Quantity <= 0 )
+					if (fCanGetItem)
+					{
+						if (ptiTradeAnswer->psiStoreItem->Quantity <= 0)
 						{
-							SendEventMsg( HUDEVENT_UNABLE, msstring("Vendor out of item: ") + SPEECH_GetItemName( ptiTradeAnswer->pItem ) + "." );
+							SendEventMsg(HUDEVENT_UNABLE, msstring("Vendor out of item: ") + SPEECH_GetItemName(ptiTradeAnswer->pItem) + ".");
 							fCanGetItem = false;
 						}
 					}
 
-					if( fCanGetItem ) {
-						SendInfoMsg( "You receive %s.", SPEECH_GetItemName( ptiTradeAnswer->pItem ) );
-						ptiTradeAnswer->pItem->GiveTo( this );
-						GiveGold( -ptiTradeAnswer->iPrice, false );
-						ptiTradeAnswer->psiStoreItem->Quantity -= max(ptiTradeAnswer->pItem->iQuantity,1);
-						
+					if (fCanGetItem)
+					{
+						SendInfoMsg("You receive %s.", SPEECH_GetItemName(ptiTradeAnswer->pItem));
+						ptiTradeAnswer->pItem->GiveTo(this);
+						GiveGold(-ptiTradeAnswer->iPrice, false);
+						ptiTradeAnswer->psiStoreItem->Quantity -= max(ptiTradeAnswer->pItem->iQuantity, 1);
+
 						//Thothie FEB2008a - allow informing of other players of item transfer
 						static msstringlist Params;
-						Params.clearitems( );
-						Params.add( EntToString(ptiTradeAnswer->pItem) );
-						Params.add( EntToString(pVendor) );
-						CallScriptEvent( "game_player_got_from_store", &Params );
+						Params.clearitems();
+						Params.add(EntToString(ptiTradeAnswer->pItem));
+						Params.add(EntToString(pVendor));
+						CallScriptEvent("game_player_got_from_store", &Params);
 
 						static msstringlist Params_sec;
-						Params_sec.clearitems( );
-						Params_sec.add( EntToString(this) );
-						Params_sec.add( EntToString(ptiTradeAnswer->pItem) );
-						pVendor->CallScriptEvent( "game_gave_player", &Params_sec ); //Thothie JAN2013_08 - good to give vender/chest ability to know what player took
+						Params_sec.clearitems();
+						Params_sec.add(EntToString(this));
+						Params_sec.add(EntToString(ptiTradeAnswer->pItem));
+						pVendor->CallScriptEvent("game_gave_player", &Params_sec); //Thothie JAN2013_08 - good to give vender/chest ability to know what player took
 
 						goto EndTrade;
 					}
-					else {
-						ptiTradeAnswer->pItem->SUB_Remove( );
+					else
+					{
+						ptiTradeAnswer->pItem->SUB_Remove();
 						goto EndTrade;
 					}
 				}
-				else if( ptiTradeAnswer->iPrice )
+				else if (ptiTradeAnswer->iPrice)
 				{
 					static msstringlist Params;
-					Params.clearitems( );
-					Params.add( EntToString(this) );
-					Params.add( UTIL_VarArgs("%i",ptiTradeAnswer->iPrice) );
-					pVendor->CallScriptEvent( "game_gave_gold", &Params ); //Thothie JAN2013_08 - good to give vender/chest ability to know it gave gold and amt
+					Params.clearitems();
+					Params.add(EntToString(this));
+					Params.add(UTIL_VarArgs("%i", ptiTradeAnswer->iPrice));
+					pVendor->CallScriptEvent("game_gave_gold", &Params); //Thothie JAN2013_08 - good to give vender/chest ability to know it gave gold and amt
 
-					GiveGold( ptiTradeAnswer->iPrice );
-					pVendor->GiveGold( -ptiTradeAnswer->iPrice );
+					GiveGold(ptiTradeAnswer->iPrice);
+					pVendor->GiveGold(-ptiTradeAnswer->iPrice);
 					goto EndTrade;
 				}
 			}
-			else if( ptiTradeAnswer->iStatus == TRADE_SELL ) 
+			else if (ptiTradeAnswer->iStatus == TRADE_SELL)
 			{
 				//The vendor will let me sell him this item
-				if( !ptiTradeAnswer->pItem ) goto EndTrade;
+				if (!ptiTradeAnswer->pItem)
+					goto EndTrade;
 
-				SendInfoMsg( "You sell %s for %i gold.", SPEECH_GetItemName( ptiTradeAnswer->pItem ), ptiTradeAnswer->iPrice );
-				GiveGold( ptiTradeAnswer->iPrice, false );
-				ptiTradeAnswer->psiStoreItem->Quantity += (short)max(ptiTradeAnswer->pItem->iQuantity,1);
-				RemoveItem( ptiTradeAnswer->pItem );
-				ptiTradeAnswer->pItem->SUB_Remove( );
+				SendInfoMsg("You sell %s for %i gold.", SPEECH_GetItemName(ptiTradeAnswer->pItem), ptiTradeAnswer->iPrice);
+				GiveGold(ptiTradeAnswer->iPrice, false);
+				ptiTradeAnswer->psiStoreItem->Quantity += (short)max(ptiTradeAnswer->pItem->iQuantity, 1);
+				RemoveItem(ptiTradeAnswer->pItem);
+				ptiTradeAnswer->pItem->SUB_Remove();
 
 				goto EndTrade;
 			}
 		}
 	}
-	else ;//I'm the vendor
+	else
+		; //I'm the vendor
 
 EndTrade:
 	//ClearConditions(MONSTER_TRADING); //NOV2014_12 Thothie - attempting to fix the Ike bug
@@ -5896,33 +6021,35 @@ EndTrade:
 }
 //
 // AcceptOffer - Accept an offer from a player or monster
-// ¯¯¯¯¯¯¯¯¯¯¯
-bool CBasePlayer :: AcceptOffer( )
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+bool CBasePlayer ::AcceptOffer()
 {
 	//Save the Offer info
 	offerinfo_t OfferInfo;
-	memcpy( &OfferInfo, &m_OfferInfo, sizeof(offerinfo_t) );
+	memcpy(&OfferInfo, &m_OfferInfo, sizeof(offerinfo_t));
 
-	if( !CMSMonster::AcceptOffer() ) return false;
+	if (!CMSMonster::AcceptOffer())
+		return false;
 
 	CMSMonster *pMonster = (CMSMonster *)OfferInfo.pSrcMonster;
 	CBasePlayer *pPlayer = pMonster->IsPlayer() ? (CBasePlayer *)pMonster : NULL;
-	
-	if( OfferInfo.ItemType == ITEM_NORMAL )
+
+	if (OfferInfo.ItemType == ITEM_NORMAL)
 	{
-		if( pPlayer )
-			pPlayer->SendInfoMsg( "%s accepts your %s", DisplayName(), SPEECH_GetItemName((CGenericItem *)OfferInfo.pItemData2) );
-		SendInfoMsg( "You recieve %s from %s", SPEECH_GetItemName((CGenericItem *)OfferInfo.pItemData2), pMonster->DisplayName() );
+		if (pPlayer)
+			pPlayer->SendInfoMsg("%s accepts your %s", DisplayName(), SPEECH_GetItemName((CGenericItem *)OfferInfo.pItemData2));
+		SendInfoMsg("You recieve %s from %s", SPEECH_GetItemName((CGenericItem *)OfferInfo.pItemData2), pMonster->DisplayName());
 	}
-	else if( OfferInfo.ItemType == ITEM_GOLD ) {
-		if( pPlayer )
-			pPlayer->SendInfoMsg( "%s accepts your %i gold coins", DisplayName(), (int)OfferInfo.pItemData );
-		SendInfoMsg( "You recieve %i gold coins from %s", (int)OfferInfo.pItemData, pMonster->DisplayName() );
+	else if (OfferInfo.ItemType == ITEM_GOLD)
+	{
+		if (pPlayer)
+			pPlayer->SendInfoMsg("%s accepts your %i gold coins", DisplayName(), (int)OfferInfo.pItemData);
+		SendInfoMsg("You recieve %i gold coins from %s", (int)OfferInfo.pItemData, pMonster->DisplayName());
 	}
 
 	return true;
 }
-BOOL CBasePlayer::SkinMonster( CMSMonster *pDeadMonster )
+BOOL CBasePlayer::SkinMonster(CMSMonster *pDeadMonster)
 {
 	/*if( !pDeadMonster->Skin ) 
 		return FALSE;
@@ -5957,25 +6084,25 @@ BOOL CBasePlayer::SkinMonster( CMSMonster *pDeadMonster )
 
 	return FALSE;
 }
-void CBasePlayer::InitHUD( ) 
+void CBasePlayer::InitHUD()
 {
 	//Don't do anything relating to the client until now!!
-	g_pGameRules->InitHUD( this );
-	FireTargets( "game_playerjoin", this, this, USE_TOGGLE, 0 );
+	g_pGameRules->InitHUD(this);
+	FireTargets("game_playerjoin", this, this, USE_TOGGLE, 0);
 }
-bool CBasePlayer::PrepareSpell( const char *pszName ) 
+bool CBasePlayer::PrepareSpell(const char *pszName)
 {
 	//Thothie - make sure player actually HAS SPELL before giving it to him
 	//otherwise you can summon any spell with prep command
 	bool thoth_madespell = false;
-	 for (int i = 0; i < m_SpellList.size(); i++) 
+	for (int i = 0; i < m_SpellList.size(); i++)
 	{
 		msstring ShortName = m_SpellList[i];
-		if( ShortName == pszName )
+		if (ShortName == pszName)
 		{
-			return Magic::Prepare( pszName, this );
+			return Magic::Prepare(pszName, this);
 			thoth_madespell = true;
-			break; 
+			break;
 		}
 	}
 	return thoth_madespell;
@@ -5984,14 +6111,14 @@ bool CBasePlayer::PrepareSpell( const char *pszName )
 class CLightSensor : public CBaseEntity
 {
 public:
-	static CLightSensor *CreateLightSensor( int PlayerIndex, Vector &Origin )
+	static CLightSensor *CreateLightSensor(int PlayerIndex, Vector &Origin)
 	{
-		CLightSensor *pNewLightSensor = GetClassPtr( (CLightSensor *)NULL );
+		CLightSensor *pNewLightSensor = GetClassPtr((CLightSensor *)NULL);
 		pNewLightSensor->pev->origin = Origin;
 		pNewLightSensor->pev->iuser1 = PlayerIndex;
-		pNewLightSensor->Spawn( );
+		pNewLightSensor->Spawn();
 	}
-	void Spawn( )
+	void Spawn()
 	{
 		//Note:  Half-life will only give an an object a light level when:
 		//- It has a model
@@ -6003,16 +6130,16 @@ public:
 		SET_MODEL(ENT(pev), "models/null.mdl");
 		pev->rendermode = kRenderTransTexture;
 		pev->renderamt = 1;
-		pev->origin = pev->origin + Vector(0,0,0);
+		pev->origin = pev->origin + Vector(0, 0, 0);
 		SetThink(&CBaseEntity::SUB_Remove);
 		pev->nextthink = gpGlobals->time + 1.0;
 	}
 };
-LINK_ENTITY_TO_CLASS( light_sensor, CLightSensor );
+LINK_ENTITY_TO_CLASS(light_sensor, CLightSensor);
 
-void CBasePlayer::UseSkill( int iSkill ) 
+void CBasePlayer::UseSkill(int iSkill)
 {
-/*	if( !Class ) return;
+	/*	if( !Class ) return;
 
 	if( Class->id == CLASS_ROGUE )
 	{
@@ -6041,56 +6168,64 @@ void CBasePlayer::UseSkill( int iSkill )
 	}*/
 }
 
-void CBasePlayer :: SetModel( const char *Newmodel ) {
-	SET_MODEL(  ENT(pev), Newmodel );
-//	if( CanSendMessages ) g_engfuncs.pfnSetClientKeyValue( entindex(), g_engfuncs.pfnGetInfoKeyBuffer(edict()), "model", Newmodel );
+void CBasePlayer ::SetModel(const char *Newmodel)
+{
+	SET_MODEL(ENT(pev), Newmodel);
+	//	if( CanSendMessages ) g_engfuncs.pfnSetClientKeyValue( entindex(), g_engfuncs.pfnGetInfoKeyBuffer(edict()), "model", Newmodel );
 }
-void CBasePlayer :: SetModel( int Newmodel ) {
-	SetModel( STRING(Newmodel) );
+void CBasePlayer ::SetModel(int Newmodel)
+{
+	SetModel(STRING(Newmodel));
 }
 
-void CBasePlayer :: SetTeam( CTeam *pNewTeam ) {
+void CBasePlayer ::SetTeam(CTeam *pNewTeam)
+{
 	//g_engfuncs.pfnSetClientKeyValue( entindex(), g_engfuncs.pfnGetInfoKeyBuffer( edict() ), "team", TeamName );
 
 	msstringlist Parameters;
 	CTeam *pOldTeam = m_pTeam;
 	m_pTeam = pNewTeam;
 
-	if( pOldTeam ) pOldTeam->RemoveFromTeam( this );
-	if( pNewTeam )
+	if (pOldTeam)
+		pOldTeam->RemoveFromTeam(this);
+	if (pNewTeam)
 	{
-		pNewTeam->AddToTeam( this );
-		Parameters.add( pNewTeam->TeamName() );
-		CallScriptEvent( "game_party_join", &Parameters );
+		pNewTeam->AddToTeam(this);
+		Parameters.add(pNewTeam->TeamName());
+		CallScriptEvent("game_party_join", &Parameters);
 	}
 	else
 	{
-		Parameters.add( pOldTeam ? pOldTeam->TeamName() : "" );
-		CallScriptEvent( "game_party_leave", &Parameters );
+		Parameters.add(pOldTeam ? pOldTeam->TeamName() : "");
+		CallScriptEvent("game_party_leave", &Parameters);
 	}
 }
-int CBasePlayer::IRelationship ( CBaseEntity *pTarget )
+int CBasePlayer::IRelationship(CBaseEntity *pTarget)
 {
-	if( pTarget->IsPlayer() )
+	if (pTarget->IsPlayer())
 	{
 		CBasePlayer *pPlayer = (CBasePlayer *)pTarget;
-		if( SameTeam(this,pPlayer) ) return RELATIONSHIP_AL;
-		if( pPlayer->m_PlayersKilled > 8 ) return RELATIONSHIP_NM;
-		else if( pPlayer->m_PlayersKilled > 3 ) return RELATIONSHIP_HT;
-		else if( pPlayer->m_PlayersKilled > 0 ) return RELATIONSHIP_DL;
+		if (SameTeam(this, pPlayer))
+			return RELATIONSHIP_AL;
+		if (pPlayer->m_PlayersKilled > 8)
+			return RELATIONSHIP_NM;
+		else if (pPlayer->m_PlayersKilled > 3)
+			return RELATIONSHIP_HT;
+		else if (pPlayer->m_PlayersKilled > 0)
+			return RELATIONSHIP_DL;
 	}
-	return CMSMonster::IRelationship( pTarget );
+	return CMSMonster::IRelationship(pTarget);
 }
-bool CBasePlayer::CanDamage( CBaseEntity *pOther )		//Can I damage this npc?
+bool CBasePlayer::CanDamage(CBaseEntity *pOther) //Can I damage this npc?
 {
-	if( pOther->IsPlayer() )	//It's a player and player killing is allowed
+	if (pOther->IsPlayer()) //It's a player and player killing is allowed
 	{
-		if( MSGlobals::PKAllowed )
+		if (MSGlobals::PKAllowed)
 		{
 			//MiB AUG2007a
 			CBasePlayer *pOtherPlayer = (CBasePlayer *)pOther;
 
-			//We're not party members and 
+			//We're not party members and
 			//PK is allowed everywhere or
 			//The other player is not in town
 			//MAR2008b Thothie - something is up with the PVP, just returning true to see if it fiexes
@@ -6101,26 +6236,29 @@ bool CBasePlayer::CanDamage( CBaseEntity *pOther )		//Can I damage this npc?
 			}
 			return false;*/
 		}
-		return false;		//Hit a player, but PK is not allowed
+		return false; //Hit a player, but PK is not allowed
 	}
 
-	return CBaseEntity::CanDamage( pOther );
+	return CBaseEntity::CanDamage(pOther);
 }
-void CBasePlayer::KickPlayer( const char *pszMessage )
+void CBasePlayer::KickPlayer(const char *pszMessage)
 {
-	if( !IsElite() )
+	if (!IsElite())
 	{
-		if( pszMessage ) ClientPrint( pev, HUD_PRINTNOTIFY, pszMessage );
-		if( IsLocalHost() )
-			SERVER_COMMAND( "disconnect\n" );
-		else SERVER_COMMAND( UTIL_VarArgs("kick #%i\n", ENTINDEX(edict())) );
+		if (pszMessage)
+			ClientPrint(pev, HUD_PRINTNOTIFY, pszMessage);
+		if (IsLocalHost())
+			SERVER_COMMAND("disconnect\n");
+		else
+			SERVER_COMMAND(UTIL_VarArgs("kick #%i\n", ENTINDEX(edict())));
 		logfile << "Kicked " << DisplayName() << " Reason: " << pszMessage << "\r\n";
 	}
 }
-void CBasePlayer::Attacked( CBaseEntity *pAttacker, float flDamage, int bitsDamageType )
+void CBasePlayer::Attacked(CBaseEntity *pAttacker, float flDamage, int bitsDamageType)
 {
 	//I was attacked by something
-	if( !pAttacker || flDamage <= 0 ) return;
+	if (!pAttacker || flDamage <= 0)
+		return;
 
 	/*if( FBitSet( SkillInfo.SkillsActivated, SKILL_ROGUE_FADE )
 		&& SkillInfo.FadeStatus == skillinfo_t::FADE_IN )
@@ -6128,34 +6266,38 @@ void CBasePlayer::Attacked( CBaseEntity *pAttacker, float flDamage, int bitsDama
 		SkillInfo.FadeAmt = -1; //kill the fade
 	}*/
 
-	if( pAttacker->IsPlayer() && pAttacker != this )
+	if (pAttacker->IsPlayer() && pAttacker != this)
 	{
-		hudtextparms_t htp; memset( &htp, 0, sizeof(hudtextparms_t) );
-		htp.x = 0.02; htp.y = 0.6;
+		hudtextparms_t htp;
+		memset(&htp, 0, sizeof(hudtextparms_t));
+		htp.x = 0.02;
+		htp.y = 0.6;
 		htp.effect = 1;
-		htp.r1 = 255; htp.g1 = htp.b1 = 0;
-		htp.fadeinTime = 0.5; htp.fadeoutTime = 2.0; htp.holdTime = 2.0;
-		UTIL_HudMessage( this, htp, UTIL_VarArgs("%s is attacking you!", pAttacker->DisplayName()) );
+		htp.r1 = 255;
+		htp.g1 = htp.b1 = 0;
+		htp.fadeinTime = 0.5;
+		htp.fadeoutTime = 2.0;
+		htp.holdTime = 2.0;
+		UTIL_HudMessage(this, htp, UTIL_VarArgs("%s is attacking you!", pAttacker->DisplayName()));
 		return;
 	}
-
-
 }
-void CBasePlayer::Seen( CMSMonster *pMonster )
-{ 
+void CBasePlayer::Seen(CMSMonster *pMonster)
+{
 	//I was spotted by someone
-	if( !pMonster || pMonster->IsPlayer() ) return;
+	if (!pMonster || pMonster->IsPlayer())
+		return;
 
-/*	if( FBitSet( SkillInfo.SkillsActivated, SKILL_ROGUE_FADE )
+	/*	if( FBitSet( SkillInfo.SkillsActivated, SKILL_ROGUE_FADE )
 		&& SkillInfo.FadeStatus == skillinfo_t::FADE_IN )
 	{
 		SkillInfo.FadeAmt = -1; //kill the fade
 	}*/
 	msstringlist Parameters;
-	Parameters.add( EntToString(pMonster) );
-	CallScriptEvent( "game_seen", &Parameters );
+	Parameters.add(EntToString(pMonster));
+	CallScriptEvent("game_seen", &Parameters);
 }
-void CBasePlayer::SetQuest( bool SetData, msstring_ref Name, msstring_ref Data )
+void CBasePlayer::SetQuest(bool SetData, msstring_ref Name, msstring_ref Data)
 {
 	//if( SetData ) ALERT( at_aiconsole, UTIL_VarArgs("Got Quest String1(%s) String2(%s) \n", Name, Data));
 
@@ -6174,38 +6316,40 @@ void CBasePlayer::SetQuest( bool SetData, msstring_ref Name, msstring_ref Data )
 	{*/
 
 	int Found = -1;
-	 for (int i = 0; i < m_Quests.size(); i++) 
+	for (int i = 0; i < m_Quests.size(); i++)
 	{
-		if( m_Quests[i].Name == Name )
+		if (m_Quests[i].Name == Name)
 		{
-			if( SetData ) m_Quests[i].Data = Data;
-			else m_Quests.erase( i );
+			if (SetData)
+				m_Quests[i].Data = Data;
+			else
+				m_Quests.erase(i);
 			Found = i;
 			break;
 		}
 	}
 
-	if( Found <= -1 )
+	if (Found <= -1)
 	{
-		if( SetData ) 
+		if (SetData)
 		{
 			quest_t Quest;
-			Quest.Name = Name; Quest.Data = Data;
-			m_Quests.add( Quest );
+			Quest.Name = Name;
+			Quest.Data = Data;
+			m_Quests.add(Quest);
 		}
 	}
-	
 }
-bool CBasePlayer::LoadCharacter( int Num )
+bool CBasePlayer::LoadCharacter(int Num)
 {
-	if( Num >= (signed)m_CharInfo.size() )
+	if (Num >= (signed)m_CharInfo.size())
 		return false;
 
 	charinfo_t &Char = m_CharInfo[Num];
-	if( Char.Status != CDS_LOADED )
+	if (Char.Status != CDS_LOADED)
 		return false;
 
-	if( RestoreAllServer( Char.Data, Char.DataLen ) )
+	if (RestoreAllServer(Char.Data, Char.DataLen))
 	{
 		m_CharacterNum = Num;
 		return true;
@@ -6214,228 +6358,231 @@ bool CBasePlayer::LoadCharacter( int Num )
 	return false;
 }
 
-void CBasePlayer::SUB_Remove( )
+void CBasePlayer::SUB_Remove()
 {
-	CBaseMonster::SUB_Remove( );
+	CBaseMonster::SUB_Remove();
 }
 
-void CBasePlayer::Central_ReceivedChar( int CharIndex, char *Data, int DataLen )
+void CBasePlayer::Central_ReceivedChar(int CharIndex, char *Data, int DataLen)
 {
 	//Load a character from the Central Server
-	if( CharIndex >= (signed)m_CharInfo.size() )
+	if (CharIndex >= (signed)m_CharInfo.size())
 		return;
 
 	charinfo_t &Char = m_CharInfo[CharIndex];
-	Char.AssignChar( CharIndex, LOC_CENTRAL, Data, DataLen, this );
+	Char.AssignChar(CharIndex, LOC_CENTRAL, Data, DataLen, this);
 }
-void CBasePlayer::Central_UpdateChar( int CharIndex, chardatastatus_e Status )
+void CBasePlayer::Central_UpdateChar(int CharIndex, chardatastatus_e Status)
 {
 	//Update the retrieval status information about a char
-	if( CharIndex >= (signed)m_CharInfo.size() )
+	if (CharIndex >= (signed)m_CharInfo.size())
 		return;
-	
+
 	charinfo_t &Char = m_CharInfo[CharIndex];
 	Char.Index = CharIndex;
 	Char.Status = Status;
-	Char.m_CachedStatus = CDS_UNLOADED;	//force an update
+	Char.m_CachedStatus = CDS_UNLOADED; //force an update
 }
 
-void CBasePlayer::Think_SendCharData( )
+void CBasePlayer::Think_SendCharData()
 {
 	//If it's time, then send info about a character
 	//Keep doing this until info about all 3 chars is sent to client
-	if( m_CharacterState == CHARSTATE_LOADED || gpGlobals->time < m_TimeSendCharInfo
-		|| !m_fGameHUDInitialized )
+	if (m_CharacterState == CHARSTATE_LOADED || gpGlobals->time < m_TimeSendCharInfo || !m_fGameHUDInitialized)
 		return;
 
 	msstringlist VisitedMaps;
 
-	 for (int i = 0; i < m_CharInfo.size(); i++) 
+	for (int i = 0; i < m_CharInfo.size(); i++)
 	{
 		charinfo_t &CharInfo = m_CharInfo[i];
 
-		if( CharInfo.m_CachedStatus == CharInfo.Status )
+		if (CharInfo.m_CachedStatus == CharInfo.Status)
 			continue;
 
 		CharInfo.m_CachedStatus = CharInfo.Status;
-		
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CHARINFO], NULL, pev );
-			WRITE_BYTE( CharInfo.Index );					//This character is available or pending
-			WRITE_BYTE( CharInfo.Status );					//Current status
-			WRITE_BYTE( CharInfo.Location );				//Current storage location
 
-			if( CharInfo.Status == CDS_LOADED )
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CHARINFO], NULL, pev);
+		WRITE_BYTE(CharInfo.Index);	   //This character is available or pending
+		WRITE_BYTE(CharInfo.Status);   //Current status
+		WRITE_BYTE(CharInfo.Location); //Current storage location
+
+		if (CharInfo.Status == CDS_LOADED)
+		{
+			WRITE_STRING(CharInfo.Name);	 //Character name
+			WRITE_STRING(CharInfo.MapName);	 //Map char was last on
+			WRITE_STRING(CharInfo.OldTrans); //Last trans char hit
+			WRITE_STRING(CharInfo.NextMap);	 //New map char wants to enter
+			WRITE_STRING(CharInfo.NewTrans); //New trans at new map
+			WRITE_SHORT(CharInfo.body);		 //MIB JAN2010_27 - Char Selection Fix - Body the model should use
+			WRITE_STRING(CharInfo.Race);	 // MIB FEB2015_21 [RACE_MENU] - Send character race
+
+			//jointype_e JoinType = MSChar_Interface::CanJoinThisMap( CharInfo, VisitedMaps );
+
+			byte CharFlags = 0;
+			if (CharInfo.IsElite)
+				SetBits(CharFlags, (1 << 0));
+			if (CharInfo.Gender == GENDER_FEMALE)
+				SetBits(CharFlags, (1 << 1));
+			if (CharInfo.JoinType != JN_NOTALLOWED)
+				SetBits(CharFlags, (1 << 2));
+			WRITE_BYTE(CharFlags); //Character flags
+
+			WRITE_SHORT(CharInfo.GearInfo.size());
+			for (int i = 0; i < CharInfo.GearInfo.size(); i++)
 			{
-				WRITE_STRING( CharInfo.Name );		//Character name
-				WRITE_STRING( CharInfo.MapName );	//Map char was last on
-				WRITE_STRING( CharInfo.OldTrans );	//Last trans char hit
-				WRITE_STRING( CharInfo.NextMap );	//New map char wants to enter
-				WRITE_STRING( CharInfo.NewTrans );	//New trans at new map
-				WRITE_SHORT( CharInfo.body );		//MIB JAN2010_27 - Char Selection Fix - Body the model should use
-				WRITE_STRING( CharInfo.Race );		// MIB FEB2015_21 [RACE_MENU] - Send character race
-
-				//jointype_e JoinType = MSChar_Interface::CanJoinThisMap( CharInfo, VisitedMaps );
-
-				byte CharFlags = 0;
-				if( CharInfo.IsElite )						SetBits( CharFlags, (1<<0) );
-				if( CharInfo.Gender == GENDER_FEMALE )		SetBits( CharFlags, (1<<1) );
-				if( CharInfo.JoinType != JN_NOTALLOWED )	SetBits( CharFlags, (1<<2) );
-				WRITE_BYTE( CharFlags );		//Character flags
-
-				WRITE_SHORT( CharInfo.GearInfo.size() );
-				 for (int i = 0; i < CharInfo.GearInfo.size(); i++) 
-				{
-					gearinfo_t &GearInfo = CharInfo.GearInfo[i];
-					WRITE_BYTE( GearInfo.Flags );
-					WRITE_SHORT( GearInfo.Model );
-					WRITE_SHORT( GearInfo.Body );
-					WRITE_BYTE( GearInfo.Anim );
-				}
+				gearinfo_t &GearInfo = CharInfo.GearInfo[i];
+				WRITE_BYTE(GearInfo.Flags);
+				WRITE_SHORT(GearInfo.Model);
+				WRITE_SHORT(GearInfo.Body);
+				WRITE_BYTE(GearInfo.Anim);
 			}
+		}
 		MESSAGE_END();
 	}
 
 	m_TimeSendCharInfo = gpGlobals->time + 0.5f;
 }
 
-bool CBasePlayer::IsInAttackStance( )
+bool CBasePlayer::IsInAttackStance()
 {
 	//Server can't tell if the player is running, so just
 	//check if player speed is over walkspeed
-	if( pev->velocity.Length2D() >= WalkSpeed( false ) * 1.3 )
+	if (pev->velocity.Length2D() >= WalkSpeed(false) * 1.3)
 		return false;
 
-	if( m_TimeResetLegs && gpGlobals->time < m_TimeResetLegs )
+	if (m_TimeResetLegs && gpGlobals->time < m_TimeResetLegs)
 		return true;
 
-	 for (int i = 0; i < MAX_NPC_HANDS; i++) 
-		if( Hand(i) && Hand(i)->IsInAttackStance( ) )
+	for (int i = 0; i < MAX_NPC_HANDS; i++)
+		if (Hand(i) && Hand(i)->IsInAttackStance())
 			return true;
 
 	return false;
 }
-void CBasePlayer::Storage_Open( msstring_ref pszDisplayName, msstring_ref pszStorageName, float flFeeRatio, entityinfo_t &Entity )
+void CBasePlayer::Storage_Open(msstring_ref pszDisplayName, msstring_ref pszStorageName, float flFeeRatio, entityinfo_t &Entity)
 {
 	m_CurrentStorage.Active = true;
 	m_CurrentStorage.StorageName = pszStorageName;
 	m_CurrentStorage.DisplayName = pszDisplayName;
 	m_CurrentStorage.flFeeRatio = flFeeRatio;
 	m_CurrentStorage.ReqTeller = Entity.pvPrivData ? true : false;
-	if( m_CurrentStorage.ReqTeller )
+	if (m_CurrentStorage.ReqTeller)
 		m_CurrentStorage.Teller = Entity;
 
-	MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_ITEM], NULL, pev );
-		WRITE_BYTE( 5 );
-		WRITE_STRING( m_CurrentStorage.DisplayName );
-		WRITE_STRING( m_CurrentStorage.StorageName );
-		WRITE_FLOAT( m_CurrentStorage.flFeeRatio );
+	MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_ITEM], NULL, pev);
+	WRITE_BYTE(5);
+	WRITE_STRING(m_CurrentStorage.DisplayName);
+	WRITE_STRING(m_CurrentStorage.StorageName);
+	WRITE_FLOAT(m_CurrentStorage.flFeeRatio);
 	MESSAGE_END();
 }
-void CBasePlayer::Storage_Send( )
+void CBasePlayer::Storage_Send()
 {
-	MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_STOREITEM], NULL, pev );
-		WRITE_BYTE( 1 );						//reset storage items
+	MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_STOREITEM], NULL, pev);
+	WRITE_BYTE(1); //reset storage items
 	MESSAGE_END();
 
 	//Send all storage items.
-	 for (int s = 0; s < m_Storages.size(); s++) 
+	for (int s = 0; s < m_Storages.size(); s++)
 	{
-		if( !m_Storages[s].Items.size() )
+		if (!m_Storages[s].Items.size())
 		{
 			//If the storage has no items, just send the storage name, indicating no items
-			MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_STOREITEM], NULL, pev );
-				WRITE_BYTE( 2 );						//storage item
-				WRITE_STRING( m_Storages[s].Name );
-				WRITE_BYTE( 0 );						//No items
+			MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_STOREITEM], NULL, pev);
+			WRITE_BYTE(2); //storage item
+			WRITE_STRING(m_Storages[s].Name);
+			WRITE_BYTE(0); //No items
 			MESSAGE_END();
 		}
 		else
 		{
 			//If the storage has items, send a full message
-			 for (int i = 0; i < m_Storages[s].Items.size(); i++) 
+			for (int i = 0; i < m_Storages[s].Items.size(); i++)
 			{
-				MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_STOREITEM], NULL, pev );
-					WRITE_BYTE( 2 );						//storage item
-					WRITE_STRING( m_Storages[s].Name );
-					WRITE_BYTE( 1 );						//Add this item to the storage
-					SendGenericItem( this, m_Storages[s].Items[i], false );
+				MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_STOREITEM], NULL, pev);
+				WRITE_BYTE(2); //storage item
+				WRITE_STRING(m_Storages[s].Name);
+				WRITE_BYTE(1); //Add this item to the storage
+				SendGenericItem(this, m_Storages[s].Items[i], false);
 				MESSAGE_END();
 			}
 		}
 	}
 }
-void CBasePlayer::Music_Play( mslist<song_t> &Songs, CBaseEntity *pMusicArea )
+void CBasePlayer::Music_Play(mslist<song_t> &Songs, CBaseEntity *pMusicArea)
 {
 	//NOV2014_12 - Dont think this is used by msarea_music anymore
 	//likely still used by mstrig_music, which maybe should be undone
 
-	if( m_MusicArea && m_MusicArea.Entity()->Intersects( this ) )
-		return;	//I'm already standing within a music area
-
+	if (m_MusicArea && m_MusicArea.Entity()->Intersects(this))
+		return; //I'm already standing within a music area
 
 	//AUG2013_13 Thothie - moved to event for better handling
 	//using index 0 SHOULD be safe, as SFAIK, no msarea_music uses multiple tracks
 	static msstringlist Params;
-	Params.clearitems( );
-	Params.add( Songs[0].Name.c_str() );
-	Params.add( FloatToString(Songs[0].Length) );
+	Params.clearitems();
+	Params.add(Songs[0].Name.c_str());
+	Params.add(FloatToString(Songs[0].Length));
 	//Thothie NOV2014_10 - allow game_music to set idle music, when touching msarea_music
-	msstring caller_type = STRING( pMusicArea->pev->classname );
-	Print("DEBUG: Music_Play Caller %s",caller_type.c_str());
-	if ( caller_type.starts_with("msarea_music") ) Params.add( "1" );
-	CallScriptEvent( "game_music", &Params );
+	msstring caller_type = STRING(pMusicArea->pev->classname);
+	Print("DEBUG: Music_Play Caller %s", caller_type.c_str());
+	if (caller_type.starts_with("msarea_music"))
+		Params.add("1");
+	CallScriptEvent("game_music", &Params);
 
-	if ( Songs[0].Name.contains("!prev_music") )
+	if (Songs[0].Name.contains("!prev_music"))
 	{
 		Songs[0].Name = GetFirstScriptVar("PLR_PREV_MUSIC");
 		Songs[0].Length = atoi(GetFirstScriptVar("PLR_PREV_MUSIC_LENGTH"));
 	}
 
-	MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_MUSIC], NULL, pev );
-		WRITE_BYTE( 0 );
-		WRITE_BYTE( Songs.size() );
-		 for (int i = 0; i < Songs.size(); i++) 
-		{
-			//SetScriptVar("PLR_CURRENT_MUSIC", Songs[i].Name.c_str()); //Thothie JAN2013_08 - (moved to event, see above)
-			WRITE_STRING( Songs[i].Name );
-			WRITE_FLOAT( Songs[i].Length );
-		}
+	MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_MUSIC], NULL, pev);
+	WRITE_BYTE(0);
+	WRITE_BYTE(Songs.size());
+	for (int i = 0; i < Songs.size(); i++)
+	{
+		//SetScriptVar("PLR_CURRENT_MUSIC", Songs[i].Name.c_str()); //Thothie JAN2013_08 - (moved to event, see above)
+		WRITE_STRING(Songs[i].Name);
+		WRITE_FLOAT(Songs[i].Length);
+	}
 	MESSAGE_END();
 
 	m_MusicArea = pMusicArea;
 }
-void CBasePlayer::Music_Stop( CBaseEntity *pMusicArea )
+void CBasePlayer::Music_Stop(CBaseEntity *pMusicArea)
 {
-	if( m_MusicArea && m_MusicArea.Entity()->Intersects( this ) )
-		return;	//I'm already standing within a music area
+	if (m_MusicArea && m_MusicArea.Entity()->Intersects(this))
+		return; //I'm already standing within a music area
 
-	MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_MUSIC], NULL, pev );
-		WRITE_BYTE( 1 );
+	MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_MUSIC], NULL, pev);
+	WRITE_BYTE(1);
 	MESSAGE_END();
 
 	m_MusicArea = pMusicArea;
 }
-void CBasePlayer::SaveChar( )
-{	
+void CBasePlayer::SaveChar()
+{
 	//Save right now
-	MSChar_Interface::SaveChar( this, NULL );
+	MSChar_Interface::SaveChar(this, NULL);
 }
 
-void CBasePlayer::QuickSlot_Create( int Slot, ulong ID, bool Verbose )
+void CBasePlayer::QuickSlot_Create(int Slot, ulong ID, bool Verbose)
 {
-	if( Slot < 0 || Slot >= MAX_QUICKSLOTS ) return;
+	if (Slot < 0 || Slot >= MAX_QUICKSLOTS)
+		return;
 
-	CGenericItem *pItem = MSUtil_GetItemByID( ID, this );
-	if( !pItem || pItem->m_Hand == HAND_PLAYERHANDS )
+	CGenericItem *pItem = MSUtil_GetItemByID(ID, this);
+	if (!pItem || pItem->m_Hand == HAND_PLAYERHANDS)
 		return;
 
 	quickslot_t &QuickSlot = m_QuickSlots[Slot];
 	bool CreateSlot = false;
 	int Flags = 0;
 
-	if( ID != 0 )
+	if (ID != 0)
 	{
-		if( !FBitSet(pItem->MSProperties(),ITEM_SPELL) )
+		if (!FBitSet(pItem->MSProperties(), ITEM_SPELL))
 		{
 			QuickSlot.Active = true;
 			QuickSlot.Type = QS_ITEM;
@@ -6444,76 +6591,78 @@ void CBasePlayer::QuickSlot_Create( int Slot, ulong ID, bool Verbose )
 		}
 		else
 		{
-			 for (int i = 0; i < m_SpellList.size(); i++) 
+			for (int i = 0; i < m_SpellList.size(); i++)
 			{
 				msstring LongName = pItem->m_Scripts[0]->m.ScriptFile;
 				msstring ShortName = m_SpellList[i];
-				msstring NameSubstr = LongName.find_str( ShortName );
-				if( ShortName == NameSubstr )
-					{
-						QuickSlot.Active = true;
-						QuickSlot.Type = QS_SPELL;
-						QuickSlot.ID = i; 
-						CreateSlot = true;
-						break; 
-					}
+				msstring NameSubstr = LongName.find_str(ShortName);
+				if (ShortName == NameSubstr)
+				{
+					QuickSlot.Active = true;
+					QuickSlot.Type = QS_SPELL;
+					QuickSlot.ID = i;
+					CreateSlot = true;
+					break;
+				}
 			}
 		}
 	}
 
-	if( CreateSlot )
+	if (CreateSlot)
 	{
-		SetBits( Flags, (1<<0) );
-		if( Verbose ) SetBits( Flags, (1<<1) );
+		SetBits(Flags, (1 << 0));
+		if (Verbose)
+			SetBits(Flags, (1 << 1));
 	}
 	else
 	{
 		QuickSlot.Active = false;
 	}
 
-	#ifdef VALVE_DLL
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev );
-			WRITE_BYTE( 20 );
-			WRITE_BYTE( Flags );
-			WRITE_BYTE( Slot );
-			WRITE_BYTE( QuickSlot.Type );
-			WRITE_LONG( QuickSlot.Active ? QuickSlot.ID : 0 );
-		MESSAGE_END();
-	#endif
-	
+#ifdef VALVE_DLL
+	MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev);
+	WRITE_BYTE(20);
+	WRITE_BYTE(Flags);
+	WRITE_BYTE(Slot);
+	WRITE_BYTE(QuickSlot.Type);
+	WRITE_LONG(QuickSlot.Active ? QuickSlot.ID : 0);
+	MESSAGE_END();
+#endif
 }
-void CBasePlayer::QuickSlot_Use( int Slot )
+void CBasePlayer::QuickSlot_Use(int Slot)
 {
 	/*if( Slot < 0 || Slot >= MAX_QUICKSLOTS ) return;
 
 	CGenericItem *pItem = MSUtil_GetItemByID( ID, this );
 	if( !pItem || pItem->m_Hand == HAND_PLAYERHANDS )
 		return;*/
-
 }
 
-
-void SendViewAnim( CBasePlayer *pPlayer, int iAnim, int body )
+void SendViewAnim(CBasePlayer *pPlayer, int iAnim, int body)
 {
-	MESSAGE_BEGIN( MSG_ONE, SVC_WEAPONANIM, NULL, pPlayer->pev );
-		WRITE_BYTE( iAnim );		// sequence number
-		WRITE_BYTE( body );	// weaponmodel bodygroup.
+	MESSAGE_BEGIN(MSG_ONE, SVC_WEAPONANIM, NULL, pPlayer->pev);
+	WRITE_BYTE(iAnim); // sequence number
+	WRITE_BYTE(body);  // weaponmodel bodygroup.
 	MESSAGE_END();
 }
 
-void MSGSend_PlayerInfo( CBasePlayer *pSendToPlayer, CBasePlayer *pPlayer )
+void MSGSend_PlayerInfo(CBasePlayer *pSendToPlayer, CBasePlayer *pPlayer)
 {
-	MESSAGE_BEGIN( MSG_ONE, gmsgScoreInfo, NULL, pSendToPlayer->edict() );
-		WRITE_BYTE( pPlayer->entindex() );	// client number
-		int Flags = 0;
-		if( pPlayer->m_fIsElite )		SetBits( Flags, (1<<0) );
-		if( pPlayer->CurrentTransArea ) SetBits( Flags, (1<<1) );
-		if( pPlayer->m_CharacterState == CHARSTATE_LOADED ) SetBits( Flags, (1<<2) );
-		WRITE_BYTE( Flags );
-		if( pPlayer->m_CharacterState == CHARSTATE_LOADED ) {
-			WRITE_STRING( pPlayer->GetFullTitle() );
-			WRITE_SHORT( (int)pPlayer->MaxHP() ); //FEB2008a -- Shuriken
-			WRITE_SHORT( (int)pPlayer->m_HP );	//FEB2008a -- Shuriken
-		}
+	MESSAGE_BEGIN(MSG_ONE, gmsgScoreInfo, NULL, pSendToPlayer->edict());
+	WRITE_BYTE(pPlayer->entindex()); // client number
+	int Flags = 0;
+	if (pPlayer->m_fIsElite)
+		SetBits(Flags, (1 << 0));
+	if (pPlayer->CurrentTransArea)
+		SetBits(Flags, (1 << 1));
+	if (pPlayer->m_CharacterState == CHARSTATE_LOADED)
+		SetBits(Flags, (1 << 2));
+	WRITE_BYTE(Flags);
+	if (pPlayer->m_CharacterState == CHARSTATE_LOADED)
+	{
+		WRITE_STRING(pPlayer->GetFullTitle());
+		WRITE_SHORT((int)pPlayer->MaxHP()); //FEB2008a -- Shuriken
+		WRITE_SHORT((int)pPlayer->m_HP);	//FEB2008a -- Shuriken
+	}
 	MESSAGE_END();
 }

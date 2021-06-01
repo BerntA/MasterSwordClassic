@@ -8,37 +8,39 @@ extern char *ModelList[4][2];
 
 int HumanModels = ARRAYSIZE(ModelList);
 
-CHumanBodypart *CHumanBodypart::Duplicate( ) {
+CHumanBodypart *CHumanBodypart::Duplicate()
+{
 	CHumanBodypart *pNewBodypart = GetClassPtr((CHumanBodypart *)NULL);
-	return (CHumanBodypart *)CBodypart::Duplicate( pNewBodypart );
+	return (CHumanBodypart *)CBodypart::Duplicate(pNewBodypart);
 }
 
-void CHumanBody::Initialize( CBaseEntity *pOwner, void *pvData ) 
+void CHumanBody::Initialize(CBaseEntity *pOwner, void *pvData)
 {
-	 for (int i = 0; i < HUMAN_BODYPARTS; i++) 
+	for (int i = 0; i < HUMAN_BODYPARTS; i++)
 	{
-		CHumanBodypart &HumanBodypart = *(CHumanBodypart *)GetClassPtr( (CHumanBodypart *)NULL );
+		CHumanBodypart &HumanBodypart = *(CHumanBodypart *)GetClassPtr((CHumanBodypart *)NULL);
 
 		int Gender = ((CMSMonster *)pOwner)->m_Gender;
-		if( pvData ) Gender = (int)pvData;
+		if (pvData)
+			Gender = (int)pvData;
 
-		HumanBodypart.Initialize( pOwner, ModelList[i][Gender], i );
+		HumanBodypart.Initialize(pOwner, ModelList[i][Gender], i);
 
-		Bodyparts.add( &HumanBodypart );
+		Bodyparts.add(&HumanBodypart);
 	}
 }
-CBaseBody *CHumanBody::Duplicate( ) 
+CBaseBody *CHumanBody::Duplicate()
 {
 	CHumanBody &NewBody = *msnew(CHumanBody);
-	 for (int i = 0; i < Bodyparts.size(); i++) 
-		NewBody.Bodyparts.add( Bodyparts[i]->Duplicate() );
+	for (int i = 0; i < Bodyparts.size(); i++)
+		NewBody.Bodyparts.add(Bodyparts[i]->Duplicate());
 
 	return &NewBody;
 }
 
-int HitGroupToBodyPart( int HitGroup )
+int HitGroupToBodyPart(int HitGroup)
 {
-	switch( HitGroup )
+	switch (HitGroup)
 	{
 	case HITGROUP_HEAD:
 		return HBP_HEAD;

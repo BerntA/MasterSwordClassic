@@ -6,88 +6,92 @@
 
 */
 
-	#include "MSDLLHeaders.h"
-	#include "Half-life/monsters.h"
-	#include "animation.h"
-	#include "soundent.h"
+#include "MSDLLHeaders.h"
+#include "Half-life/monsters.h"
+#include "animation.h"
+#include "soundent.h"
 
-	#include "../MSShared/Script.h"
+#include "../MSShared/Script.h"
 
-	#include "Stats/Stats.h"
-	#include "Stats/Races.h"
-	#include "Store.h"
-	#include "MSItemDefs.h"
-	#include "Stats/statdefs.h"
-	#include "../MSShared/Magic.h"
-	#include "Weapons/GenericItem.h"
-	#include "Syntax/Syntax.h"
-	#include "../cl_dll/MasterSword/vgui_HUD.h"
-	#include "logfile.h"
+#include "Stats/Stats.h"
+#include "Stats/Races.h"
+#include "Store.h"
+#include "MSItemDefs.h"
+#include "Stats/statdefs.h"
+#include "../MSShared/Magic.h"
+#include "Weapons/GenericItem.h"
+#include "Syntax/Syntax.h"
+#include "../cl_dll/MasterSword/vgui_HUD.h"
+#include "logfile.h"
 
 #ifdef VALVE_DLL
 
-	BOOL SameTeam( CBaseEntity *pObject1, CBaseEntity *pObject2 );
-	void AlignToNormal( /*In*/ Vector &vNormal, /*Out*/Vector &vAngles );
-	CGenericItem *FindParryWeapon( CMSMonster *pMonster, /*out*/int &iPlayerHand, /*out*/int &iAttackNum );
-	extern int g_SummonedMonsters;
-	extern int g_netmsg[NETMSG_NUM];
-	#define MOVE_STEP_SIZE 1
-	//#define MOVE_STEP_SIZE 32
+BOOL SameTeam(CBaseEntity *pObject1, CBaseEntity *pObject2);
+void AlignToNormal(/*In*/ Vector &vNormal, /*Out*/ Vector &vAngles);
+CGenericItem *FindParryWeapon(CMSMonster *pMonster, /*out*/ int &iPlayerHand, /*out*/ int &iAttackNum);
+extern int g_SummonedMonsters;
+extern int g_netmsg[NETMSG_NUM];
+#define MOVE_STEP_SIZE 1
+//#define MOVE_STEP_SIZE 32
 
-	LINK_ENTITY_TO_CLASS( ms_npc, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msnpc_human1, CMSMonster );
+LINK_ENTITY_TO_CLASS(ms_npc, CMSMonster);
+LINK_ENTITY_TO_CLASS(msnpc_human1, CMSMonster);
 
-	LINK_ENTITY_TO_CLASS( msmonster_orcwarrior, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_orcarcher, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_orcranger, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_orcberserker, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_bat, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_giantbat, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_boar, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_hawk, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_giantrat, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_giantspider, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_skeleton, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_troll, CMSMonster );
-	//NOV2014_20 Thothie - adding some new entries for ease of view in Hammer [begin]
-	LINK_ENTITY_TO_CLASS( msmonster_goblin, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_hobgoblin, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_dwarf, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_wizard, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_bigboar, CMSMonster );
-	LINK_ENTITY_TO_CLASS( msmonster_giantboar, CMSMonster );
-	//NOV2014_20 Thothie - adding some new entries for ease of view in Hammer [end]
-	LINK_ENTITY_TO_CLASS( msmonster_random, CMSMonster ); //NOV2014_20 - Thothie msmonster_random
-	LINK_ENTITY_TO_CLASS( msworlditem_treasure, CMSMonster );
+LINK_ENTITY_TO_CLASS(msmonster_orcwarrior, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_orcarcher, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_orcranger, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_orcberserker, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_bat, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_giantbat, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_boar, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_hawk, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_giantrat, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_giantspider, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_skeleton, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_troll, CMSMonster);
+//NOV2014_20 Thothie - adding some new entries for ease of view in Hammer [begin]
+LINK_ENTITY_TO_CLASS(msmonster_goblin, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_hobgoblin, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_dwarf, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_wizard, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_bigboar, CMSMonster);
+LINK_ENTITY_TO_CLASS(msmonster_giantboar, CMSMonster);
+//NOV2014_20 Thothie - adding some new entries for ease of view in Hammer [end]
+LINK_ENTITY_TO_CLASS(msmonster_random, CMSMonster); //NOV2014_20 - Thothie msmonster_random
+LINK_ENTITY_TO_CLASS(msworlditem_treasure, CMSMonster);
 
 #endif
 
 extern int iBeam;
 
-int CMSMonster::Classify( ) {
+int CMSMonster::Classify()
+{
 	return CLASS_NPC;
 }
 
-int CMSMonster::IRelationship ( CBaseEntity *pTarget )
+int CMSMonster::IRelationship(CBaseEntity *pTarget)
 {
 
-	if( !m_Race[0] || !pTarget || !pTarget->IsMSMonster() ) return RELATIONSHIP_NO;
+	if (!m_Race[0] || !pTarget || !pTarget->IsMSMonster())
+		return RELATIONSHIP_NO;
 
 	CMSMonster *pMonster = (CMSMonster *)pTarget;
-	if( !pMonster->m_Race[0] ) return RELATIONSHIP_NO;
+	if (!pMonster->m_Race[0])
+		return RELATIONSHIP_NO;
 
-	return (int)CRaceManager::Relationship( m_Race, pMonster->m_Race );
+	return (int)CRaceManager::Relationship(m_Race, pMonster->m_Race);
 }
-bool CMSMonster::CanDamage( CBaseEntity *pOther )		//Can I damage this entity?
+bool CMSMonster::CanDamage(CBaseEntity *pOther) //Can I damage this entity?
 {
-	return	( CBaseEntity::CanDamage( pOther ) )  &&			//The entity can take damage
-			( IRelationship( pOther ) <= RELATIONSHIP_NO	);	//I have a bad or nonexistant releationship with the entity
+	return (CBaseEntity::CanDamage(pOther)) &&		   //The entity can take damage
+		   (IRelationship(pOther) <= RELATIONSHIP_NO); //I have a bad or nonexistant releationship with the entity
 }
 
 //Set up this monster to spawn at a spawn area
-void CMSMonster::Activate ( ) 
+void CMSMonster::Activate()
 {
-	if( !m_iszMonsterSpawnArea.len() ) return;
+	if (!m_iszMonsterSpawnArea.len())
+		return;
 
 	//Thothie JUN2007a
 	//- No changes, just note: maybe can fix bug where mon becomes invincible + inifinite XP
@@ -99,32 +103,33 @@ void CMSMonster::Activate ( )
 	CBaseEntity *pSpawnAreaList[255];
 	int SpawnsFound = 0;
 
-	while( (peSpawnArea = FIND_ENTITY_BY_TARGETNAME( peSpawnArea, m_iszMonsterSpawnArea) )
-		   && SpawnsFound < 255 ) 
+	while ((peSpawnArea = FIND_ENTITY_BY_TARGETNAME(peSpawnArea, m_iszMonsterSpawnArea)) && SpawnsFound < 255)
 	{
-		if( peSpawnArea == peFirstArea ) break;
-		else if( !peFirstArea ) peFirstArea = peSpawnArea;
-		CBaseEntity *pSpawnArea = CBaseEntity::Instance( peSpawnArea );
-		if( pSpawnArea && ( FStrEq(STRING(pSpawnArea->pev->classname),"msarea_monsterspawn") || FStrEq(STRING(pSpawnArea->pev->classname),"ms_monsterspawn") ) )
+		if (peSpawnArea == peFirstArea)
+			break;
+		else if (!peFirstArea)
+			peFirstArea = peSpawnArea;
+		CBaseEntity *pSpawnArea = CBaseEntity::Instance(peSpawnArea);
+		if (pSpawnArea && (FStrEq(STRING(pSpawnArea->pev->classname), "msarea_monsterspawn") || FStrEq(STRING(pSpawnArea->pev->classname), "ms_monsterspawn")))
 			pSpawnAreaList[SpawnsFound++] = pSpawnArea;
 	}
 
-	if( SpawnsFound )
+	if (SpawnsFound)
 	{
-		CBaseEntity *pSpawnArea = pSpawnAreaList[RANDOM_LONG(0,SpawnsFound-1)];
+		CBaseEntity *pSpawnArea = pSpawnAreaList[RANDOM_LONG(0, SpawnsFound - 1)];
 		pSpawnArea->m_pGoalEnt = this;
 		pSpawnArea->Activate();
 		pev->owner = pSpawnArea->edict(); //Only used for spawn_on_trigger monsters
 	}
-	else 
+	else
 	{
-		ALERT( at_console, "ERROR: msarea_monsterspawn named %s NOT FOUND\n", m_iszMonsterSpawnArea.c_str() );
+		ALERT(at_console, "ERROR: msarea_monsterspawn named %s NOT FOUND\n", m_iszMonsterSpawnArea.c_str());
 	}
-	
-	if( !m_fSpawnOnTrigger )
-		SUB_Remove( );		//REMOVE_ENTITY( edict() );
+
+	if (!m_fSpawnOnTrigger)
+		SUB_Remove(); //REMOVE_ENTITY( edict() );
 }
-void CMSMonster::Spawn( ) 
+void CMSMonster::Spawn()
 {
 	//startdbg;
 	//SUB_Remove( ); return;
@@ -133,40 +138,41 @@ void CMSMonster::Spawn( )
 	//dbg( "Precache" );
 
 	//NOV2014_20 - Thothie msmonster_random [begin]
-	if ( m_nRndMobs > 0 )
+	if (m_nRndMobs > 0)
 	{
 		//precache all random mob scripts
 		string_i orig_scriptName = m_ScriptName;
-		 for (int i = 0; i < m_nRndMobs; i++) 
+		for (int i = 0; i < m_nRndMobs; i++)
 		{
-			logfile << UTIL_VarArgs("DEBUG: msmonster_random precache #%i / %i as %s\n",i,m_nRndMobs,random_monsterdata[i].m_ScriptName.c_str());
+			logfile << UTIL_VarArgs("DEBUG: msmonster_random precache #%i / %i as %s\n", i, m_nRndMobs, random_monsterdata[i].m_ScriptName.c_str());
 			CScript TempScript;
-			TempScript.Spawn( random_monsterdata[i].m_ScriptName, NULL, NULL, true );
+			TempScript.Spawn(random_monsterdata[i].m_ScriptName, NULL, NULL, true);
 			//TempScript.RunScriptEventByName( "game_precache" ); //skipping this, and hoping it behaves, as I'm not sure if it'll remove when done or how to do so
 
 			//dis didn't work
 			//m_ScriptName = random_monsterdata[i].m_ScriptName;
 			//Precache( );
-			//RunScriptEvents( );	
+			//RunScriptEvents( );
 		}
 		m_ScriptName = orig_scriptName;
 	}
 	//NOV2014_20 - Thothie msmonster_random [end]
 
-	Precache( );
+	Precache();
 
 	//dbg( "Setup flags" );
 
-	if( !m_Brush )
+	if (!m_Brush)
 	{
-		pev->flags			|= FL_MONSTER|FL_MONSTERCLIP;
-		pev->movetype		= MOVETYPE_STEP;
-		pev->solid			= SOLID_BBOX;
+		pev->flags |= FL_MONSTER | FL_MONSTERCLIP;
+		pev->movetype = MOVETYPE_STEP;
+		pev->solid = SOLID_BBOX;
 	}
-	pev->deadflag		= DEAD_NO;
-	pev->takedamage		= DAMAGE_AIM;
+	pev->deadflag = DEAD_NO;
+	pev->takedamage = DAMAGE_AIM;
 	//pev->solid			= SOLID_SLIDEBOX;
-	if( !m_MaxHP ) pev->health = m_HP = pev->max_health = m_MaxHP = 1;
+	if (!m_MaxHP)
+		pev->health = m_HP = pev->max_health = m_MaxHP = 1;
 	m_pAnimHandler = NULL;
 	m_Activity = ACT_IDLE;
 	m_SpeedMultiplier = 1.0; //Script settable
@@ -183,59 +189,63 @@ void CMSMonster::Spawn( )
 	m_Framerate_Modifier = 1.0f;
 	pev->gravity = 1;
 
-	if( !m_ScriptName )
+	if (!m_ScriptName)
 		m_ScriptName = "NPCs/default_human";
 
 	//dbg( "Setup Various" );
-	if( pev->targetname )
+	if (pev->targetname)
 		m_DisplayName = STRING(pev->targetname); //Default name, overridden by script
-	else m_DisplayName = "Npc";
-	if( !m_Lives ) m_Lives = -1; //zero == infinite lives
-	if( !m_SpawnChance ) m_SpawnChance = 100.0; //Wasn't specified in map
-	if( m_SpawnChance == -1 ) m_SpawnChance = 0.0;
+	else
+		m_DisplayName = "Npc";
+	if (!m_Lives)
+		m_Lives = -1; //zero == infinite lives
+	if (!m_SpawnChance)
+		m_SpawnChance = 100.0; //Wasn't specified in map
+	if (m_SpawnChance == -1)
+		m_SpawnChance = 0.0;
 	SetUse(&CMSMonster::Used);
 
 	//dbg( "Create Script" );
 	//This loads the script file and precaches all models/sounds it uses
-	bool fScriptSpawned = Script_Add( m_ScriptName, this ) ? true : false;
+	bool fScriptSpawned = Script_Add(m_ScriptName, this) ? true : false;
 
-	if( !fScriptSpawned ) 
+	if (!fScriptSpawned)
 	{
-		SUB_Remove( );
+		SUB_Remove();
 		return;
 	}
 
 	//dbg( "Delete After Precache" );
-	if( g_fInPrecache ) 
+	if (g_fInPrecache)
 	{
 		//This monster was only created to precache its resources
-		RunScriptEvents( );		//Run scriptevents once to execute any 'precachefile' commands
-		SUB_Remove( );
-		return; 
+		RunScriptEvents(); //Run scriptevents once to execute any 'precachefile' commands
+		SUB_Remove();
+		return;
 	}
-	if( m_iszMonsterSpawnArea.len() )
+	if (m_iszMonsterSpawnArea.len())
 	{
-		SetBits( pev->effects, EF_NODRAW );
+		SetBits(pev->effects, EF_NODRAW);
 		return; //wait until Activate(), when everything is spawned
 	}
 
 	//dbg( "Create Stats" );
-	CreateStats( );
+	CreateStats();
 
 	//dbg( "Call Script Event: \"Spawn\"" );
-	CScriptedEnt::Spawn( );
+	CScriptedEnt::Spawn();
 
 	//dbg( "Setup BBox" );
-	if( !m_Brush )
-		if( pev->model )
+	if (!m_Brush)
+		if (pev->model)
 		{
-			UTIL_SetSize(pev, Vector(-(m_Width/2), -(m_Width/2), 0), Vector((m_Width/2), (m_Width/2), m_Height));
-			InitBoneControllers( );
-			SetAnimation( MONSTER_ANIM_WALK, m_IdleAnim );
+			UTIL_SetSize(pev, Vector(-(m_Width / 2), -(m_Width / 2), 0), Vector((m_Width / 2), (m_Width / 2), m_Height));
+			InitBoneControllers();
+			SetAnimation(MONSTER_ANIM_WALK, m_IdleAnim);
 		}
 
-//	TurnRate = .8;//.7
-	pev->view_ofs = Vector( 0, 0, m_Height );
+	//	TurnRate = .8;//.7
+	pev->view_ofs = Vector(0, 0, m_Height);
 	m_CurrentHand = LEFT_HAND;
 	LastEvent.event = 0;
 
@@ -248,38 +258,43 @@ void CMSMonster::Spawn( )
 	pev->nextthink = gpGlobals->time + 0.1;
 
 	//dbg( "Use Spawn targets" );
-	
+
 	//Thothie OCT2007a - hoping to add this conditional to cut down on null fireevents
-	if ( this->pev->target ) SUB_UseTargets( this, USE_TOGGLE, 0 );
+	if (this->pev->target)
+		SUB_UseTargets(this, USE_TOGGLE, 0);
 
 	//Thothie AUG2007 & SEP2007 - add custom name, hp, and damage multipleirs
 	//Defaults
 	//dbg( "Set Custom Title" );
-	if ( m_title.len() <= 0 ) m_title.append("default");
-	if ( m_addparams.len() <= 0 ) m_addparams.append("none");
+	if (m_title.len() <= 0)
+		m_title.append("default");
+	if (m_addparams.len() <= 0)
+		m_addparams.append("none");
 	//dbg( "Set Custom DMG Multi" );
-	if ( m_DMGMulti == 0 ) m_DMGMulti = 1.0;
+	if (m_DMGMulti == 0)
+		m_DMGMulti = 1.0;
 	//dbg( "Set Custom HP Multi" );
-	if ( m_HPMulti == 0 ) m_HPMulti = 1.0;
-	
+	if (m_HPMulti == 0)
+		m_HPMulti = 1.0;
+
 	//ALERT( at_console, "Postspawn Adj Reads: dmg%f hp%f \n", m_DMGMulti, m_HPMulti);
 
 	//dbg( "Set Custom Params" );
 	msstringlist Parameters;
-	Parameters.add( m_title );
-	Parameters.add( FloatToString(m_DMGMulti) );
-	Parameters.add( FloatToString(m_HPMulti) );
-	Parameters.add( m_addparams );
-	
+	Parameters.add(m_title);
+	Parameters.add(FloatToString(m_DMGMulti));
+	Parameters.add(FloatToString(m_HPMulti));
+	Parameters.add(m_addparams);
+
 	CallScriptEvent("game_postspawn", &Parameters);
 	//enddbg;
 }
-void CMSMonster::Precache ( ) 
+void CMSMonster::Precache()
 {
-	CBaseMonster::Precache( );
+	CBaseMonster::Precache();
 }
 
-void CMSMonster::KeyValue( KeyValueData *pkvd ) 
+void CMSMonster::KeyValue(KeyValueData *pkvd)
 {
 	msstring randomdata = pkvd->szKeyName ? pkvd->szKeyName : "null"; //NOV2014_20 - Thothie msmonster_random
 
@@ -293,24 +308,24 @@ void CMSMonster::KeyValue( KeyValueData *pkvd )
 		m_iszPerishTarget = pkvd->szValue;
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "spawnarea")) 
+	else if (FStrEq(pkvd->szKeyName, "spawnarea"))
 	{
 		m_iszMonsterSpawnArea = pkvd->szValue;
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "delaylow")) 
+	else if (FStrEq(pkvd->szKeyName, "delaylow"))
 	{
-		m_SpawnDelayLow = atof( pkvd->szValue );
+		m_SpawnDelayLow = atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "delayhigh")) 
+	else if (FStrEq(pkvd->szKeyName, "delayhigh"))
 	{
-		m_SpawnDelayHigh = atof( pkvd->szValue );
+		m_SpawnDelayHigh = atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "lives")) 
+	else if (FStrEq(pkvd->szKeyName, "lives"))
 	{
-		m_Lives = atoi( pkvd->szValue );
+		m_Lives = atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "spawnchance"))
@@ -318,39 +333,40 @@ void CMSMonster::KeyValue( KeyValueData *pkvd )
 		//m_SpawnChance = min( 100, max( 0, atof( pkvd->szValue ) ) );
 		if (0 > atof(pkvd->szValue))
 			m_SpawnChance = 0;
+		else if (100 < atof(pkvd->szValue))
+			m_SpawnChance = 100;
 		else
-			if (100 < atof(pkvd->szValue))
-				m_SpawnChance = 100;
-			else
-				m_SpawnChance = atof(pkvd->szValue);
+			m_SpawnChance = atof(pkvd->szValue);
 
-		if (!m_SpawnChance) m_SpawnChance = -1;
+		if (!m_SpawnChance)
+			m_SpawnChance = -1;
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "spawnstart")) 
+	else if (FStrEq(pkvd->szKeyName, "spawnstart"))
 	{
 		m_fSpawnOnTrigger = (atoi(pkvd->szValue)) ? true : false;
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "nplayers")) 
+	else if (FStrEq(pkvd->szKeyName, "nplayers"))
 	{
 		//Thothie - AUG2007a - adding option to only spawn monster if # players present
 		m_ReqPlayers = (atoi(pkvd->szValue));
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "reqhp")) 
+	else if (FStrEq(pkvd->szKeyName, "reqhp"))
 	{
 		//Thothie - AUG2007a - adding option to only spawn monster if server's total HP equals
 		//m_HPReq = (atoi(pkvd->szValue));
 		msstringlist reqhp_stringlist;
-		TokenizeString((pkvd->szValue),reqhp_stringlist);
+		TokenizeString((pkvd->szValue), reqhp_stringlist);
 		m_HPReq_min = 0;
 		m_HPReq_max = 0;
-		if ( reqhp_stringlist.size() > 0 ) m_HPReq_min = atoi(reqhp_stringlist[0].c_str());
-		if ( reqhp_stringlist.size() > 1 )
+		if (reqhp_stringlist.size() > 0)
+			m_HPReq_min = atoi(reqhp_stringlist[0].c_str());
+		if (reqhp_stringlist.size() > 1)
 		{
 			m_HPReq_max = atoi(reqhp_stringlist[1].c_str());
-			if ( m_HPReq_max < m_HPReq_min )
+			if (m_HPReq_max < m_HPReq_min)
 			{
 				m_HPReq_max = 0;
 				logfile << "MAP_ERROR: " << m_Scripts[0]->m.ScriptFile.c_str() << " - max reqhp set higher than min.\n";
@@ -359,46 +375,46 @@ void CMSMonster::KeyValue( KeyValueData *pkvd )
 		}
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "title")) 
+	else if (FStrEq(pkvd->szKeyName, "title"))
 	{
 		//Thothie - AUG2007b - adding option to change monster name
 		m_title = pkvd->szValue;
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "params")) 
+	else if (FStrEq(pkvd->szKeyName, "params"))
 	{
 		//Thothie - DEC2007b - adding option to send params to script
 		m_addparams = pkvd->szValue;
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "hpmulti")) 
+	else if (FStrEq(pkvd->szKeyName, "hpmulti"))
 	{
 		//Thothie - SEP2007a - multiply hp by this amount
 		float thoth_inhealth = atof(pkvd->szValue);
-		if ( thoth_inhealth > 1 )
+		if (thoth_inhealth > 1)
 		{
 			m_HPMulti = thoth_inhealth;
 			pkvd->fHandled = TRUE;
 		}
 	}
-	else if (FStrEq(pkvd->szKeyName, "dmgmulti")) 
+	else if (FStrEq(pkvd->szKeyName, "dmgmulti"))
 	{
 		//Thothie - SEP2007a - multiply damage by this amount
 		float thoth_invar = atof(pkvd->szValue);
-		if ( thoth_invar > 1 )
+		if (thoth_invar > 1)
 		{
 			m_DMGMulti = thoth_invar;
 			pkvd->fHandled = TRUE;
 		}
 	}
-	else if ( FStrEq(pkvd->szKeyName, "scriptfile") ||
-			(FStrEq(pkvd->szKeyName, "defscriptfile") && !m_ScriptName) )
+	else if (FStrEq(pkvd->szKeyName, "scriptfile") ||
+			 (FStrEq(pkvd->szKeyName, "defscriptfile") && !m_ScriptName))
 	{
 		m_ScriptName = pkvd->szValue;
 		pkvd->fHandled = TRUE;
 	}
 	//NOV2014_20 - Thothie msmonster_random [begin]
-	else if ( randomdata.starts_with("random_") ) //optimize this - dis is stupid lazy
+	else if (randomdata.starts_with("random_")) //optimize this - dis is stupid lazy
 	{
 		//Some of this requires the mapper not to fug up, and thus doesn't error check well
 
@@ -406,44 +422,52 @@ void CMSMonster::KeyValue( KeyValueData *pkvd )
 		//not the most efficient way to do this...
 		static msstringlist Tokens;
 		Tokens.clearitems();
-		TokenizeString( randomdata, Tokens, "_" ); //not sure if we can use semi-colons in properties - would look icky anyways
-		int idx = atoi(Tokens[1].c_str())-1;
+		TokenizeString(randomdata, Tokens, "_"); //not sure if we can use semi-colons in properties - would look icky anyways
+		int idx = atoi(Tokens[1].c_str()) - 1;
 		msstring rndproperty = Tokens[2];
-		if ( random_monsterdata.size() == 0 )
+		if (random_monsterdata.size() == 0)
 		{
 			//random_monster_t tmp;
-			 for (int i = 0; i < 32; i++) 
+			for (int i = 0; i < 32; i++)
 			{
 				random_monsterdata.add_blank();
 			};
-			logfile << UTIL_VarArgs("DEBUG: msmonster_random spaces for new mob idx %i - array size after %i\n",idx,(int)random_monsterdata.size());
+			logfile << UTIL_VarArgs("DEBUG: msmonster_random spaces for new mob idx %i - array size after %i\n", idx, (int)random_monsterdata.size());
 		}
-		if ( rndproperty == "title" ) random_monsterdata[idx].m_title = pkvd->szValue;
-		if ( rndproperty == "params" ) random_monsterdata[idx].m_addparams = pkvd->szValue;
-		if ( rndproperty == "scriptfile" )
+		if (rndproperty == "title")
+			random_monsterdata[idx].m_title = pkvd->szValue;
+		if (rndproperty == "params")
+			random_monsterdata[idx].m_addparams = pkvd->szValue;
+		if (rndproperty == "scriptfile")
 		{
 			//is required, and only one of each, so add count here
 			random_monsterdata[idx].m_ScriptName = pkvd->szValue;
-			if ( m_nRndMobs == 0 ) m_nRndMobs = 1;
-			else ++m_nRndMobs;
-			logfile << UTIL_VarArgs("DEBUG: msmonster_random added new mob #%i = %s \n",idx,random_monsterdata[idx].m_ScriptName.c_str());
+			if (m_nRndMobs == 0)
+				m_nRndMobs = 1;
+			else
+				++m_nRndMobs;
+			logfile << UTIL_VarArgs("DEBUG: msmonster_random added new mob #%i = %s \n", idx, random_monsterdata[idx].m_ScriptName.c_str());
 		}
-		if ( rndproperty == "hpmulti" ) random_monsterdata[idx].m_HPMulti = atof(pkvd->szValue);
-		if ( rndproperty == "dmgmulti" ) random_monsterdata[idx].m_DMGMulti = atof(pkvd->szValue);
+		if (rndproperty == "hpmulti")
+			random_monsterdata[idx].m_HPMulti = atof(pkvd->szValue);
+		if (rndproperty == "dmgmulti")
+			random_monsterdata[idx].m_DMGMulti = atof(pkvd->szValue);
 		//if ( rndproperty == "lives" ) random_monsterdata[idx].m_Lives = atoi(pkvd->szValue);
-		if ( rndproperty == "nplayers" ) random_monsterdata[idx].m_ReqPlayers = atoi(pkvd->szValue);
+		if (rndproperty == "nplayers")
+			random_monsterdata[idx].m_ReqPlayers = atoi(pkvd->szValue);
 		//sticky bit
-		if ( rndproperty == "reqhp" )
+		if (rndproperty == "reqhp")
 		{
 			msstringlist reqhp_stringlist;
-			TokenizeString((pkvd->szValue),reqhp_stringlist);
+			TokenizeString((pkvd->szValue), reqhp_stringlist);
 			int mrand_m_HPReq_min = 0;
 			int mrand_m_HPReq_max = 0;
-			if ( reqhp_stringlist.size() > 0 ) mrand_m_HPReq_min = atoi(reqhp_stringlist[0].c_str());
-			if ( reqhp_stringlist.size() > 1 )
+			if (reqhp_stringlist.size() > 0)
+				mrand_m_HPReq_min = atoi(reqhp_stringlist[0].c_str());
+			if (reqhp_stringlist.size() > 1)
 			{
 				mrand_m_HPReq_max = atoi(reqhp_stringlist[1].c_str());
-				if ( mrand_m_HPReq_max < mrand_m_HPReq_min )
+				if (mrand_m_HPReq_max < mrand_m_HPReq_min)
 				{
 					mrand_m_HPReq_max = 0;
 					logfile << "MAP_ERROR: " << STRING(random_monsterdata[idx].m_ScriptName) << " - max reqhp set higher than min.\n";
@@ -454,130 +478,140 @@ void CMSMonster::KeyValue( KeyValueData *pkvd )
 			random_monsterdata[idx].m_HPReq_max = mrand_m_HPReq_max;
 		}
 		//Gotta use the logfile here, dernitall
-		logfile << UTIL_VarArgs("DEBUG: msmonster_random added rndproperty #%i / tot %i - %s %s\n",idx,m_nRndMobs,rndproperty.c_str(),pkvd->szValue);
+		logfile << UTIL_VarArgs("DEBUG: msmonster_random added rndproperty #%i / tot %i - %s %s\n", idx, m_nRndMobs, rndproperty.c_str(), pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	//NOV2014_20 - Thothie msmonster_random [end]
 	else
-		CBaseMonster::KeyValue( pkvd );
+		CBaseMonster::KeyValue(pkvd);
 }
 
 //
 //	Think
-//	¯¯¯¯¯
-void CMSMonster :: Think( ) 
+//	ï¿½ï¿½ï¿½ï¿½ï¿½
+void CMSMonster ::Think()
 {
-	
+
 	//dbg( "Start" );
 	pev->ltime = gpGlobals->time;
 	pev->nextthink = gpGlobals->time + 0.1;
-
 
 	//if( pev->framerate > 1 )
 
 	float flInterval = 0;
 	//dbg( "StudioFrameAdvance" );
-	if ( IsAlive() ) flInterval = StudioFrameAdvance( );
+	if (IsAlive())
+		flInterval = StudioFrameAdvance();
 
 	startdbg; //MAR2008b - Skipping StudioFrameAdvance errors for now
 
-	dbg( "m_pfnThink" );
+	dbg("m_pfnThink");
 
-	if( m_pfnThink ) { CBaseEntity::Think(); return; }
+	if (m_pfnThink)
+	{
+		CBaseEntity::Think();
+		return;
+	}
 
-	dbg( "!IsAlive()" );
+	dbg("!IsAlive()");
 
-	if( !IsAlive() ) 
-	return;
+	if (!IsAlive())
+		return;
 
-	dbg( "pev->button" );
+	dbg("pev->button");
 
 	pev->button = 0;
 
 	//Ignore normal script events when possessed by an NPC script ent
-	dbg( "Run script events" );
-	if( !HasConditions( MONSTER_NOAI ) )
-		RunScriptEvents( );
+	dbg("Run script events");
+	if (!HasConditions(MONSTER_NOAI))
+		RunScriptEvents();
 	//Only run timed named events when this flag is set
-	else 
-		RunScriptEvents( true );
-	
-	if( !pev->model ) { return; }
+	else
+		RunScriptEvents(true);
 
-	Act( );
-
-	dbg( "Look" );
-	if( !HasConditions(MONSTER_BLIND) ) Look( );
-
-	if( !HasConditions( MONSTER_NOAI ) )
+	if (!pev->model)
 	{
-		dbg( "ListenForSound" );
-		ListenForSound( );
+		return;
 	}
 
-	dbg( "Trade" );
-	Trade( );
+	Act();
 
-	dbg( "SetSpeed" );
-	SetSpeed( );
+	dbg("Look");
+	if (!HasConditions(MONSTER_BLIND))
+		Look();
 
-	dbg( "SetMoveDest" );
-	SetMoveDest( );
+	if (!HasConditions(MONSTER_NOAI))
+	{
+		dbg("ListenForSound");
+		ListenForSound();
+	}
 
-	dbg( "SetWanderDest" );
-	SetWanderDest( );
+	dbg("Trade");
+	Trade();
+
+	dbg("SetSpeed");
+	SetSpeed();
+
+	dbg("SetMoveDest");
+	SetMoveDest();
+
+	dbg("SetWanderDest");
+	SetWanderDest();
 
 	//Clear out single-frame events
-	switch( LastEvent.event ) {
-		case 600:
-			LastEvent.event = 0;
+	switch (LastEvent.event)
+	{
+	case 600:
+		LastEvent.event = 0;
 	}
-	dbg( "DispatchAnimEvents" );
-	DispatchAnimEvents( );
+	dbg("DispatchAnimEvents");
+	DispatchAnimEvents();
 
-	dbg( "Play Movement Anim" );
+	dbg("Play Movement Anim");
 
 	//NPCScripts override the monster animation
-	if( m_MonsterState != MONSTERSTATE_SCRIPT )
+	if (m_MonsterState != MONSTERSTATE_SCRIPT)
 	{
-		if( HasConditions( MONSTER_HASMOVEDEST ) )					//I have a movement destination, play my movement anim
-			SetAnimation( MONSTER_ANIM_WALK, m_MoveAnim );
-		else if( m_IdleAnim.len() ) 
+		if (HasConditions(MONSTER_HASMOVEDEST)) //I have a movement destination, play my movement anim
+			SetAnimation(MONSTER_ANIM_WALK, m_MoveAnim);
+		else if (m_IdleAnim.len())
 			//if( m_pAnimHandler == &gAnimWalk ) pev->frame = 0; //Repeat the idle
-			SetAnimation( MONSTER_ANIM_WALK, m_IdleAnim );
-		
-		else if( m_OldActivity != m_Activity || m_fSequenceFinished ) 
+			SetAnimation(MONSTER_ANIM_WALK, m_IdleAnim);
+
+		else if (m_OldActivity != m_Activity || m_fSequenceFinished)
 		{
 			m_pAnimHandler = NULL;
-			SetActivity( ACT_IDLE );
+			SetActivity(ACT_IDLE);
 		}
-
 
 		m_OldActivity = m_Activity;
 	}
 
-	dbg( "Move" );
-	Move( flInterval );
+	dbg("Move");
+	Move(flInterval);
 
 	//Need to check if I'm alive again, because the above MoveExecute will
 	//sometimes call the touch function of a projectile that kills me.
-	if( !IsAlive( ) )
+	if (!IsAlive())
 		return;
-	
-	if( m_hEnemy != NULL )
+
+	if (m_hEnemy != NULL)
 	{
-		if( !FVisible( m_hEnemy ) ) m_hEnemy = NULL;
+		if (!FVisible(m_hEnemy))
+			m_hEnemy = NULL;
 	}
 
-	Float( ); //Special velocity for floating monsters
+	Float(); //Special velocity for floating monsters
 
-	dbg( "Talk" );
-	Talk( );
+	dbg("Talk");
+	Talk();
 	int TempConditions = FrameConditions;
 	FrameConditions = 0;
-	if( TempConditions & FC_AVOID ) FrameConditions |= FC_AVOID;
+	if (TempConditions & FC_AVOID)
+		FrameConditions |= FC_AVOID;
 
-	enddbgprt( m_ScriptName.c_str() );
+	enddbgprt(m_ScriptName.c_str());
 }
 /*int CMSMonster :: MoveExecute ( const Vector &vecStart, const Vector &vecEnd, CBaseEntity *pTarget, float *pflDist, bool fTestMove )
 {
@@ -686,7 +720,7 @@ void CMSMonster :: Think( )
 
 	return iReturn;
 }*/
-bool CMSMonster :: MoveExecute( moveexec_t &MoveExec )
+bool CMSMonster ::MoveExecute(moveexec_t &MoveExec)
 {
 	Vector OrigOrigin = pev->origin;
 	Vector OrigAngles = pev->angles;
@@ -694,8 +728,8 @@ bool CMSMonster :: MoveExecute( moveexec_t &MoveExec )
 	int OrigMovetype = pev->movetype;
 	Vector CurrentPos = OrigOrigin;
 	Vector PrevPos = CurrentPos;
-	float TotalDist = (MoveExec.vecEnd - MoveExec.vecStart).Length( );
-	float TotalDistThreshold = TotalDist * 0.1;	//Must move to within 10% of goal
+	float TotalDist = (MoveExec.vecEnd - MoveExec.vecStart).Length();
+	float TotalDistThreshold = TotalDist * 0.1; //Must move to within 10% of goal
 	TraceResult tr;
 	//SetBits( pev->flags, FL_FLY );
 	//pev->movetype = MOVETYPE_FLY;
@@ -710,39 +744,39 @@ bool CMSMonster :: MoveExecute( moveexec_t &MoveExec )
 	do
 	{
 		LoopTimes++;
-		fContinue = false;		//Set this each loop
+		fContinue = false; //Set this each loop
 		PrevPos = CurrentPos;
 		Vector MoveDir = (MoveExec.vecEnd - CurrentPos).Normalize();
-		TRACE_MONSTER_HULL( edict(), CurrentPos, MoveExec.vecEnd, dont_ignore_monsters, edict(), &tr );
+		TRACE_MONSTER_HULL(edict(), CurrentPos, MoveExec.vecEnd, dont_ignore_monsters, edict(), &tr);
 
 		bool HitTargetEnt = (MoveExec.pTarget && MSInstance(tr.pHit) == MoveExec.pTarget);
 
-		if( (tr.pHit || tr.flFraction < 1) && !HitTargetEnt )
+		if ((tr.pHit || tr.flFraction < 1) && !HitTargetEnt)
 		{
 			fSuccess = false;
 
-			if( MoveExec.fAllowStep )
+			if (MoveExec.fAllowStep)
 			{
 				//CurrentPos += MoveDir * tr.flFraction * 0.9;
 
 				//See if I can step up onto this surface
 				TraceResult FlyTr;
 				FlyTr.pHit = NULL;
-				Vector FlyOrigin = CurrentPos + Vector(0,0,m_StepSize);
-				TRACE_MONSTER_HULL( edict(), CurrentPos, FlyOrigin, dont_ignore_monsters, edict(), &FlyTr );
-				if( FlyTr.flFraction >= 1 && !FlyTr.pHit )
+				Vector FlyOrigin = CurrentPos + Vector(0, 0, m_StepSize);
+				TRACE_MONSTER_HULL(edict(), CurrentPos, FlyOrigin, dont_ignore_monsters, edict(), &FlyTr);
+				if (FlyTr.flFraction >= 1 && !FlyTr.pHit)
 				{
-					Vector FlyDest = MoveExec.vecEnd + Vector(0,0,m_StepSize);
-					TRACE_MONSTER_HULL( edict(), FlyOrigin, FlyDest, dont_ignore_monsters, edict(), &FlyTr );
-					if( FlyTr.flFraction >= 1 && !FlyTr.pHit )
+					Vector FlyDest = MoveExec.vecEnd + Vector(0, 0, m_StepSize);
+					TRACE_MONSTER_HULL(edict(), FlyOrigin, FlyDest, dont_ignore_monsters, edict(), &FlyTr);
+					if (FlyTr.flFraction >= 1 && !FlyTr.pHit)
 					{
 						Vector BeforeAngles = pev->angles;
 						Vector BeforeNormal = m_GroundNormal;
 						pev->origin = FlyDest;
-						FaceForward( );
+						FaceForward();
 
 						//Print( "%.2f\n", m_GroundNormal.z );
-						if( m_GroundNormal.z > m_MaxGroundSlope )
+						if (m_GroundNormal.z > m_MaxGroundSlope)
 						{
 							//Stepped up onto surface.
 							MoveExec.Return_HitStep = true;
@@ -756,56 +790,56 @@ bool CMSMonster :: MoveExecute( moveexec_t &MoveExec )
 							m_GroundNormal = BeforeNormal;
 							pev->angles = BeforeAngles;
 							pev->origin = OrigOrigin;
-							fSuccess = false;	//Blocked and stepped up onto the object but new ground slope is too high
+							fSuccess = false; //Blocked and stepped up onto the object but new ground slope is too high
 						}
 					}
 					else
-						fSuccess = false;	//Blocked, moved up, but couldn't move forward, on top of the object
+						fSuccess = false; //Blocked, moved up, but couldn't move forward, on top of the object
 				}
-				else 
-					fSuccess = false;	//Blocked, and couldn't move up to step over it
+				else
+					fSuccess = false; //Blocked, and couldn't move up to step over it
 
-			//}
-			//else
+				//}
+				//else
 				//Move was within threshold.  Consider it a success
-			//	fSuccess = true;
+				//	fSuccess = true;
 			}
 		}
 		else
 		{
 			// Made it all the way to goal, or hit target entity
 			// If I hit the entity, then don't move, but return success
-			if( !HitTargetEnt )
+			if (!HitTargetEnt)
 			{
 				CurrentPos = MoveExec.vecEnd;
-				MoveExec.Return_DistMoved = (MoveExec.vecEnd - MoveExec.vecStart).Length( );
+				MoveExec.Return_DistMoved = (MoveExec.vecEnd - MoveExec.vecStart).Length();
 			}
 			else
 				MoveExec.Return_HitTargetEnt = true;
 
 			fSuccess = true;
 		}
-	}
-	while( fContinue && LoopTimes < 4 && !fSuccess ); //restored DO/While MAR2012
+	} while (fContinue && LoopTimes < 4 && !fSuccess); //restored DO/While MAR2012
 
 	pev->flags = OrigFlags;
 	pev->movetype = OrigMovetype;
 
-	if( fSuccess && !MoveExec.fTestMove )
+	if (fSuccess && !MoveExec.fTestMove)
 	{
 		pev->origin = CurrentPos;
-		UTIL_SetOrigin( pev, pev->origin );
-		
-		if( MoveExec.Return_HitStep )
-			DROP_TO_FLOOR( edict() );
+		UTIL_SetOrigin(pev, pev->origin);
+
+		if (MoveExec.Return_HitStep)
+			DROP_TO_FLOOR(edict());
 	}
 
 	return fSuccess;
 }
-BOOL CMSMonster::CanSetVelocity( ) { return TRUE; }
+BOOL CMSMonster::CanSetVelocity() { return TRUE; }
 
-void CMSMonster::Float( ) {
-/*#ifdef VALVE_DLL
+void CMSMonster::Float()
+{
+	/*#ifdef VALVE_DLL
 	if( !FBitSet(pev->flags, FL_FLOAT ) ) return;
 	if( gpGlobals->time < FloatTime ) return;
 
@@ -828,59 +862,63 @@ void CMSMonster::Float( ) {
 	}
 #endif*/
 }
-	
-void CMSMonster :: Touch( CBaseEntity *pOther ) {
-//	if( FBitSet(pev->flags,FL_FLOAT) ) ALERT( at_console, "Touching %s\n", STRING(pOther->pev->classname) );
-	CBaseEntity :: Touch( pOther );
-	if ( m_HandleTouch && ( pOther->IsPlayer() || pOther->IsMSMonster() ) )
+
+void CMSMonster ::Touch(CBaseEntity *pOther)
+{
+	//	if( FBitSet(pev->flags,FL_FLOAT) ) ALERT( at_console, "Touching %s\n", STRING(pOther->pev->classname) );
+	CBaseEntity ::Touch(pOther);
+	if (m_HandleTouch && (pOther->IsPlayer() || pOther->IsMSMonster()))
 	{
 		msstringlist Parameters;
-		Parameters.add( EntToString(pOther) );
+		Parameters.add(EntToString(pOther));
 		CallScriptEvent("game_touch", &Parameters);
 	}
 }
-void CMSMonster::Look( ) {
+void CMSMonster::Look()
+{
 
-    if( gpGlobals->time < m_LookTime ) return;
+	if (gpGlobals->time < m_LookTime)
+		return;
 
 	// Look around for the best target
-	CBaseMonster :: Look( 1024 ); //was 512
+	CBaseMonster ::Look(1024); //was 512
 
-	CBaseEntity *pEnt = m_pLink;		//Save seen targets
+	CBaseEntity *pEnt = m_pLink; //Save seen targets
 	m_EnemyListNum = 0;
-	while( pEnt && m_EnemyListNum < MAX_ENEMYLIST ) {
+	while (pEnt && m_EnemyListNum < MAX_ENEMYLIST)
+	{
 		m_hEnemyList[m_EnemyListNum] = pEnt;
 		m_EnemyListNum++;
 		pEnt = pEnt->m_pLink;
 	}
-	m_LookTime = gpGlobals->time + 0.5;//1.0
-
+	m_LookTime = gpGlobals->time + 0.5; //1.0
 }
-void CMSMonster::ListenForSound( ) 
+void CMSMonster::ListenForSound()
 {
 	startdbg;
 
-	if( gpGlobals->time < m_ListenTime ) return;
+	if (gpGlobals->time < m_ListenTime)
+		return;
 
-	CBaseMonster :: Listen( );
+	CBaseMonster ::Listen();
 
-	if( HasConditions(bits_COND_HEAR_SOUND) )
+	if (HasConditions(bits_COND_HEAR_SOUND))
 	{
-		int iThisSound; 
+		int iThisSound;
 		CSound *pSound = NULL;
 		msstringlist Parameters;
-		iThisSound = m_iAudibleList; 
+		iThisSound = m_iAudibleList;
 
-		while( iThisSound != SOUNDLIST_EMPTY )
+		while (iThisSound != SOUNDLIST_EMPTY)
 		{
-			if( (pSound = CSoundEnt::SoundPointerForIndex( iThisSound )) && (bool)pSound->m_SrcEntity )
+			if ((pSound = CSoundEnt::SoundPointerForIndex(iThisSound)) && (bool)pSound->m_SrcEntity)
 			{
-				StoreEntity( pSound->m_SrcEntity.Entity(), ENT_LASTHEARD );
-				Parameters.clearitems( );
-				Parameters.add( pSound->m_Type );
-				Parameters.add( VecToString(pSound->m_vecOrigin) );
-				Parameters.add( UTIL_VarArgs("%.2f",pSound->m_DangerRadius) );
-				CallScriptEvent( "game_heardsound", &Parameters );
+				StoreEntity(pSound->m_SrcEntity.Entity(), ENT_LASTHEARD);
+				Parameters.clearitems();
+				Parameters.add(pSound->m_Type);
+				Parameters.add(VecToString(pSound->m_vecOrigin));
+				Parameters.add(UTIL_VarArgs("%.2f", pSound->m_DangerRadius));
+				CallScriptEvent("game_heardsound", &Parameters);
 			}
 			iThisSound = pSound->m_iNextAudible;
 		}
@@ -934,15 +972,19 @@ void CMSMonster::ListenForSound( )
 
 	enddbg;
 }
-void CMSMonster::SetMoveDest( ) 
+void CMSMonster::SetMoveDest()
 {
-	if( !HasConditions(MONSTER_HASMOVEDEST) ) return;
-	if( m_MonsterState == MONSTERSTATE_SCRIPT && m_Activity != ACT_WALK ) return;
-	if( m_Activity == ACT_SPECIAL_ATTACK1 || m_Activity == ACT_MELEE_ATTACK1 ) return;
-	if( pev->movetype == MOVETYPE_FOLLOW || pev->movetype == MOVETYPE_NONE ) return;
+	if (!HasConditions(MONSTER_HASMOVEDEST))
+		return;
+	if (m_MonsterState == MONSTERSTATE_SCRIPT && m_Activity != ACT_WALK)
+		return;
+	if (m_Activity == ACT_SPECIAL_ATTACK1 || m_Activity == ACT_MELEE_ATTACK1)
+		return;
+	if (pev->movetype == MOVETYPE_FOLLOW || pev->movetype == MOVETYPE_NONE)
+		return;
 
 	Vector m_vecTarget;
-	
+
 	//Might have to put this visibility check back
 	/*if( !FVisible( m_vecEnemyLKP ) ) {
 		//ALERT( at_console, "%s: Move dest NOT VISIBLE!\n", STRING(DisplayName) );
@@ -954,28 +996,30 @@ void CMSMonster::SetMoveDest( )
 	m_vecTarget = m_MoveDest.Origin - EyePosition();
 	Vector ExactAngle = UTIL_VecToAngles(m_vecTarget);
 
-	//Are we close enough?	
-	if( (IsFlying() ? m_vecTarget.Length() : m_vecTarget.Length2D()) <= m_MoveDest.Proximity ) {
-//		ALERT( at_console, "%s: Within Prox(%f) of target.\n", STRING(DisplayName), MoveProximity );
+	//Are we close enough?
+	if ((IsFlying() ? m_vecTarget.Length() : m_vecTarget.Length2D()) <= m_MoveDest.Proximity)
+	{
+		//		ALERT( at_console, "%s: Within Prox(%f) of target.\n", STRING(DisplayName), MoveProximity );
 		pev->v_angle = ExactAngle;
 		pev->v_angle.x *= -1;
 		pev->angles.y = pev->v_angle.y;
 		//if( IsFlying() ) pev->angles.x = pev->v_angle.x;
 		//FaceDirection( UTIL_VecToAngles(m_vecEnemyLKP - EyePosition()) );
-		StopWalking( );
-		CallScriptEvent( "game_reached_dest" );
+		StopWalking();
+		CallScriptEvent("game_reached_dest");
 		return;
 	}
 
 	//TODO: Turn the correct way (right or left) based on shortest turn
-	if( !FBitSet(FrameConditions,FC_AVOID) )
+	if (!FBitSet(FrameConditions, FC_AVOID))
 	{
-		float FullTurn = UTIL_AngleDiff( ExactAngle.y, pev->angles.y );
-		if( fabs(UTIL_AngleDiff(ExactAngle.y, pev->angles.y)) > 6 )
+		float FullTurn = UTIL_AngleDiff(ExactAngle.y, pev->angles.y);
+		if (fabs(UTIL_AngleDiff(ExactAngle.y, pev->angles.y)) > 6)
 		{
 			float PartialTurn = FullTurn * m_TurnRate;
 			pev->angles.y += PartialTurn;
-			if( fabs(UTIL_AngleDiff(ExactAngle.y, pev->angles.y)) <= 6 ) pev->angles.y = ExactAngle.y;
+			if (fabs(UTIL_AngleDiff(ExactAngle.y, pev->angles.y)) <= 6)
+				pev->angles.y = ExactAngle.y;
 		}
 	}
 	pev->v_angle.x = -ExactAngle.x;
@@ -984,47 +1028,50 @@ void CMSMonster::SetMoveDest( )
 	m_Activity = ACT_WALK;
 	//if( IsFlying() ) pev->angles.x = pev->v_angle.x;
 	static msstringlist Parameters; //Static, for speed
-	Parameters.clearitems( );
-	Parameters.add( VecToString( ExactAngle ) );
-	CallScriptEvent( "game_movingto_dest", &Parameters );
-
+	Parameters.clearitems();
+	Parameters.add(VecToString(ExactAngle));
+	CallScriptEvent("game_movingto_dest", &Parameters);
 }
-void CMSMonster::SetWanderDest( ) 
+void CMSMonster::SetWanderDest()
 {
 	startdbg;
 	//No enemy, walk around randomly (here m_vecEnemyLKP is the random place to walk)
-	if( !HasConditions(MONSTER_ROAM) ) return;
+	if (!HasConditions(MONSTER_ROAM))
+		return;
 
-//	if( gpGlobals->time < MoveTime ) return;
+	//	if( gpGlobals->time < MoveTime ) return;
 
 	Vector m_vecTarget, VecDest;
 	TraceResult tr;
 
-	dbg( "Check m_NodeCancelTime" );
+	dbg("Check m_NodeCancelTime");
 	//Canel a movedest if we've been trying for too long
-	if( !m_NextNodeTime && gpGlobals->time >= m_NodeCancelTime )
+	if (!m_NextNodeTime && gpGlobals->time >= m_NodeCancelTime)
 		m_NextNodeTime = gpGlobals->time + m_RoamDelay;
-	
-	dbg( "Check m_NextNodeTime" );
-	if( m_NextNodeTime && gpGlobals->time >= m_NextNodeTime ) {
+
+	dbg("Check m_NextNodeTime");
+	if (m_NextNodeTime && gpGlobals->time >= m_NextNodeTime)
+	{
 		//Find another random spot to walk to
 		int count = 0;
-		float Proximity = GetDefaultMoveProximity( );
+		float Proximity = GetDefaultMoveProximity();
 		bool FoundPath = false;
 		float NewYaw;
 		m_hEnemy = NULL;
 		Vector vForward;
-		dbg( "Check 15 random move dirs" );
-		while( count < 15 ) {
-			NewYaw = UTIL_AngleMod( pev->angles.y + RANDOM_FLOAT(-130,130) );
-			UTIL_MakeVectorsPrivate( Vector(0,NewYaw,0), vForward, NULL, NULL );
-			VecDest = pev->origin + vForward * (Proximity*3);
-			UTIL_TraceLine( EyePosition(), VecDest, dont_ignore_monsters, edict(), &tr );
-			if( tr.flFraction >= 1.0 ) {
+		dbg("Check 15 random move dirs");
+		while (count < 15)
+		{
+			NewYaw = UTIL_AngleMod(pev->angles.y + RANDOM_FLOAT(-130, 130));
+			UTIL_MakeVectorsPrivate(Vector(0, NewYaw, 0), vForward, NULL, NULL);
+			VecDest = pev->origin + vForward * (Proximity * 3);
+			UTIL_TraceLine(EyePosition(), VecDest, dont_ignore_monsters, edict(), &tr);
+			if (tr.flFraction >= 1.0)
+			{
 				//AUG2013_22 Thothie - Fishies stay in water
-				if ( pev->flags & (FL_SWIM) )
+				if (pev->flags & (FL_SWIM))
 				{
-					if ( EngineFunc::Shared_PointContents(VecDest) == CONTENTS_WATER )
+					if (EngineFunc::Shared_PointContents(VecDest) == CONTENTS_WATER)
 					{
 						FoundPath = true;
 						break;
@@ -1038,19 +1085,22 @@ void CMSMonster::SetWanderDest( )
 			}
 			count++;
 		}
-		if( !FoundPath ) { 
-			dbg( "Check 360 sequential move dirs" );
+		if (!FoundPath)
+		{
+			dbg("Check 360 sequential move dirs");
 			//Couldn't randomly find an angle, so brute force one
-			for( count = 0; count < 360; count++ ) {
+			for (count = 0; count < 360; count++)
+			{
 				NewYaw = count;
-				UTIL_MakeVectorsPrivate( Vector(0,NewYaw,0), vForward, NULL, NULL );
-				VecDest = Center( ) + vForward * (Proximity*3);
-				UTIL_TraceLine( EyePosition(), VecDest, dont_ignore_monsters, edict(), &tr );
-				if( tr.flFraction >= 1.0 ) {
+				UTIL_MakeVectorsPrivate(Vector(0, NewYaw, 0), vForward, NULL, NULL);
+				VecDest = Center() + vForward * (Proximity * 3);
+				UTIL_TraceLine(EyePosition(), VecDest, dont_ignore_monsters, edict(), &tr);
+				if (tr.flFraction >= 1.0)
+				{
 					//AUG2013_22 Thothie - Fishies stay in water
-					if ( pev->flags & (FL_SWIM) )
+					if (pev->flags & (FL_SWIM))
 					{
-						if ( EngineFunc::Shared_PointContents(VecDest) == CONTENTS_WATER )
+						if (EngineFunc::Shared_PointContents(VecDest) == CONTENTS_WATER)
 						{
 							FoundPath = true;
 							break;
@@ -1063,44 +1113,47 @@ void CMSMonster::SetWanderDest( )
 					}
 				}
 			}
-			if( !FoundPath ) {
+			if (!FoundPath)
+			{
 				//ALERT( at_console, "Monster: %s is UNFIXABLY STUCK!\n", STRING(DisplayName) );
 				m_NextNodeTime = gpGlobals->time + 10.0; //big delay
 			}
 		}
-		dbg( "Check if path found" );
-		if( FoundPath ) {
+		dbg("Check if path found");
+		if (FoundPath)
+		{
 			//pev->angles.x = 0; pev->angles.z = 0;
-			dbg( "Setup wander variables" );
-			m_MoveDest.Origin = EyePosition() + vForward * RANDOM_FLOAT(300,6000);
-			m_MoveDest.Proximity = GetDefaultMoveProximity( );
+			dbg("Setup wander variables");
+			m_MoveDest.Origin = EyePosition() + vForward * RANDOM_FLOAT(300, 6000);
+			m_MoveDest.Proximity = GetDefaultMoveProximity();
 			m_Wandering = true;
 			m_NodeCancelTime = gpGlobals->time + 7.0;
-			SetConditions( MONSTER_HASMOVEDEST );
+			SetConditions(MONSTER_HASMOVEDEST);
 			m_NextNodeTime = 0;
 			m_Activity = ACT_WALK;
-			dbg( "CallEvent game_wander" );
-			CallScriptEvent( "game_wander" );
+			dbg("CallEvent game_wander");
+			CallScriptEvent("game_wander");
 		}
 	}
 	enddbg;
 }
 
 Vector StartAng;
-void CMSMonster::Move( float flInterval )
+void CMSMonster::Move(float flInterval)
 {
 	startdbg;
-	int Side[2] = { 1, -1 };
+	int Side[2] = {1, -1};
 
-	if( pev->movetype == MOVETYPE_FOLLOW || pev->movetype == MOVETYPE_NONE ) return;
-	
+	if (pev->movetype == MOVETYPE_FOLLOW || pev->movetype == MOVETYPE_NONE)
+		return;
+
 	//Get the desired direction
 	m_MoveDir = (m_MoveDest.Origin - pev->origin).Normalize();
-	
+
 	//Turn to face my ideal direction
-	if( HasConditions( MONSTER_HASMOVEDEST ) )
+	if (HasConditions(MONSTER_HASMOVEDEST))
 	{
-		if( !IsFlying() )
+		if (!IsFlying())
 			pev->angles.y = UTIL_VecToAngles(m_MoveDir).y;
 		else
 		{
@@ -1111,19 +1164,20 @@ void CMSMonster::Move( float flInterval )
 		}
 	}
 
-	if( pev->angles.y != m_LastYaw 		//I turned or moved, now check the ground under me for my proper pitch/roll orientation
-		|| m_LastOrigin != pev->origin )
-			FaceForward( );
+	if (pev->angles.y != m_LastYaw //I turned or moved, now check the ground under me for my proper pitch/roll orientation
+		|| m_LastOrigin != pev->origin)
+		FaceForward();
 
-	dbg( "Set Movement velocity" );
-	if( m_flGroundSpeed ) {
-		if( CanSetVelocity() ) 
+	dbg("Set Movement velocity");
+	if (m_flGroundSpeed)
+	{
+		if (CanSetVelocity())
 		{
-			Vector vTargetAng = IsFlying() ? pev->v_angle : Vector(-pev->angles.x,pev->angles.y,pev->angles.z);
-			UTIL_MakeVectorsPrivate( vTargetAng, m_MoveDir, NULL, NULL );
+			Vector vTargetAng = IsFlying() ? pev->v_angle : Vector(-pev->angles.x, pev->angles.y, pev->angles.z);
+			UTIL_MakeVectorsPrivate(vTargetAng, m_MoveDir, NULL, NULL);
 
 			float ScriptMultiplier = 1.0f;
-			if( pev->maxspeed ) 
+			if (pev->maxspeed)
 				ScriptMultiplier = pev->maxspeed / 100.0f;
 
 			float flTotal = m_flGroundSpeed * pev->framerate * flInterval * m_SpeedMultiplier * ScriptMultiplier;
@@ -1137,13 +1191,13 @@ void CMSMonster::Move( float flInterval )
 			MoveExec.fAllowStep = true;
 
 			//MIB MAR2012 game_stuck (fail, false positives)
-			if( !MoveExecute( MoveExec ) && !MoveExec.Return_HitTargetEnt )
+			if (!MoveExecute(MoveExec) && !MoveExec.Return_HitTargetEnt)
 			{
-				AvoidFrontObject( flTotal );      //Turn to avoid object
-				Vector vTargetAng = IsFlying() ? pev->v_angle : Vector(-pev->angles.x,pev->angles.y,pev->angles.z);
-				UTIL_MakeVectorsPrivate( vTargetAng, m_MoveDir, NULL, NULL );
+				AvoidFrontObject(flTotal); //Turn to avoid object
+				Vector vTargetAng = IsFlying() ? pev->v_angle : Vector(-pev->angles.x, pev->angles.y, pev->angles.z);
+				UTIL_MakeVectorsPrivate(vTargetAng, m_MoveDir, NULL, NULL);
 				MoveExec.vecEnd = pev->origin + m_MoveDir * flTotal;
-				MoveExecute( MoveExec );
+				MoveExecute(MoveExec);
 
 				//Do move again
 				/*
@@ -1165,8 +1219,8 @@ void CMSMonster::Move( float flInterval )
 	}
 
 	//Gravity has to be done manually...
-	dbg( "Gravity" );
-	if( !IsFlying() && !FBitSet(FrameConditions,FC_STEP) )
+	dbg("Gravity");
+	if (!IsFlying() && !FBitSet(FrameConditions, FC_STEP))
 	{
 		bool fAddGravity = true;
 
@@ -1174,7 +1228,7 @@ void CMSMonster::Move( float flInterval )
 		//fAddGravity = WALK_MOVE( ENT(pev), pev->angles.y, 1, WALKMOVE_NORMAL ) ? true : false;
 		//pev->velocity.z += 0.0001f;
 
-		if( 1 )	//Manual onground check
+		if (1) //Manual onground check
 		{
 			int FallCheckAmt = 3;
 			//int oldflags = pev->flags;
@@ -1188,15 +1242,14 @@ void CMSMonster::Move( float flInterval )
 			//if( flMoved < FallCheckAmt ) SetBits( pev->flags, FL_ONGROUND );
 			if( flMoved >= FallCheckAmt ) ClearBits( pev->flags, FL_ONGROUND );*/
 
-			ClearBits( pev->flags, FL_ONGROUND );
+			ClearBits(pev->flags, FL_ONGROUND);
 		}
 
-		
 		//if( !FBitSet(pev->flags,FL_ONGROUND) )
 		//if( fAddGravity )
 		//{
 		//	pev->velocity.z -= CVAR_GET_FLOAT("sv_gravity") * 0.5
-		//						* (pev->gravity ? pev->gravity : 1) 
+		//						* (pev->gravity ? pev->gravity : 1)
 		//						* (gpGlobals->frametime);
 		//}
 	}
@@ -1206,37 +1259,35 @@ void CMSMonster::Move( float flInterval )
 
 	enddbg;
 }
-void CMSMonster::AvoidFrontObject( float MoveAmt ) 
+void CMSMonster::AvoidFrontObject(float MoveAmt)
 {
-	static int Side[2] = { 1, -1 };
+	static int Side[2] = {1, -1};
 
 	float flmdist = 0;
-	ClearBits( FrameConditions, FC_AVOID );
-	if( m_Activity == ACT_WALK
-		&& HasConditions( MONSTER_HASMOVEDEST )
-		&& m_flGroundSpeed ) 
+	ClearBits(FrameConditions, FC_AVOID);
+	if (m_Activity == ACT_WALK && HasConditions(MONSTER_HASMOVEDEST) && m_flGroundSpeed)
 	{
 		//Run avoidance AI before stopping
 
 		bool fShouldStop = true;
-			
+
 		Vector vOriginSave = pev->origin;
 		float flYawSave = StartAng.y;
 
 		//Use the angle on either side for which i have to make the smallest turn
 #define TURN_INCREMENT 15
-	    int Increment = TURN_INCREMENT;
-		for( int ang = 0; ang <= 170; ang += Increment ) //, Increment *= 4 )   //MiB MAR2012_19 - Doing a solid 15 degree increment. We were getting false positives with small angles
-		{ 
-			
+		int Increment = TURN_INCREMENT;
+		for (int ang = 0; ang <= 170; ang += Increment) //, Increment *= 4 )   //MiB MAR2012_19 - Doing a solid 15 degree increment. We were getting false positives with small angles
+		{
+
 			Vector vAng, vAvoidDir, SideAng[2];
 			float Dist[2];
-			for( int i = 0; i < 2; i++ ) //Try each side
+			for (int i = 0; i < 2; i++) //Try each side
 			{
 				//Finds the forward vector of the avoidance direction
 				vAng.y = UTIL_AngleMod(m_LastYaw + ang * -Side[i]);
-				AlignToNormal( m_GroundNormal, vAng );
-				UTIL_MakeVectorsPrivate( vAng, vAvoidDir, NULL, NULL );
+				AlignToNormal(m_GroundNormal, vAng);
+				UTIL_MakeVectorsPrivate(vAng, vAvoidDir, NULL, NULL);
 
 				//Check for avoidance space
 				moveexec_t MoveExec;
@@ -1246,10 +1297,10 @@ void CMSMonster::AvoidFrontObject( float MoveAmt )
 				MoveExec.pTarget = m_MoveDest.MoveTarget.Entity();
 				MoveExec.fAllowStep = true;
 
-				bool moved = MoveExecute( MoveExec ) ? true : false;
+				bool moved = MoveExecute(MoveExec) ? true : false;
 
 				//if( fltestmovedist > flmdist )
-				if( moved )
+				if (moved)
 				{
 					//Dist[i] = MoveExec.Return_DistMoved;
 					Dist[i] = (m_MoveDest.Origin - MoveExec.vecEnd).Length();
@@ -1258,15 +1309,23 @@ void CMSMonster::AvoidFrontObject( float MoveAmt )
 				else
 					Dist[i] = -1;
 			}
-			
+
 			float flNewYaw = 0;
-			if( Dist[0] > -1 && (Dist[1] < 0 || Dist[0] < Dist[1]) )		{ fShouldStop = false; pev->angles = SideAng[0]; }
-			else if( Dist[1] > -1 && (Dist[0] < 0 || Dist[1] < Dist[0]) )	{ fShouldStop = false; pev->angles = SideAng[1]; }
-			
-			if( !fShouldStop )
+			if (Dist[0] > -1 && (Dist[1] < 0 || Dist[0] < Dist[1]))
+			{
+				fShouldStop = false;
+				pev->angles = SideAng[0];
+			}
+			else if (Dist[1] > -1 && (Dist[0] < 0 || Dist[1] < Dist[0]))
+			{
+				fShouldStop = false;
+				pev->angles = SideAng[1];
+			}
+
+			if (!fShouldStop)
 			{
 				//Break all the way out
-				SetBits( FrameConditions, FC_AVOID );
+				SetBits(FrameConditions, FC_AVOID);
 				break;
 			}
 
@@ -1275,44 +1334,42 @@ void CMSMonster::AvoidFrontObject( float MoveAmt )
 			pev->angles.y = flYawSave;
 		}
 
-		if( fShouldStop )  //I'm blocked, stop
+		if (fShouldStop) //I'm blocked, stop
 		{
 			pev->angles.y = UTIL_VecToAngles(m_MoveDir).y;
 			StopWalking();
 		}
 	}
-
 }
 
-void CMSMonster::FaceForward( ) 
+void CMSMonster::FaceForward()
 {
-	if( !IsFlying() )
+	if (!IsFlying())
 	{
 		//Get the ground normal
 		TraceResult tr;
 		//UTIL_TraceLine( EyePosition(), EyePosition() - Vector(0,0,4096), ignore_monsters, edict(), &tr );
 		//UTIL_TraceHull( EyePosition(), EyePosition() - Vector(0,0,4096), ignore_monsters, 3, edict(), &tr );
-		TRACE_MONSTER_HULL( edict(), pev->origin, pev->origin - Vector(0,0,m_Height), ignore_monsters, edict(), &tr );
+		TRACE_MONSTER_HULL(edict(), pev->origin, pev->origin - Vector(0, 0, m_Height), ignore_monsters, edict(), &tr);
 
 		//if( HasConditions( MONSTER_HASMOVEDEST ) )
 		//	pev->angles.y = UTIL_VecToAngles(m_MoveDir).y;
 
-		if( tr.flFraction < 1 )
+		if (tr.flFraction < 1)
 		{
 			//Aligns the monster to the ground slope
 			m_GroundNormal = tr.vecPlaneNormal;
 			//AlignToNormal( m_GroundNormal, pev->angles );
 
-			Vector vTestAng = Vector( 0, pev->angles.y, 0 );
-			AlignToNormal( m_GroundNormal, vTestAng );
+			Vector vTestAng = Vector(0, pev->angles.y, 0);
+			AlignToNormal(m_GroundNormal, vTestAng);
 			pev->angles = vTestAng;
 
-			UTIL_MakeVectorsPrivate( vTestAng, m_MoveDir, NULL, NULL );
+			UTIL_MakeVectorsPrivate(vTestAng, m_MoveDir, NULL, NULL);
 		}
 		else
 		{
-			m_GroundNormal = Vector( 0, 0, 1 );
-			
+			m_GroundNormal = Vector(0, 0, 1);
 		}
 
 		//Finds the forward vector (of the target direction, not neccesarily in front)
@@ -1322,24 +1379,27 @@ void CMSMonster::FaceForward( )
 	}
 }
 
-void CMSMonster::StopWalking( ) {
-	if( !pev->model ) return; //Just in case
+void CMSMonster::StopWalking()
+{
+	if (!pev->model)
+		return; //Just in case
 	//if( m_Activity == ACT_MELEE_ATTACK1 && !m_fSequenceFinished ) return;
 	//pev->velocity = g_vecZero;
 
-	ClearConditions( MONSTER_HASMOVEDEST );
+	ClearConditions(MONSTER_HASMOVEDEST);
 	m_NextNodeTime = gpGlobals->time + m_RoamDelay; //wait 2 seconds before wandering
 	m_Activity = ACT_IDLE;
-	if ( !HasConditions( MONSTER_TRADING ) ) m_hEnemy = NULL; //Thothie FEB2011_22 - try not to break trade menus when looking around via setmovedest
+	if (!HasConditions(MONSTER_TRADING))
+		m_hEnemy = NULL; //Thothie FEB2011_22 - try not to break trade menus when looking around via setmovedest
 	m_Wandering = true;
-	CallScriptEvent( "game_stopmoving" );
+	CallScriptEvent("game_stopmoving");
 }
 
-// 
+//
 // Attack
-// ¯¯¯¯¯¯
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-void CMSMonster::Act( ) 
+void CMSMonster::Act()
 {
 	/*if( m_Activity == ACT_SPECIAL_ATTACK1 )
 	{
@@ -1380,39 +1440,42 @@ void CMSMonster::Act( )
 			//m_Hand->AttackButtonDown( );
 		}
 	}*/
-
 }
 
-void CMSMonster::HandleAnimEvent( MonsterEvent_t *pEvent ) {
+void CMSMonster::HandleAnimEvent(MonsterEvent_t *pEvent)
+{
 	LastEvent = *pEvent;
 	float z;
 	//ALERT( at_console, "event %i\n", LastEvent.event );
-	switch( LastEvent.event ) {
-		case 400:  //Animation Event 400 - Jump
-			UTIL_MakeVectors( pev->angles );
-			pev->velocity = gpGlobals->v_forward * 250;
-			pev->velocity.z = 450;
-			break;
-		case 401:  //Animation Event 401 - Move forward in Jump
-			z = pev->velocity.z;
-			UTIL_MakeVectors( pev->angles );
-			pev->velocity = gpGlobals->v_forward * 250;
-			pev->velocity.z = z;
-			break;
-		case 450:  //Animation Event 450 - Stop forward/backward movement
-			pev->velocity.x = 0;
-			pev->velocity.y = 0;
-			break;
-		case 500:  //Animation Event 500 - Call any script event
-			if( pEvent->options ) CallScriptEvent( pEvent->options );
-			break;
-		case 600:  //Animation Event 600 - Call Attack() on my held weapon
-			//... or do damage if its an anim type attack
-			if( pEvent->options ) CallScriptEvent( pEvent->options );
-			break;
-		default:
-			CBaseAnimating::HandleAnimEvent( pEvent );
-			break;
+	switch (LastEvent.event)
+	{
+	case 400: //Animation Event 400 - Jump
+		UTIL_MakeVectors(pev->angles);
+		pev->velocity = gpGlobals->v_forward * 250;
+		pev->velocity.z = 450;
+		break;
+	case 401: //Animation Event 401 - Move forward in Jump
+		z = pev->velocity.z;
+		UTIL_MakeVectors(pev->angles);
+		pev->velocity = gpGlobals->v_forward * 250;
+		pev->velocity.z = z;
+		break;
+	case 450: //Animation Event 450 - Stop forward/backward movement
+		pev->velocity.x = 0;
+		pev->velocity.y = 0;
+		break;
+	case 500: //Animation Event 500 - Call any script event
+		if (pEvent->options)
+			CallScriptEvent(pEvent->options);
+		break;
+	case 600: //Animation Event 600 - Call Attack() on my held weapon
+		//... or do damage if its an anim type attack
+		if (pEvent->options)
+			CallScriptEvent(pEvent->options);
+		break;
+	default:
+		CBaseAnimating::HandleAnimEvent(pEvent);
+		break;
 	}
 }
 
@@ -1446,155 +1509,168 @@ void CMSMonster :: Jump( ) {
 }*/
 //
 //   Say - Have the Monster say something...
-//   ¯¯¯
-void CMSMonster :: Say( msstring_ref Sound, float fDuration ) {
+//   ï¿½ï¿½ï¿½
+void CMSMonster ::Say(msstring_ref Sound, float fDuration)
+{
 
 	//Thothie JUN2007b
 	//- wracking my brain trying to stop this thing from sending non-waves to players
 	msstring thoth_pissed = Sound;
-	if ( !thoth_pissed.contains("RND_SAY") )
+	if (!thoth_pissed.contains("RND_SAY"))
 	{
 		word_t NewWord;
- 		NewWord.Soundfile = Sound;
+		NewWord.Soundfile = Sound;
 		NewWord.Duration = fDuration;
 		NewWord.Spoken = false;
 
-		m_Words.add( NewWord );
+		m_Words.add(NewWord);
 	}
 }
-void CMSMonster :: Talk( ) {
-	if( !m_Words.size() )
+void CMSMonster ::Talk()
+{
+	if (!m_Words.size())
 		return;
 
 	word_t &Word = m_Words[0];
 	float TimeEndWord = m_TimeLastSpoke + Word.Duration;
-	if( !Word.Spoken )
+	if (!Word.Spoken)
 	{
 		//Thothie JUN2007b - trying to remove wave error with var based say commands
 		msstring thoth_filter = Word.Soundfile.c_str();
-		if ( thoth_filter.contains(".wav") )
+		if (thoth_filter.contains(".wav"))
 		{
-			if( strlen(Word.Soundfile) )
-				EMIT_SOUND( edict(), CHAN_VOICE, Word.Soundfile, SndVolume, ATTN_NORM );
+			if (strlen(Word.Soundfile))
+				EMIT_SOUND(edict(), CHAN_VOICE, Word.Soundfile, SndVolume, ATTN_NORM);
 		}
 		m_TimeLastSpoke = gpGlobals->time;
 		Word.Spoken = true;
 	}
-	else if( gpGlobals->time < TimeEndWord ) 
+	else if (gpGlobals->time < TimeEndWord)
 	{
 		//Still speaking this word
 		float MouthAmt = (TimeEndWord - gpGlobals->time) * 80;
-		if( MouthAmt > 20 ) MouthAmt = 20;
-		else if( MouthAmt < 0 ) MouthAmt = 0;
-		
-		SetBoneController( 1, MouthAmt );
+		if (MouthAmt > 20)
+			MouthAmt = 20;
+		else if (MouthAmt < 0)
+			MouthAmt = 0;
+
+		SetBoneController(1, MouthAmt);
 	}
 	else
 	{
 		//Done speaking this word
-		m_Words.erase( 0 );
-		if( !m_Words.size() ) m_Words.clear( );
+		m_Words.erase(0);
+		if (!m_Words.size())
+			m_Words.clear();
 	}
 }
 //
 // Speak - Text speech for both NPCs and players
-// ¯¯¯¯¯
-void CMSMonster :: Speak( char *pszSentence, speech_type SpeechType ) 
+// ï¿½ï¿½ï¿½ï¿½ï¿½
+void CMSMonster ::Speak(char *pszSentence, speech_type SpeechType)
 {
 
-	if( !pszSentence || !pszSentence[0] ) return;
+	if (!pszSentence || !pszSentence[0])
+		return;
 
 	// remove quotes if present
-	if (*pszSentence == '"') {
-		if( strlen(pszSentence) > 1 )
+	if (*pszSentence == '"')
+	{
+		if (strlen(pszSentence) > 1)
 		{
 			pszSentence++;
-			if( pszSentence[strlen(pszSentence)-1] == '"' )
-				pszSentence[strlen(pszSentence)-1] = 0;
+			if (pszSentence[strlen(pszSentence) - 1] == '"')
+				pszSentence[strlen(pszSentence) - 1] = 0;
 		}
 	}
 
-// make sure the text has content
+	// make sure the text has content
 	char *pc = NULL;
-	for ( pc = pszSentence; pc != NULL && *pc != 0; pc++ )
+	for (pc = pszSentence; pc != NULL && *pc != 0; pc++)
 	{
-		if ( isprint( *pc ) && !isspace( *pc ) )
+		if (isprint(*pc) && !isspace(*pc))
 		{
-			pc = NULL;	// we've found an alphanumeric character,  so text is valid
+			pc = NULL; // we've found an alphanumeric character,  so text is valid
 			break;
 		}
 	}
-	if ( pc != NULL )
-		return;  // no character found, so say nothing
+	if (pc != NULL)
+		return; // no character found, so say nothing
 
 	//ALERT( at_console, "PrevSentence: %s\n", pszSentence );
 
 	char FinalSentence[4096] = "";
 
 	saytext_e SayTextType = SAYTEXT_GLOBAL;
-	switch( SpeechType ) 
+	switch (SpeechType)
 	{
-		case SPEECH_GLOBAL:
-			strcat( FinalSentence, "[global] " );
-			SayTextType = SAYTEXT_GLOBAL;
-			break;
-		case SPEECH_PARTY:
-			strcat( FinalSentence, "[party] " );
-			SayTextType = SAYTEXT_PARTY;
-			break;
-		case SPEECH_LOCAL:
-			char cTemp[4096];
-			sprintf( cTemp, "%s says, \"%s\"\n", DisplayName(), pszSentence );
-			strcat( FinalSentence, cTemp );
-			SayTextType = IsPlayer() ? SAYTEXT_LOCAL : SAYTEXT_NPC;
-			break;
+	case SPEECH_GLOBAL:
+		strcat(FinalSentence, "[global] ");
+		SayTextType = SAYTEXT_GLOBAL;
+		break;
+	case SPEECH_PARTY:
+		strcat(FinalSentence, "[party] ");
+		SayTextType = SAYTEXT_PARTY;
+		break;
+	case SPEECH_LOCAL:
+		char cTemp[4096];
+		sprintf(cTemp, "%s says, \"%s\"\n", DisplayName(), pszSentence);
+		strcat(FinalSentence, cTemp);
+		SayTextType = IsPlayer() ? SAYTEXT_LOCAL : SAYTEXT_NPC;
+		break;
 	}
 
-	if( SpeechType != SPEECH_LOCAL )
+	if (SpeechType != SPEECH_LOCAL)
 	{
-		strcat( FinalSentence, DisplayName() );
-		strcat( FinalSentence, ": " );
+		strcat(FinalSentence, DisplayName());
+		strcat(FinalSentence, ": ");
 
 		//ALERT( at_console, "PrevSentence: %s\n", pszSentence );
 
-		strcat( FinalSentence, pszSentence );
-		strcat( FinalSentence, "\n" );
+		strcat(FinalSentence, pszSentence);
+		strcat(FinalSentence, "\n");
 		//ALERT( at_console, "FinalSentence: %s\n", FinalSentence );
 	}
 
 	CBaseEntity *pList[255], *pEnt = NULL;
 	// Fill pList with a all the monsters and players on the level
-    int count = UTIL_EntitiesInBox( pList, 255, Vector(-6000,-6000,-6000), Vector(6000,6000,6000), FL_MONSTER|FL_CLIENT );
- 
-    // Now try to speak to each one
-	 for (int i = 0; i < count; i++) 
-    {
-       pEnt = pList[i];
- 
-		if( !pEnt->pev || FNullEnt(pEnt->edict()) ) continue;
+	int count = UTIL_EntitiesInBox(pList, 255, Vector(-6000, -6000, -6000), Vector(6000, 6000, 6000), FL_MONSTER | FL_CLIENT);
 
-		if( pEnt->edict() == edict() )
+	// Now try to speak to each one
+	for (int i = 0; i < count; i++)
+	{
+		pEnt = pList[i];
+
+		if (!pEnt->pev || FNullEnt(pEnt->edict()))
+			continue;
+
+		if (pEnt->edict() == edict())
 		{
 			//Thothie FEB2008b - admin_gag
 			CBasePlayer *pPlayer = (CBasePlayer *)pEnt;
-			if ( pPlayer )
+			if (pPlayer)
 			{
-				if ( pPlayer->m_Gagged )
+				if (pPlayer->m_Gagged)
 				{
-					int rnd_muffle = RANDOM_LONG(1,4);
-					if ( rnd_muffle == 1 ) sprintf( FinalSentence, "[muted] %s: %s\n", DisplayName(), "Hmmmf... Mmmm! MMmmmmf!");
-					else if ( rnd_muffle == 2 ) sprintf( FinalSentence, "[muted] %s: %s\n", DisplayName(), "Mmmmm! Mmmmmmmmmf!");
-					else if ( rnd_muffle == 3 ) sprintf( FinalSentence, "[muted] %s: %s\n", DisplayName(), "Ffffffmmmmffff!!!");
-					else if ( rnd_muffle == 4 ) sprintf( FinalSentence, "[muted] %s: %s\n", DisplayName(), "MMmmmmf! HMmmmmmf!");
+					int rnd_muffle = RANDOM_LONG(1, 4);
+					if (rnd_muffle == 1)
+						sprintf(FinalSentence, "[muted] %s: %s\n", DisplayName(), "Hmmmf... Mmmm! MMmmmmf!");
+					else if (rnd_muffle == 2)
+						sprintf(FinalSentence, "[muted] %s: %s\n", DisplayName(), "Mmmmm! Mmmmmmmmmf!");
+					else if (rnd_muffle == 3)
+						sprintf(FinalSentence, "[muted] %s: %s\n", DisplayName(), "Ffffffmmmmffff!!!");
+					else if (rnd_muffle == 4)
+						sprintf(FinalSentence, "[muted] %s: %s\n", DisplayName(), "MMmmmmf! HMmmmmmf!");
 				}
 			}
 
-			if( pEnt->IsNetClient() ) {
+			if (pEnt->IsNetClient())
+			{
 				// print to the sending client
-				MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_HUDMSG], NULL, edict() );
-					WRITE_BYTE( 4 );
-					WRITE_BYTE( SayTextType );
-					WRITE_STRING( FinalSentence );
+				MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_HUDMSG], NULL, edict());
+				WRITE_BYTE(4);
+				WRITE_BYTE(SayTextType);
+				WRITE_STRING(FinalSentence);
 				MESSAGE_END();
 			}
 			continue;
@@ -1602,74 +1678,78 @@ void CMSMonster :: Speak( char *pszSentence, speech_type SpeechType )
 
 		// Local speech
 		//Thothie SEP2007 - removing "|| !FMVisible( pEnt )" condition - causes issues
-		if( SpeechType == SPEECH_LOCAL )
-			if( (pEnt->Center() - Center()).Length2D() > m_SayTextRange )
+		if (SpeechType == SPEECH_LOCAL)
+			if ((pEnt->Center() - Center()).Length2D() > m_SayTextRange)
 				continue;
 
 		// Party speech
-		if( (SpeechType == SPEECH_PARTY && IsPlayer()) && !SameTeam(pEnt, this) )
+		if ((SpeechType == SPEECH_PARTY && IsPlayer()) && !SameTeam(pEnt, this))
 			continue;
 
-		if ( pEnt->IsNetClient() )
+		if (pEnt->IsNetClient())
 		{
-			MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_HUDMSG], NULL, pEnt->edict() );
-				WRITE_BYTE( 4 );
-				WRITE_BYTE( SayTextType );
-				WRITE_STRING( FinalSentence );
+			MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_HUDMSG], NULL, pEnt->edict());
+			WRITE_BYTE(4);
+			WRITE_BYTE(SayTextType);
+			WRITE_STRING(FinalSentence);
 			MESSAGE_END();
 		}
 
 		//MiB DEC2007a
-		if( SpeechType == SPEECH_LOCAL && IsPlayer() && pEnt->IsMSMonster() )    
+		if (SpeechType == SPEECH_LOCAL && IsPlayer() && pEnt->IsMSMonster())
 		{
-			StoreEntity( this, ENT_LASTSPOKE ); //Thothie - not working :(
-			msstringlist Params;    
-			Params.clear();   
-			Params.add( pszSentence );  
-			Params.add( EntToString( this ) ); //Thothie - Workaround
-			((CMSMonster *) pEnt)->CallScriptEvent( "game_heardtext", &Params );    
+			StoreEntity(this, ENT_LASTSPOKE); //Thothie - not working :(
+			msstringlist Params;
+			Params.clear();
+			Params.add(pszSentence);
+			Params.add(EntToString(this)); //Thothie - Workaround
+			((CMSMonster *)pEnt)->CallScriptEvent("game_heardtext", &Params);
 		}
 
 		//This has to be called after the text msgs are sent out
-		if( SpeechType == SPEECH_LOCAL && IsPlayer() && pEnt->IsMSMonster() )
-			((CMSMonster *)pEnt)->HearPhrase( this, pszSentence );
+		if (SpeechType == SPEECH_LOCAL && IsPlayer() && pEnt->IsMSMonster())
+			((CMSMonster *)pEnt)->HearPhrase(this, pszSentence);
 	}
 
 	// echo to server console
-	if( IsPlayer() ) g_engfuncs.pfnServerPrint( FinalSentence );	
+	if (IsPlayer())
+		g_engfuncs.pfnServerPrint(FinalSentence);
 }
 
 //Called when a player talks (normal mode)
-void CMSMonster :: HearPhrase( CMSMonster *pSpeaker, const char *phrase )
+void CMSMonster ::HearPhrase(CMSMonster *pSpeaker, const char *phrase)
 {
 	char cTemp1[256];
 
-	if( HasConditions( MONSTER_NOAI ) ) return;
-	if( !IsAlive( ) ) return;
+	if (HasConditions(MONSTER_NOAI))
+		return;
+	if (!IsAlive())
+		return;
 
-	strcpy( cTemp1, phrase );
-	_strlwr( cTemp1 );  //lower case comparison
+	strcpy(cTemp1, phrase);
+	_strlwr(cTemp1); //lower case comparison
 
 	listenphrase_t *BestPhrase = NULL;
 	float BestMatchedRatio = 0;
 
-	 for (int i = 0; i < m_Phrases.size(); i++) 
+	for (int i = 0; i < m_Phrases.size(); i++)
 	{
 		listenphrase_t &Phrase = m_Phrases[i];
-		 for (int p = 0; p < Phrase.Phrases.size(); p++) 
+		for (int p = 0; p < Phrase.Phrases.size(); p++)
 		{
 			msstring_ref CheckPhrase = Phrase.Phrases[p];
 			msstring_ref SubPhrase = NULL;
-			if( SubPhrase = strstr( cTemp1, CheckPhrase ) )
+			if (SubPhrase = strstr(cTemp1, CheckPhrase))
 			{
 				int Matched = 0;
 				int len = strlen(CheckPhrase);
-				 for (int i = 0; i < len; i++) 
-					if( SubPhrase[i] == CheckPhrase[i] ) Matched++;
+				for (int i = 0; i < len; i++)
+					if (SubPhrase[i] == CheckPhrase[i])
+						Matched++;
 
 				float ratio = (float)Matched / strlen(cTemp1);
 
-				if( ratio > BestMatchedRatio )
+				if (ratio > BestMatchedRatio)
 				{
 					BestMatchedRatio = ratio;
 					BestPhrase = &Phrase;
@@ -1679,59 +1759,64 @@ void CMSMonster :: HearPhrase( CMSMonster *pSpeaker, const char *phrase )
 		}
 	}
 
-	if( BestPhrase )
+	if (BestPhrase)
 	{
 		//Heard a phrase, store the talker and run the event
-		StoreEntity( pSpeaker, ENT_LASTSPOKE );
+		StoreEntity(pSpeaker, ENT_LASTSPOKE);
 
-		CallScriptEvent( BestPhrase->ScriptEvent );
+		CallScriptEvent(BestPhrase->ScriptEvent);
 	}
 }
 
-void CMSMonster :: Used( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CMSMonster ::Used(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-	if( !pActivator || !pActivator->IsPlayer( ) )
+	if (!pActivator || !pActivator->IsPlayer())
 	{
-		if( !m_fSpawnOnTrigger ) return;
-		if( pev->owner ) CBaseEntity::Instance(pev->owner)->MSQuery( (int)pev );
+		if (!m_fSpawnOnTrigger)
+			return;
+		if (pev->owner)
+			CBaseEntity::Instance(pev->owner)->MSQuery((int)pev);
 		return;
 	};
-	if( HasConditions( MONSTER_NOAI ) ) return;
+	if (HasConditions(MONSTER_NOAI))
+		return;
 
 	CBasePlayer *pPlayer = (CBasePlayer *)pActivator;
 
-	StoreEntity( pActivator, ENT_LASTUSED );
+	StoreEntity(pActivator, ENT_LASTUSED);
 
-	if( m_Menu_Autoopen )		//Auto open menu when player does +use on me
-		OpenMenu( pPlayer );
+	if (m_Menu_Autoopen) //Auto open menu when player does +use on me
+		OpenMenu(pPlayer);
 
 	//Using pev->euser1 is the old way, phase it out
-	pev->euser1 = pActivator->edict( );
+	pev->euser1 = pActivator->edict();
 
 	msstringlist Parameters;
-	Parameters.add( EntToString(pActivator) );
-	CallScriptEvent("game_playerused", &Parameters );
+	Parameters.add(EntToString(pActivator));
+	CallScriptEvent("game_playerused", &Parameters);
 
 	pev->euser1 = NULL;
-
 }
 //
 // Trade - Manage trading with others
-// ¯¯¯¯¯
-void CMSMonster :: Trade( )
+// ï¿½ï¿½ï¿½ï¿½ï¿½
+void CMSMonster ::Trade()
 {
-	if( !HasConditions( MONSTER_TRADING ) ) return;
+	if (!HasConditions(MONSTER_TRADING))
+		return;
 
-	if( m_hEnemy != NULL && m_hEnemy->IsAlive() )
+	if (m_hEnemy != NULL && m_hEnemy->IsAlive())
 	{
 		CBaseMonster *pEnemy = (CBaseMonster *)(CBaseEntity *)m_hEnemy;
-		if( pEnemy->m_hEnemy == this &&
-			(pEnemy->Center() - Center()).Length() <= 128 ) return;
+		if (pEnemy->m_hEnemy == this &&
+			(pEnemy->Center() - Center()).Length() <= 128)
+			return;
 	}
 
 	//End trade
-	if( m_TradeCallBackEvent.len() ) CallScriptEvent( UTIL_VarArgs( "%s_done", m_TradeCallBackEvent.c_str() ) );
-	ClearConditions( MONSTER_TRADING );
+	if (m_TradeCallBackEvent.len())
+		CallScriptEvent(UTIL_VarArgs("%s_done", m_TradeCallBackEvent.c_str()));
+	ClearConditions(MONSTER_TRADING);
 	m_hEnemy = NULL;
 	OpenStore = NULL;
 
@@ -1741,16 +1826,17 @@ void CMSMonster :: Trade( )
 	if ( pPlayer ) pPlayer->InMenu = false;
 	*/
 }
-tradeinfo_t *CMSMonster::TradeItem( tradeinfo_t *ptiTradeInfo )
+tradeinfo_t *CMSMonster::TradeItem(tradeinfo_t *ptiTradeInfo)
 {
-	if( !HasConditions(MONSTER_TRADING) || m_hEnemy == NULL || 
-		!ptiTradeInfo || !OpenStore ) return NULL;
+	if (!HasConditions(MONSTER_TRADING) || m_hEnemy == NULL ||
+		!ptiTradeInfo || !OpenStore)
+		return NULL;
 
 	//If I'm the vendor...
-	if( ptiTradeInfo->pCustomer != this )
+	if (ptiTradeInfo->pCustomer != this)
 	{
 		static tradeinfo_t tiTradeInfo;
-		ZeroMemory( &tiTradeInfo, sizeof(tradeinfo_t) );
+		ZeroMemory(&tiTradeInfo, sizeof(tradeinfo_t));
 
 		storeitem_t *psiStoreItem = NULL;
 
@@ -1758,10 +1844,10 @@ tradeinfo_t *CMSMonster::TradeItem( tradeinfo_t *ptiTradeInfo )
 		tiTradeInfo.pCustomer = ptiTradeInfo->pCustomer;
 		tiTradeInfo.pStore = OpenStore;
 
-		if( ptiTradeInfo->iStatus == TRADE_BUY ) 
-		{	
+		if (ptiTradeInfo->iStatus == TRADE_BUY)
+		{
 			//If gold, then just give all the gold
-			if( !strcmp(ptiTradeInfo->ItemName,"GOLD") )
+			if (!strcmp(ptiTradeInfo->ItemName, "GOLD"))
 			{
 				tiTradeInfo.iStatus = ptiTradeInfo->iStatus;
 				tiTradeInfo.pItem = NULL;
@@ -1769,32 +1855,33 @@ tradeinfo_t *CMSMonster::TradeItem( tradeinfo_t *ptiTradeInfo )
 				tiTradeInfo.psiStoreItem = NULL;
 			}
 			//If not gold, then match the item name to its store item
-			else if( (psiStoreItem = OpenStore->GetItem( ptiTradeInfo->ItemName )) && 
-					  psiStoreItem->Quantity >= psiStoreItem->iBundleAmt ) 
+			else if ((psiStoreItem = OpenStore->GetItem(ptiTradeInfo->ItemName)) &&
+					 psiStoreItem->Quantity >= psiStoreItem->iBundleAmt)
 			{
 				tiTradeInfo.iStatus = ptiTradeInfo->iStatus;
-				tiTradeInfo.pItem = NewGenericItem( tiTradeInfo.ItemName );
+				tiTradeInfo.pItem = NewGenericItem(tiTradeInfo.ItemName);
 				tiTradeInfo.pItem->iQuantity = psiStoreItem->iBundleAmt;
 				tiTradeInfo.iPrice = psiStoreItem->iCost;
 				tiTradeInfo.psiStoreItem = psiStoreItem;
 			}
-			else return NULL;
-
+			else
+				return NULL;
 		}
-		else if( ptiTradeInfo->iStatus == TRADE_SELL )
+		else if (ptiTradeInfo->iStatus == TRADE_SELL)
 		{
 			//Find the item on the customer.  Item must be owned by the customer
-			ptiTradeInfo->pItem = MSUtil_GetItemByID( atoi(ptiTradeInfo->ItemName) );
-			if( !ptiTradeInfo->pItem || ptiTradeInfo->pItem->Owner() != ptiTradeInfo->pCustomer ) return NULL;
+			ptiTradeInfo->pItem = MSUtil_GetItemByID(atoi(ptiTradeInfo->ItemName));
+			if (!ptiTradeInfo->pItem || ptiTradeInfo->pItem->Owner() != ptiTradeInfo->pCustomer)
+				return NULL;
 
 			//Find the item in my store.  Item must exist in my store
-			if( !(psiStoreItem = OpenStore->GetItem( ptiTradeInfo->pItem->ItemName )) )
+			if (!(psiStoreItem = OpenStore->GetItem(ptiTradeInfo->pItem->ItemName)))
 				return NULL;
 
 			tiTradeInfo.iStatus = ptiTradeInfo->iStatus;
 			tiTradeInfo.pItem = ptiTradeInfo->pItem;
 			tiTradeInfo.iPrice = int(psiStoreItem->iCost * psiStoreItem->flSellRatio);
-			tiTradeInfo.psiStoreItem = psiStoreItem;			
+			tiTradeInfo.psiStoreItem = psiStoreItem;
 		}
 		return &tiTradeInfo;
 	}
@@ -1803,44 +1890,45 @@ tradeinfo_t *CMSMonster::TradeItem( tradeinfo_t *ptiTradeInfo )
 }
 //
 // AcceptOffer - Accept an offer from a player or monster
-// ¯¯¯¯¯¯¯¯¯¯¯
-bool CMSMonster :: AcceptOffer( )
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+bool CMSMonster ::AcceptOffer()
 {
 	bool fRecievedItem = false;
 
 	CBaseEntity *pEnt = (CBaseEntity *)GET_PRIVATE(INDEXENT(m_OfferInfo.SrcMonsterIDX));
-	if( pEnt && pEnt == m_OfferInfo.pSrcMonster && pEnt->MyMonsterPointer() )
+	if (pEnt && pEnt == m_OfferInfo.pSrcMonster && pEnt->MyMonsterPointer())
 	{
 		CMSMonster *pMonster = (CMSMonster *)pEnt;
 
-		if( m_OfferInfo.ItemType == ITEM_NORMAL )
+		if (m_OfferInfo.ItemType == ITEM_NORMAL)
 		{
 			CBaseEntity *pItemEnt = (CBaseEntity *)GET_PRIVATE(INDEXENT((int)m_OfferInfo.pItemData));
-			if( pItemEnt && 
-				pItemEnt == m_OfferInfo.pItemData2 && 
-				FBitSet(pItemEnt->MSProperties(),ITEM_GENERIC) &&
-				((CGenericItem *)pItemEnt)->m_pOwner == m_OfferInfo.pSrcMonster )
+			if (pItemEnt &&
+				pItemEnt == m_OfferInfo.pItemData2 &&
+				FBitSet(pItemEnt->MSProperties(), ITEM_GENERIC) &&
+				((CGenericItem *)pItemEnt)->m_pOwner == m_OfferInfo.pSrcMonster)
 			{
 				CGenericItem *pItem = (CGenericItem *)pItemEnt;
-				if( IsPlayer() ) 
-					fRecievedItem = pItem->GiveTo( this ) ? true : false;
-				else if( pItem->m_pOwner ) 
+				if (IsPlayer())
+					fRecievedItem = pItem->GiveTo(this) ? true : false;
+				else if (pItem->m_pOwner)
 				{
-					pItem->m_pOwner->RemoveItem( pItem );
-					pItem->SUB_Remove( );
+					pItem->m_pOwner->RemoveItem(pItem);
+					pItem->SUB_Remove();
 					fRecievedItem = true;
-				}		
+				}
 			}
 		}
-		else {
-			int iGoldAmt = max(min((int)m_OfferInfo.pItemData,pMonster->m_Gold),0);
+		else
+		{
+			int iGoldAmt = max(min((int)m_OfferInfo.pItemData, pMonster->m_Gold), 0);
 			m_Gold += iGoldAmt;
 			pMonster->m_Gold -= iGoldAmt;
 			fRecievedItem = true;
 		}
 
-		if( fRecievedItem )
-			StoreEntity( pMonster, ENT_LASTGAVEITEM );
+		if (fRecievedItem)
+			StoreEntity(pMonster, ENT_LASTGAVEITEM);
 
 		m_OfferInfo.SrcMonsterIDX = 0;
 	}
@@ -1848,50 +1936,59 @@ bool CMSMonster :: AcceptOffer( )
 	return fRecievedItem;
 }
 
-float CMSMonster::Give( givetype_e Type, float Amt ) 
+float CMSMonster::Give(givetype_e Type, float Amt)
 {
 	float *Current = NULL, Max;
-	
-	switch( Type )
+
+	switch (Type)
 	{
-		case GIVE_HP: Current = &m_HP; Max = MaxHP( ); break;
-		case GIVE_MP: Current = &m_MP; Max = MaxMP( ); break;
-		default: return 0;
-	//case GIVE_GOLD: Current = &m; Max = MaxMP( ); break;
+	case GIVE_HP:
+		Current = &m_HP;
+		Max = MaxHP();
+		break;
+	case GIVE_MP:
+		Current = &m_MP;
+		Max = MaxMP();
+		break;
+	default:
+		return 0;
+		//case GIVE_GOLD: Current = &m; Max = MaxMP( ); break;
 	}
 
-	float AddAmount = min( Max - *Current, Amt ); //Max amount that can be added
-	AddAmount = max( -*Current, AddAmount ); //Max health that can be taken
+	float AddAmount = min(Max - *Current, Amt); //Max amount that can be added
+	AddAmount = max(-*Current, AddAmount);		//Max health that can be taken
 
-	if( AddAmount < 0 && FBitSet( pev->flags, FL_GODMODE ) ) AddAmount = 0;
-	
+	if (AddAmount < 0 && FBitSet(pev->flags, FL_GODMODE))
+		AddAmount = 0;
+
 	*Current += AddAmount;
-	if( Type == GIVE_HP ) pev->health = *Current;
+	if (Type == GIVE_HP)
+		pev->health = *Current;
 
 	return AddAmount;
 }
 
-
 // Set the activity based on an event or current state
-void CMSMonster::SetAnimation( MONSTER_ANIM AnimType, const char *pszAnimName, void *vData )
+void CMSMonster::SetAnimation(MONSTER_ANIM AnimType, const char *pszAnimName, void *vData)
 {
 	startdbg;
 
-	if( m_Brush ) 
+	if (m_Brush)
 		return;
 
-	if( !m_pAnimHandler ) m_pAnimHandler = &gAnimWalk;
+	if (!m_pAnimHandler)
+		m_pAnimHandler = &gAnimWalk;
 
 	//if( IsActing( ) ) return;
 
 	m_pAnimHandler->m_pOwner = this;
 	pszCurrentAnimName = pszAnimName;
-	dbg( "Check for new animation" );
+	dbg("Check for new animation");
 	//Thothie - JUN2007b
 	//- The code is causing monsters to break anims at weird moments
 	//- if you 'dance' around an affected monster, he can never attack, as his swing anims break
 	//- trying to stop that by making sure only scripts can call anim breaks
-	if( m_pAnimHandler->CanChangeTo(AnimType,vData) && pszAnimName ) 
+	if (m_pAnimHandler->CanChangeTo(AnimType, vData) && pszAnimName)
 	{
 		//Thothie - JUN2007b
 		//- Its impossible to tell what animation a monster is currently using
@@ -1913,7 +2010,7 @@ void CMSMonster::SetAnimation( MONSTER_ANIM AnimType, const char *pszAnimName, v
 		//[/thothie]
 		*/
 
-		dbg( "New Animation" );
+		dbg("New Animation");
 
 		/*if( AnimType == MONSTER_ANIM_BREAK ) //Special case: PLAYER_BREAK
 		{
@@ -1927,51 +2024,55 @@ void CMSMonster::SetAnimation( MONSTER_ANIM AnimType, const char *pszAnimName, v
 		}
 		else
 		{*/
-			m_pAnimHandler = m_pAnimHandler->ChangeTo( AnimType );
-			if( m_pAnimHandler ) {
-				m_pAnimHandler->m_pOwner = this;
-				m_pAnimHandler->Initialize( vData );
-			}
+		m_pAnimHandler = m_pAnimHandler->ChangeTo(AnimType);
+		if (m_pAnimHandler)
+		{
+			m_pAnimHandler->m_pOwner = this;
+			m_pAnimHandler->Initialize(vData);
+		}
 		//}
 	}
 
 	//Run current animation
-	if( m_pAnimHandler ) 
+	if (m_pAnimHandler)
 	{
 		m_pAnimHandler->m_pOwner = this;
 
-		dbg( "Animate" );
+		dbg("Animate");
 		m_pAnimHandler->Animate();
 
-		dbg( "PostAnimate" );
-		m_pAnimHandler->PostAnimate( );
+		dbg("PostAnimate");
+		m_pAnimHandler->PostAnimate();
 
 		pev->framerate = m_Framerate;
-		if( m_Framerate_Modifier ) pev->framerate *= m_Framerate_Modifier;
+		if (m_Framerate_Modifier)
+			pev->framerate *= m_Framerate_Modifier;
 	}
 
-	enddbgprt( (IsPlayer() ? "(Monster)" : "(PLAYER)") );
+	enddbgprt((IsPlayer() ? "(Monster)" : "(PLAYER)"));
 }
-void CMSMonster::BreakAnimation( MONSTER_ANIM AnimType, const char *pszAnimName, void *vData )
+void CMSMonster::BreakAnimation(MONSTER_ANIM AnimType, const char *pszAnimName, void *vData)
 {
 	//Thothie - Attempting to stop msdll from breaking anims
 
 	startdbg;
 
-	if( m_Brush ) 
+	if (m_Brush)
 		return;
 
-	if( !m_pAnimHandler ) m_pAnimHandler = &gAnimWalk;
+	if (!m_pAnimHandler)
+		m_pAnimHandler = &gAnimWalk;
 
 	m_pAnimHandler->m_pOwner = this;
 	pszCurrentAnimName = pszAnimName;
-	dbg( "Check for new animation" );
+	dbg("Check for new animation");
 
-	dbg( "Break Animation" );
+	dbg("Break Animation");
 
-	if( AnimType == MONSTER_ANIM_BREAK ) //Special case: PLAYER_BREAK
+	if (AnimType == MONSTER_ANIM_BREAK) //Special case: PLAYER_BREAK
 	{
-		if( vData ) AnimType = (MONSTER_ANIM)(long)vData;
+		if (vData)
+			AnimType = (MONSTER_ANIM)(long)vData;
 		else
 		{
 			AnimType = MONSTER_ANIM_WALK;
@@ -1982,32 +2083,33 @@ void CMSMonster::BreakAnimation( MONSTER_ANIM AnimType, const char *pszAnimName,
 	}
 	else
 	{
-		m_pAnimHandler = m_pAnimHandler->ChangeTo( AnimType );
-		if( m_pAnimHandler )
+		m_pAnimHandler = m_pAnimHandler->ChangeTo(AnimType);
+		if (m_pAnimHandler)
 		{
 			m_pAnimHandler->m_pOwner = this;
-			m_pAnimHandler->Initialize( vData );
+			m_pAnimHandler->Initialize(vData);
 		}
 	}
 
 	//Run current animation
-	if( m_pAnimHandler ) 
+	if (m_pAnimHandler)
 	{
 		m_pAnimHandler->m_pOwner = this;
 
-		dbg( "Animate" );
+		dbg("Animate");
 		m_pAnimHandler->Animate();
 
-		dbg( "PostAnimate" );
-		m_pAnimHandler->PostAnimate( );
+		dbg("PostAnimate");
+		m_pAnimHandler->PostAnimate();
 
 		pev->framerate = m_Framerate;
-		if( m_Framerate_Modifier ) pev->framerate *= m_Framerate_Modifier;
+		if (m_Framerate_Modifier)
+			pev->framerate *= m_Framerate_Modifier;
 	}
 
-	enddbgprt( (IsPlayer() ? "(Monster)" : "(PLAYER)") );
+	enddbgprt((IsPlayer() ? "(Monster)" : "(PLAYER)"));
 }
-void CMSMonster::Attacked( CBaseEntity *pAttacker, damage_t &Damage )
+void CMSMonster::Attacked(CBaseEntity *pAttacker, damage_t &Damage)
 {
 	//Thothie FEB2011_22 - not used by any script, save the call
 	/*
@@ -2020,7 +2122,7 @@ void CMSMonster::Attacked( CBaseEntity *pAttacker, damage_t &Damage )
 }
 
 //MiB MAR2008a multiple changes
-float CMSMonster::TraceAttack( damage_t &Damage )
+float CMSMonster::TraceAttack(damage_t &Damage)
 {
 	startdbg;
 
@@ -2028,9 +2130,9 @@ float CMSMonster::TraceAttack( damage_t &Damage )
 
 	// Handle parrying
 	// Attacker - Rolls from [AccuracyRoll - 130       ]
-	// Defender - Rolls from [0            - ParryValue] 
+	// Defender - Rolls from [0            - ParryValue]
 	// Attacker gets that extra 30 so attacks will get through more often
-	dbg( "Begin" );
+	dbg("Begin");
 
 	//This is a last-chance check, to make sure that somebody doesn't find an obscure way to hurt another player
 	//The relationship status is first checked in DoDamage()
@@ -2041,7 +2143,7 @@ float CMSMonster::TraceAttack( damage_t &Damage )
 	bool thoth_did_parry = false;
 
 	CBaseEntity *pAttacker = Damage.pAttacker;
-	if( IsAlive( ) && pAttacker && pAttacker->IsMSMonster() )
+	if (IsAlive() && pAttacker && pAttacker->IsMSMonster())
 	{
 		CMSMonster *pMonster = (CMSMonster *)pAttacker;
 
@@ -2049,15 +2151,17 @@ float CMSMonster::TraceAttack( damage_t &Damage )
 		//- maybe internalize Parry for monsters?
 		//- Thothie note of FEB2008a
 
-		int ParryValue = GetSkillStat( "parry", STATPROP_SKILL );
+		int ParryValue = GetSkillStat("parry", STATPROP_SKILL);
 
-		if ( ParryValue > 60 ) ParryValue = 60; //Thothie JAN2010_22 - cap out parry (shhh)
+		if (ParryValue > 60)
+			ParryValue = 60; //Thothie JAN2010_22 - cap out parry (shhh)
 
-		int AccRoll = RANDOM_LONG(Damage.AccuracyRoll,100), ParryRoll = RANDOM_LONG(0,ParryValue);
+		int AccRoll = RANDOM_LONG(Damage.AccuracyRoll, 100), ParryRoll = RANDOM_LONG(0, ParryValue);
 
 		//Using a weapon that can parry (shield, some swords) gives a parry bonus
-		int iAttackNum = 0, iHand = 0;;
-		CGenericItem *pHandItem = FindParryWeapon( this, iHand, iAttackNum );
+		int iAttackNum = 0, iHand = 0;
+		;
+		CGenericItem *pHandItem = FindParryWeapon(this, iHand, iAttackNum);
 		//NOV2014_09 - this is handled by setting the parry skill now, oh dear
 		/*
 		if( pHandItem )
@@ -2073,34 +2177,44 @@ float CMSMonster::TraceAttack( damage_t &Damage )
 		//mob just rolls 1d100 - (accuracy<100)
 
 		//Awareness gives a small parry bonus
-		ParryRoll += GetNatStat( NATURAL_AWR );
+		ParryRoll += GetNatStat(NATURAL_AWR);
 
 		//Thothie - do not parry certain damage types
 		msstring thoth_dmgtype = Damage.sDamageType;
-		if ( thoth_dmgtype.starts_with("target") ) ParryRoll = 0;
-		if ( thoth_dmgtype.starts_with("fire") ) ParryRoll = 0;
-		if ( thoth_dmgtype.starts_with("poison") ) ParryRoll = 0;
-		if ( thoth_dmgtype.starts_with("lightning") ) ParryRoll = 0;
-		if ( thoth_dmgtype.starts_with("cold") ) ParryRoll = 0;
-		if ( thoth_dmgtype.contains("effect") ) ParryRoll = 0; //do not parry DOT attacks
-		if ( thoth_dmgtype.starts_with("magic") ) ParryRoll = 0;
-		if ( Damage.flDamage == 0 ) ParryRoll = 0; //do not parry 0 damage atks
-		if ( ParryRoll > 80 ) ParryRoll = 80; //always allow at least 20% chance to be hit
+		if (thoth_dmgtype.starts_with("target"))
+			ParryRoll = 0;
+		if (thoth_dmgtype.starts_with("fire"))
+			ParryRoll = 0;
+		if (thoth_dmgtype.starts_with("poison"))
+			ParryRoll = 0;
+		if (thoth_dmgtype.starts_with("lightning"))
+			ParryRoll = 0;
+		if (thoth_dmgtype.starts_with("cold"))
+			ParryRoll = 0;
+		if (thoth_dmgtype.contains("effect"))
+			ParryRoll = 0; //do not parry DOT attacks
+		if (thoth_dmgtype.starts_with("magic"))
+			ParryRoll = 0;
+		if (Damage.flDamage == 0)
+			ParryRoll = 0; //do not parry 0 damage atks
+		if (ParryRoll > 80)
+			ParryRoll = 80; //always allow at least 20% chance to be hit
 
-		if( ParryRoll > AccRoll )
+		if (ParryRoll > AccRoll)
 		{
 			//thothie attempting to pass parry vars
 			msstringlist ParametersB;
-			ParametersB.add( pAttacker ? EntToString( pAttacker ) : "none" );
-			ParametersB.add( UTIL_VarArgs("%f",Damage.flDamage) );
-			ParametersB.add( Damage.sDamageType );
-			ParametersB.add( UTIL_VarArgs("%i",ParryRoll) );
-			ParametersB.add( UTIL_VarArgs("%i",AccRoll) );
-			ParametersB.add( UTIL_VarArgs("%i",ParryValue) );
-			CallScriptEvent( "game_parry", &ParametersB );
-			if( pHandItem ) pHandItem->CallScriptEvent( "game_parry", &ParametersB );
+			ParametersB.add(pAttacker ? EntToString(pAttacker) : "none");
+			ParametersB.add(UTIL_VarArgs("%f", Damage.flDamage));
+			ParametersB.add(Damage.sDamageType);
+			ParametersB.add(UTIL_VarArgs("%i", ParryRoll));
+			ParametersB.add(UTIL_VarArgs("%i", AccRoll));
+			ParametersB.add(UTIL_VarArgs("%i", ParryValue));
+			CallScriptEvent("game_parry", &ParametersB);
+			if (pHandItem)
+				pHandItem->CallScriptEvent("game_parry", &ParametersB);
 			Damage.flDamage = -1; // -1 means the monster dodged the attack
-			ClearMultiDamage( );
+			ClearMultiDamage();
 			thoth_did_parry = true;
 			/* MiB JUL2010_02 - Remove Parry as a levellable stat
 			//Learn parry skill from  a successful parry
@@ -2119,73 +2233,73 @@ float CMSMonster::TraceAttack( damage_t &Damage )
 
 	//this was moved to where experience is calculated in GIAttack
 	//Damage Modifiers ( takedmg xxx )
-	dbg( "Damage Modifiers" );
+	dbg("Damage Modifiers");
 	Damage.flDamage *= m.GenericTDM;
-	if( Damage.sDamageType )
-		 for (int i = 0; i < m.TakeDamageModifiers.size(); i++) 
+	if (Damage.sDamageType)
+		for (int i = 0; i < m.TakeDamageModifiers.size(); i++)
 		{
 			takedamagemodifier_t &TDM = m.TakeDamageModifiers[i];
 			//msstring thoth_my_dmgtype = TDM.DamageType;
 			msstring thoth_inc_dmgtype = Damage.sDamageType.c_str();
-			if( thoth_inc_dmgtype.starts_with(TDM.DamageType) )
+			if (thoth_inc_dmgtype.starts_with(TDM.DamageType))
 			{
 				//ALERT( at_console, "Damage modified!");// %.2f --> %.2f ( %s )\n", Damage.flDamage, Damage.flDamage * TDM.modifier, Damage.sDamageType );
 				Damage.flDamage *= TDM.modifier;
 			}
 		}
 
-
 	//Allow scripts to affect the damage
 	msstringlist Parameters;
-	Parameters.add( pAttacker ? EntToString( pAttacker ) : "none" );
-	Parameters.add( UTIL_VarArgs("%f",Damage.flDamage) );
-	Parameters.add( Damage.sDamageType ); //Thothie attempting to add damage type to game_damaged
-	Parameters.add( UTIL_VarArgs("%i",Damage.AccuracyRoll) );
-	Parameters.add( Damage.pInflictor ? EntToString( Damage.pInflictor ) : "none" );
+	Parameters.add(pAttacker ? EntToString(pAttacker) : "none");
+	Parameters.add(UTIL_VarArgs("%f", Damage.flDamage));
+	Parameters.add(Damage.sDamageType); //Thothie attempting to add damage type to game_damaged
+	Parameters.add(UTIL_VarArgs("%i", Damage.AccuracyRoll));
+	Parameters.add(Damage.pInflictor ? EntToString(Damage.pInflictor) : "none");
 
 	//[begin] Thothie DEC2014_13 - return skill used (WEAPON_SKILL not being reliable)
-	CStat *pStat = FindStat( Damage.ExpStat );
+	CStat *pStat = FindStat(Damage.ExpStat);
 	msstring out_skill = pStat->m_Name;
-	if ( out_skill.contains("spell") )
+	if (out_skill.contains("spell"))
 	{
 		out_skill.append(".");
 		char toconv[256];
-		strcpy( toconv, SpellTypeList[Damage.ExpProp] );
-		out_skill.append(msstring(_strlwr( toconv )));
+		strcpy(toconv, SpellTypeList[Damage.ExpProp]);
+		out_skill.append(msstring(_strlwr(toconv)));
 	}
-	Parameters.add( out_skill ); 
+	Parameters.add(out_skill);
 	//[end] Thothie DEC2014_13 - return skill used (WEAPON_SKILL not being reliable)
 
-	CallScriptEvent( "game_damaged", &Parameters );
+	CallScriptEvent("game_damaged", &Parameters);
 
-	if( m_ReturnData.len() )
+	if (m_ReturnData.len())
 	{
 		//Each script sets a ratio of damage you should take.  Factor each one into the damage
 		msstringlist DamageRatios;
-		TokenizeString( m_ReturnData, DamageRatios );
-		 for (int i = 0; i < DamageRatios.size(); i++) 
-			Damage.flDamage *= atof( DamageRatios[i] );	//Script can reject the damage with "returndata"
+		TokenizeString(m_ReturnData, DamageRatios);
+		for (int i = 0; i < DamageRatios.size(); i++)
+			Damage.flDamage *= atof(DamageRatios[i]); //Script can reject the damage with "returndata"
 	}
 
-	Parameters.clearitems( );
-	Parameters.add( pAttacker ? EntToString( pAttacker ) : "none" );
-	Parameters.add( UTIL_VarArgs("%f",Damage.flDamage) );
-	CallScriptEvent( "game_damaged_end", &Parameters );	//Allow post-parsing of damage, after all the scripts have messed with it
+	Parameters.clearitems();
+	Parameters.add(pAttacker ? EntToString(pAttacker) : "none");
+	Parameters.add(UTIL_VarArgs("%f", Damage.flDamage));
+	CallScriptEvent("game_damaged_end", &Parameters); //Allow post-parsing of damage, after all the scripts have messed with it
 
-	dbg( "StruckSound/Bleed" );
-	if( Damage.flDamage > 0 )
+	dbg("StruckSound/Bleed");
+	if (Damage.flDamage > 0)
 	{
 		//if( IsAlive() ) StruckSound( CBaseEntity::Instance(Damage.pevInflictor), CBaseEntity::Instance(Damage.pevAttacker), Damage.flDamage, &Damage.outTraceResult, Damage.iDamageType );
 
-		if( pev->health > 0 && pev->takedamage && !FBitSet( pev->flags, FL_GODMODE ) )
+		if (pev->health > 0 && pev->takedamage && !FBitSet(pev->flags, FL_GODMODE))
 		{
-			SpawnBlood( Damage.outTraceResult.vecEndPos, BloodColor(), Damage.flDamage );// a little surface blood.
-			TraceBleed( Damage.flDamage, (Damage.vecEnd-Damage.vecSrc).Normalize(), &Damage.outTraceResult, Damage.iDamageType );
+			SpawnBlood(Damage.outTraceResult.vecEndPos, BloodColor(), Damage.flDamage); // a little surface blood.
+			TraceBleed(Damage.flDamage, (Damage.vecEnd - Damage.vecSrc).Normalize(), &Damage.outTraceResult, Damage.iDamageType);
 		}
 	}
-	
-	dbg( "AddMultiDamage" );
-	if ( !thoth_did_parry ) AddMultiDamage( Damage.pAttacker ? Damage.pAttacker->pev : NULL, this, Damage.flDamage, Damage.iDamageType );
+
+	dbg("AddMultiDamage");
+	if (!thoth_did_parry)
+		AddMultiDamage(Damage.pAttacker ? Damage.pAttacker->pev : NULL, this, Damage.flDamage, Damage.iDamageType);
 
 	return Damage.flDamage;
 
@@ -2194,39 +2308,42 @@ float CMSMonster::TraceAttack( damage_t &Damage )
 	return 0;
 }
 
-int CMSMonster::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) {
-//	if( m_hEnemy == NULL || m_hEnemy.Get() != pevAttacker->pContainingEntity )
-//		m_hEnemy.Set( pevAttacker->pContainingEntity );
+int CMSMonster::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+{
+	//	if( m_hEnemy == NULL || m_hEnemy.Get() != pevAttacker->pContainingEntity )
+	//		m_hEnemy.Set( pevAttacker->pContainingEntity );
 
 	//if( pevAttacker == pev ) return fTookDamage;
 	//startdbg;
 	//dbg( "Begin" );
 	CBaseEntity *pInflictor = NULL, *pAttacker = NULL;
-	if (!FNullEnt( pevInflictor ))
-		pInflictor = CBaseEntity :: Instance( pevInflictor );
-	if (!FNullEnt( pevAttacker ))
-		pAttacker = CBaseEntity :: Instance( pevAttacker );
+	if (!FNullEnt(pevInflictor))
+		pInflictor = CBaseEntity ::Instance(pevInflictor);
+	if (!FNullEnt(pevAttacker))
+		pAttacker = CBaseEntity ::Instance(pevAttacker);
 
 	//--UNDONE:  If Damage is given, we must accept it regardless of the entity that caused it
 	//if( pAttacker && IRelationship(pAttacker) >= RELATIONSHIP_NO )
 	//	return 0;
 
 	//dbg( "TakeDamageEffect" );
-	TakeDamageEffect( pInflictor, pAttacker, flDamage, bitsDamageType );
+	TakeDamageEffect(pInflictor, pAttacker, flDamage, bitsDamageType);
 
-	if( pevInflictor ) m_vecEnemyLKP = pevInflictor->origin;
-	else m_vecEnemyLKP = pev->origin - ( g_vecAttackDir * 64 ); 
+	if (pevInflictor)
+		m_vecEnemyLKP = pevInflictor->origin;
+	else
+		m_vecEnemyLKP = pev->origin - (g_vecAttackDir * 64);
 
-	if( IsAlive() )
+	if (IsAlive())
 	{
 		//Attacked, store the attacker and run the struck event
 		//dbg( "StoreEntity" );
-		StoreEntity( pAttacker, ENT_LASTSTRUCK );
+		StoreEntity(pAttacker, ENT_LASTSTRUCK);
 
 		//dbg( "CallScriptEvent->game_struck" );
 		msstringlist Parameters;
-		Parameters.add( UTIL_VarArgs("%f",flDamage) );
-		CallScriptEvent( "game_struck", &Parameters );	
+		Parameters.add(UTIL_VarArgs("%f", flDamage));
+		CallScriptEvent("game_struck", &Parameters);
 
 		//AUG2013_21 Thothie - This is an old function we don't use, and it doesn't report damage proper
 		/*
@@ -2235,10 +2352,10 @@ int CMSMonster::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 		*/
 
 		//dbg( "GiveHP" );
-		GiveHP( -flDamage );
-		if( pev->health <= 0 )
+		GiveHP(-flDamage);
+		if (pev->health <= 0)
 		{
-			if( FBitSet(bitsDamageType,DMG_NOKILL) )
+			if (FBitSet(bitsDamageType, DMG_NOKILL))
 			{
 				//dbg( "Zero_Health^1" );
 				pev->health = m_HP = 1;
@@ -2246,7 +2363,7 @@ int CMSMonster::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 			else
 			{
 				//dbg( "Killed" );
-				Killed( pevAttacker, GIB_NEVER );
+				Killed(pevAttacker, GIB_NEVER);
 			}
 		}
 	}
@@ -2270,168 +2387,181 @@ int CMSMonster::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 				//fTookDamage = CBaseMonster::TakeDamage( pevInflictor, pevAttacker, flDamage, bitsDamageType );
 			}
 		}*/
-		GiveHP( -flDamage );
-		if( pev->health <= 0 ) pev->health = 0;
+		GiveHP(-flDamage);
+		if (pev->health <= 0)
+			pev->health = 0;
 	}
 
 	//enddbg;
 
 	return flDamage;
 }
-void CMSMonster::CounterEffect( CBaseEntity *pInflictor, int iEffect, void *pExtraData )
+void CMSMonster::CounterEffect(CBaseEntity *pInflictor, int iEffect, void *pExtraData)
 {
-	if( !pInflictor  || !pInflictor->IsMSItem() )
+	if (!pInflictor || !pInflictor->IsMSItem())
 		return;
 
 	//Call hitliving event on the item that struck me
 
-	pInflictor->CounterEffect( this, CE_HITMONSTER, this );
+	pInflictor->CounterEffect(this, CE_HITMONSTER, this);
 }
 
-void CMSMonster::Killed( entvars_t *pevAttacker, int iGib )
+void CMSMonster::Killed(entvars_t *pevAttacker, int iGib)
 {
 	startdbg;
 	dbg("Begin");
 	BOOL DeleteMe = TRUE;
 
 	//NOV2014_21 Thothie - script side XP management option [begin]
-	bool xp_dump = (strcmp(GetFirstScriptVar("NPC_DUMP_XP"), "1") == 0); //dump hits to array
+	bool xp_dump = (strcmp(GetFirstScriptVar("NPC_DUMP_XP"), "1") == 0);	 //dump hits to array
 	bool xp_custom = (strcmp(GetFirstScriptVar("NPC_CUSTOM_XP"), "1") == 0); //don't add XP code side
 	msstring skillname;
 
-	if ( xp_dump )
+	if (xp_dump)
 	{
 		//this maybe called post-death, ya may have to swap this for the GM ent
-		Util_ScriptArray(this,"create","ARRAY_XP_PLAYERS","0");
-		Util_ScriptArray(this,"create","ARRAY_XP_SKILLS","0");
-		Util_ScriptArray(this,"create","ARRAY_XP_AMTS","0");
+		Util_ScriptArray(this, "create", "ARRAY_XP_PLAYERS", "0");
+		Util_ScriptArray(this, "create", "ARRAY_XP_SKILLS", "0");
+		Util_ScriptArray(this, "create", "ARRAY_XP_AMTS", "0");
 	}
 	//NOV2014_21 Thothie - script side XP management option [end]
 
 	//MiB JUL2010_28 Anti-Gib
-	if( pev->deadflag == DEAD_NO )
+	if (pev->deadflag == DEAD_NO)
 	{
 		//Award players with exp proportional to the damage they did
 		dbg("AwardXP");
-		for( int i = 1; i <= MAXPLAYERS; i++ )
+		for (int i = 1; i <= MAXPLAYERS; i++)
 		{
-			CMSMonster *pPlayer = (CMSMonster *)UTIL_PlayerByIndex( i );
-			if( !pPlayer ) continue;
+			CMSMonster *pPlayer = (CMSMonster *)UTIL_PlayerByIndex(i);
+			if (!pPlayer)
+				continue;
 			float xpsend = 0.0;
 			// MiB JUN2010_19 - Decreases the exp-damage ratio if monster was overkilled
-			float mult = min( 1, m_MaxHP / m_PlayerDamage[i-1].dmgInTotal );
-			 for (int n = 0; n < SKILL_MAX_ATTACK; n++) 
+			float mult = min(1, m_MaxHP / m_PlayerDamage[i - 1].dmgInTotal);
+			for (int n = 0; n < SKILL_MAX_ATTACK; n++)
 			{
-				 for (int r = 0; r < STATPROP_ALL_TOTAL; r++) 
+				for (int r = 0; r < STATPROP_ALL_TOTAL; r++)
 				{
-					float dmg = m_PlayerDamage[i-1].dmg[n][r];
-					if( dmg > 0 )
+					float dmg = m_PlayerDamage[i - 1].dmg[n][r];
+					if (dmg > 0)
 					{
-						float xp = ( m_SkillLevel * ( (dmg*mult) / MaxHP()) );
+						float xp = (m_SkillLevel * ((dmg * mult) / MaxHP()));
 						xp = xp - floor(xp) >= 0.5 ? ceil(xp) : floor(xp); //Round the value. If it seems people are getting screwed on exp, lower the 0.5
-						
+
 						//MiB - Removed
-						//if ( xpsend < m_SkillLevel ) 
-							xpsend += xp; //Thothie added if ( xpsend < m_SkillLevel ) condition - don't give more than the monsters worth just cuz you hit it a lot!
+						//if ( xpsend < m_SkillLevel )
+						xpsend += xp; //Thothie added if ( xpsend < m_SkillLevel ) condition - don't give more than the monsters worth just cuz you hit it a lot!
 						//if( xpsend > 0 ) ALERT( at_console, "Gained XP: %f", xpsend );  //Thothie returns XP
 						//if( xpsend > 0 ) ClientPrint( pPlayer->pev, at_console, "Gained XP: %f", xpsend );
 						dbg("pPlayer->LearnSkill");
-						if ( !xp_custom ) pPlayer->LearnSkill( n, r, xp ); //NOV2014_21 Thothie - script side XP management option
+						if (!xp_custom)
+							pPlayer->LearnSkill(n, r, xp); //NOV2014_21 Thothie - script side XP management option
 						//NOV2014_21 Thothie - script side XP management option [begin]
-						if ( xp_dump )
+						if (xp_dump)
 						{
-							Util_ScriptArray(this,"add","ARRAY_XP_PLAYERS",EntToString(pPlayer));
+							Util_ScriptArray(this, "add", "ARRAY_XP_PLAYERS", EntToString(pPlayer));
 
-							skillname = SkillStatList[n-SKILL_FIRSTSKILL].Name;
+							skillname = SkillStatList[n - SKILL_FIRSTSKILL].Name;
 							skillname.append(".");
-							if ( skillname.contains("Spell") ) skillname.append(SpellTypeList[r]);
-							else skillname.append(SkillTypeList[r]);
+							if (skillname.contains("Spell"))
+								skillname.append(SpellTypeList[r]);
+							else
+								skillname.append(SkillTypeList[r]);
 
-							Util_ScriptArray(this,"add","ARRAY_XP_SKILLS",skillname.c_str());
-							Util_ScriptArray(this,"add","ARRAY_XP_AMTS",FloatToString(xp));
+							Util_ScriptArray(this, "add", "ARRAY_XP_SKILLS", skillname.c_str());
+							Util_ScriptArray(this, "add", "ARRAY_XP_AMTS", FloatToString(xp));
 						}
 						//NOV2014_21 Thothie - script side XP management option [end]
 					}
 				}
 			}
 			dbg("SendXP");
-			if ( xpsend > 0 && !xp_custom )
+			if (xpsend > 0 && !xp_custom)
 			{
 				msstringlist Parameters;
-				Parameters.add( UTIL_VarArgs("%f",xpsend) );
-				pPlayer->CallScriptEvent( "game_xpgain", &Parameters );
+				Parameters.add(UTIL_VarArgs("%f", xpsend));
+				pPlayer->CallScriptEvent("game_xpgain", &Parameters);
 			}
 		}
 
 		//Stop attacking
-		CancelAttack( );
+		CancelAttack();
 
 		//Slience my weapon
 		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "common/null.wav", 1, ATTN_NORM);
 
 		//Callback for msarea_monsterspawn
 		//MAR2008b - this used to be after ShouldGibMonster( iGib ) - moving before
-		if( pev->owner )
+		if (pev->owner)
 		{
 			CBaseEntity *pOwner = CBaseEntity::Instance(pev->owner);
 			// MiB AUG2010_01 - pOwner - If the msarea_monsterspawn has been deleted, pev->owner will be "true", but it will null-pointer here
 			//				  - DEAD_NO redundancy is in case game_death changes it (happens on skeletons)
 			//if ( pOwner && pev->deadflag != DEAD_NO )
-			if ( pOwner ) pOwner->DeathNotice( pev ); //Thothie DEC2010_22 - check that pOwner exists
+			if (pOwner)
+				pOwner->DeathNotice(pev); //Thothie DEC2010_22 - check that pOwner exists
 		}
 
-
 		//MAR2008b fire targets here instead of in death fade, in case gibs
-		if ( m_iszKillTarget.len() > 0 ) FireTargets( m_iszKillTarget, this, this, USE_TOGGLE, 0 );
+		if (m_iszKillTarget.len() > 0)
+			FireTargets(m_iszKillTarget, this, this, USE_TOGGLE, 0);
 
 		//Gib now, if neccesary
-		if( ShouldGibMonster( iGib ) ) CallGibMonster();
+		if (ShouldGibMonster(iGib))
+			CallGibMonster();
 
 		//Thothie SEP2007 - attempting to remove inifnite xp sploit from missing monsterspawn
 		//- maybe causing issues - prob not - test further when have time (see if actually fixes inf xp)
 		//bool thoth_spawner_alive = CBaseEntity::Instance(pev->owner)->IsAlive;
-		//if( !thoth_spawner_alive ) CallGibMonster(); 
+		//if( !thoth_spawner_alive ) CallGibMonster();
 
 		//I'm dying, create my body
-		if( !FBitSet(pev->effects,EF_NODRAW) ) {
+		if (!FBitSet(pev->effects, EF_NODRAW))
+		{
 			Activity DeathAct = GetDeathActivity();
-			pev->sequence = LookupActivity( DeathAct );
+			pev->sequence = LookupActivity(DeathAct);
 			ResetSequenceInfo();
 			pev->frame = 0;
-			pev->deadflag	= DEAD_DYING;
-			pev->solid		= SOLID_NOT;
-			pev->movetype	= MOVETYPE_TOSS;		//So I'll fall to the ground
-			ClearBits( pev->flags, FL_ONGROUND );
-			UTIL_SetOrigin( pev, pev->origin ); //Thothie - do we need this?, messses with fliers
-			SetThink( &CMSMonster::DieThink ); 
-//			ALERT( at_console, "m_flFrameRate: %f\n", m_flFrameRate );
+			pev->deadflag = DEAD_DYING;
+			pev->solid = SOLID_NOT;
+			pev->movetype = MOVETYPE_TOSS; //So I'll fall to the ground
+			ClearBits(pev->flags, FL_ONGROUND);
+			UTIL_SetOrigin(pev, pev->origin); //Thothie - do we need this?, messses with fliers
+			SetThink(&CMSMonster::DieThink);
+			//			ALERT( at_console, "m_flFrameRate: %f\n", m_flFrameRate );
 			//pev->nextthink = gpGlobals->time + ((256 / m_flFrameRate) * pev->framerate);
-			pev->health = pev->max_health/2; //Thothie - Dunno what this is about
-			DeleteMe = FALSE; //live until the body's dead
+			pev->health = pev->max_health / 2; //Thothie - Dunno what this is about
+			DeleteMe = FALSE;				   //live until the body's dead
 
-			if( FStrEq(STRING(pev->classname),"msmonster_summoned") )
+			if (FStrEq(STRING(pev->classname), "msmonster_summoned"))
 				g_SummonedMonsters--;
 
 			//ALERT( at_console, "called game_death\n" );
-			CallScriptEvent( "game_death" );
+			CallScriptEvent("game_death");
 			m_SkillLevel = 0; //Thothie APR2011_06 - attempt to make sure monster does not give additional skill post mortem
 		}
-		else DeleteMe = TRUE; // Gibbed, destroy this entity
+		else
+			DeleteMe = TRUE; // Gibbed, destroy this entity
 	}
-	if( DeleteMe ) {
-        if ( !IsPlayer() ) DropAllItems( ); //Be sure to drop items
+	if (DeleteMe)
+	{
+		if (!IsPlayer())
+			DropAllItems(); //Be sure to drop items
 		GibMonster();
 	}
 	enddbg;
 }
-void CMSMonster :: SUB_Remove( ) 
+void CMSMonster ::SUB_Remove()
 {
-	CBaseEntity::SUB_Remove( );
+	CBaseEntity::SUB_Remove();
 }
-void CMSMonster :: DieThink( ) {
-	StudioFrameAdvance( );
-	DispatchAnimEvents( );	//Have to handle this, even when dead
-	if ( !IsPlayer() ) DropAllItems( );
+void CMSMonster ::DieThink()
+{
+	StudioFrameAdvance();
+	DispatchAnimEvents(); //Have to handle this, even when dead
+	if (!IsPlayer())
+		DropAllItems();
 
 	//Thothie APR2008a - massive commenting out
 	//- changes made here so monsters fade away faster and dependably
@@ -2450,10 +2580,10 @@ void CMSMonster :: DieThink( ) {
 		return;
 	}*/
 
-	pev->deadflag		= DEAD_DEAD;		//I am now officially dead
-	//pev->solid			= SOLID_NOT;		//Bodies aren't solid anymore
+	pev->deadflag = DEAD_DEAD; //I am now officially dead
+							   //pev->solid			= SOLID_NOT;		//Bodies aren't solid anymore
 
-/*	Vector vOrigin = pev->origin;
+	/*	Vector vOrigin = pev->origin;
 	GetBonePosition( 1, pev->origin, Vector(0,0,0) );
 	UTIL_SetOrigin(pev, pev->origin );
 
@@ -2466,15 +2596,15 @@ void CMSMonster :: DieThink( ) {
 	//UTIL_SetSize(pev, pev->mins, pev->maxs );
 
 	//Make the BBox HUGE, so it covers the whole body.
-/*	pev->mins.x = min(pev->mins.x,-128);
+	/*	pev->mins.x = min(pev->mins.x,-128);
 	pev->mins.y = min(pev->mins.y,-128);
 	pev->mins.z = min(pev->mins.z,-128);
 	pev->maxs.x = max(pev->maxs.x,128);
 	pev->maxs.y = max(pev->maxs.y,128);
 	pev->maxs.z = max(pev->maxs.z,128);*/
 
-    float z = pev->mins.z;
-	ExtractBbox( pev->sequence, pev->mins, pev->maxs );
+	float z = pev->mins.z;
+	ExtractBbox(pev->sequence, pev->mins, pev->maxs);
 	pev->mins.z = z;
 
 	/*float CheckRange = 1024;
@@ -2492,7 +2622,7 @@ void CMSMonster :: DieThink( ) {
 	}*/
 
 	SetThink(&CBaseEntity::SUB_StartFadeOut);
-	SetTouch( NULL );
+	SetTouch(NULL);
 	//MAR2008b Reducing remove after death delay, larger creatures linger longer
 	//sometimes monsters not going away at all with this? :/
 	//float fade_delay = 10.0;
@@ -2501,64 +2631,64 @@ void CMSMonster :: DieThink( ) {
 	//Print("fade_delay: %f", fade_delay);
 	//( (MaxHP()>0)? 0 : MaxHP() / 100 ) - no can do
 	pev->nextthink = gpGlobals->time + 20.0; //MSITEM_TIME_EXPIRE;
-	pev->ltime = gpGlobals->time; //save the time you died
+	pev->ltime = gpGlobals->time;			 //save the time you died
 }
 
-
-void CMSMonster::ReportAIState( )
+void CMSMonster::ReportAIState()
 {
-	Print( "Name: %s\n", DisplayName( ) );
-	Print( "Script: %s\n", m_ScriptName.len() ? m_ScriptName : "None" );
+	Print("Name: %s\n", DisplayName());
+	Print("Script: %s\n", m_ScriptName.len() ? m_ScriptName : "None");
 }
-
 
 /*
 	LearnSkill - Called after certain actions to increase your skill stats.  
-	¯¯¯¯¯¯¯¯¯¯   Caller gets EnemySkillLevel experience pts and then
+	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½   Caller gets EnemySkillLevel experience pts and then
 				 it checks whether it should advance his stats
 */
 
-bool CMSMonster::LearnSkill( int iStat, int iStatType, int EnemySkillLevel )
+bool CMSMonster::LearnSkill(int iStat, int iStatType, int EnemySkillLevel)
 {
 	float LearnMultiplier = 1.0;
 
-	CStat *pStat = FindStat( iStat );
-	if( !pStat ) return false;
+	CStat *pStat = FindStat(iStat);
+	if (!pStat)
+		return false;
 
-	if( iStatType >= (signed)pStat->m_SubStats.size() ) return false;
-	
+	if (iStatType >= (signed)pStat->m_SubStats.size())
+		return false;
+
 	//if ( pStat->Value() >= CHAR_LEVEL_CAP ) return false; //Thoth DEC2008a level cap
 
 	CSubStat &SubStat = pStat->m_SubStats[iStatType];
 
 	//MiB JAN2010_15 Global Level Cap [BEGIN]
-	if ( SubStat.Value >= CHAR_LEVEL_CAP )
+	if (SubStat.Value >= CHAR_LEVEL_CAP)
 	{
-	//Don't go looking for a better option if it's a spell-stat or parry
-	if ( pStat->m_SubStats.size() == 1 || pStat->m_SubStats.size() > 3 )
-		return false;
+		//Don't go looking for a better option if it's a spell-stat or parry
+		if (pStat->m_SubStats.size() == 1 || pStat->m_SubStats.size() > 3)
+			return false;
 
-	//Look through the other SubStats for one that's not at the cap, yet.
-	//Not random, but good enough.
-	 for (int i = 0; i < 1; i++) 
-	{
-		iStatType = ( iStatType + 1 ) % 3;
-		CSubStat &SubStat = pStat->m_SubStats[iStatType];
-		if ( SubStat.Value < CHAR_LEVEL_CAP )
-		break;
-	}
+		//Look through the other SubStats for one that's not at the cap, yet.
+		//Not random, but good enough.
+		for (int i = 0; i < 1; i++)
+		{
+			iStatType = (iStatType + 1) % 3;
+			CSubStat &SubStat = pStat->m_SubStats[iStatType];
+			if (SubStat.Value < CHAR_LEVEL_CAP)
+				break;
+		}
 
-	if ( SubStat.Value >= CHAR_LEVEL_CAP )
-		return false;
+		if (SubStat.Value >= CHAR_LEVEL_CAP)
+			return false;
 	}
 	//MiB JAN2010_15 Global Level Cap [/END]
 
-	SubStat.Exp += max(int(max(EnemySkillLevel,0) * LearnMultiplier),0);
+	SubStat.Exp += max(int(max(EnemySkillLevel, 0) * LearnMultiplier), 0);
 	//ALERT( at_console, "Exp: %i %i\n", pStat->Exp[iStatType],  GetSkillStat( sStatName, iStatType )  );
 	//ALERT( at_console, "Exp: %f \n", SubStat.Exp ); //thothie attempting to get total XP
 
 	int OldVal = SubStat.Value;
-	long double ExpNeeded = GetExpNeeded( OldVal );
+	long double ExpNeeded = GetExpNeeded(OldVal);
 	//ALERT( at_console, "Exp: %i/%i\n", pStat->Exp[iStatType],  ExpNeeded  );
 	//Must use long double variables because a typecast to it won't work correctly
 	long double ExpLeft = SubStat.Exp - ExpNeeded;
@@ -2566,33 +2696,34 @@ bool CMSMonster::LearnSkill( int iStat, int iStatType, int EnemySkillLevel )
 	//Shuriken - Message to send the Exp because it gets f'd up at high levels.
 	//Thothie AUG2007a - this causes crash when monster kills monster (message not client)
 	//- attempting to add isplayer() conditionals
-	if( OldVal > 25 && ExpLeft < 0 )
+	if (OldVal > 25 && ExpLeft < 0)
 	{
-		if ( IsPlayer() )
+		if (IsPlayer())
 		{
-			MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_EXP], NULL, pev );
-					WRITE_BYTE( iStat - SKILL_FIRSTSKILL );
-					WRITE_BYTE( iStatType );
-					WRITE_LONG( SubStat.Exp );
+			MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_EXP], NULL, pev);
+			WRITE_BYTE(iStat - SKILL_FIRSTSKILL);
+			WRITE_BYTE(iStatType);
+			WRITE_LONG(SubStat.Exp);
 			MESSAGE_END();
 		}
 	}
 
-	if( ExpLeft < 0 ) return false;
+	if (ExpLeft < 0)
+		return false;
 
 	SubStat.Value += 1;
-	if( SubStat.Value > STATPROP_MAX_VALUE )
+	if (SubStat.Value > STATPROP_MAX_VALUE)
 		SubStat.Value = STATPROP_MAX_VALUE;
 	SubStat.Exp = 0;
 	//Thothie - why's this here twice? I dont see where oldval could change.
-	if( OldVal > 25 )
+	if (OldVal > 25)
 	{
-		if ( IsPlayer() )
+		if (IsPlayer())
 		{
-			MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_EXP], NULL, pev );
-					WRITE_BYTE( iStat - SKILL_FIRSTSKILL );
-					WRITE_BYTE( iStatType );
-					WRITE_LONG( 0 );
+			MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_EXP], NULL, pev);
+			WRITE_BYTE(iStat - SKILL_FIRSTSKILL);
+			WRITE_BYTE(iStatType);
+			WRITE_LONG(0);
 			MESSAGE_END();
 		}
 	}
@@ -2600,40 +2731,40 @@ bool CMSMonster::LearnSkill( int iStat, int iStatType, int EnemySkillLevel )
 	return true;
 }
 
-float CMSMonster::GetBodyDist( Vector Point, float Radius )
-{ 
-	return CBaseMonster::GetBodyDist( Point, Radius ) - GetDefaultMoveProximity( );
-}
-bool CMSMonster::IsLootable( CMSMonster *pLooter )
+float CMSMonster::GetBodyDist(Vector Point, float Radius)
 {
-	return pLooter->CanDamage( this ) && !IsAlive();
+	return CBaseMonster::GetBodyDist(Point, Radius) - GetDefaultMoveProximity();
 }
-void CMSMonster::SetSpeed(  )
+bool CMSMonster::IsLootable(CMSMonster *pLooter)
 {
-	pev->maxspeed = 0.0f;	//Zero means normal speed
-	
+	return pLooter->CanDamage(this) && !IsAlive();
+}
+void CMSMonster::SetSpeed()
+{
+	pev->maxspeed = 0.0f; //Zero means normal speed
+
 	float SpeedPercent = 100.0f;
 	m_Framerate_Modifier = 1.0;
-	
-	 for (int i = 0; i < m_Scripts.size(); i++) 
+
+	for (int i = 0; i < m_Scripts.size(); i++)
 	{
-		if( !m_Scripts[i]->VarExists("game.effect.id") )
+		if (!m_Scripts[i]->VarExists("game.effect.id"))
 			continue;
 
-		if( m_Scripts[i]->VarExists("game.effect.movespeed") )
+		if (m_Scripts[i]->VarExists("game.effect.movespeed"))
 		{
 			float EffectPercent = atof(m_Scripts[i]->GetVar("game.effect.movespeed"));
 			SpeedPercent *= (EffectPercent / 100.0f);
 		}
 
-		if( m_Scripts[i]->VarExists("game.effect.anim.framerate") )
+		if (m_Scripts[i]->VarExists("game.effect.anim.framerate"))
 		{
 			float EffectPercent = atof(m_Scripts[i]->GetVar("game.effect.anim.framerate"));
 			m_Framerate_Modifier *= EffectPercent;
 		}
 	}
 
-	if( SpeedPercent != 100.0f )
+	if (SpeedPercent != 100.0f)
 		pev->maxspeed = SpeedPercent;
 
 	//Can't move while a spell is preparing
@@ -2644,120 +2775,121 @@ void CMSMonster::SetSpeed(  )
 			SpeedPercent = 0;  //Percentage of normal speed
 	*/
 
-	if( !SpeedPercent ) SetBits( m_StatusFlags, PLAYER_MOVE_NOMOVE );
+	if (!SpeedPercent)
+		SetBits(m_StatusFlags, PLAYER_MOVE_NOMOVE);
 	//g_engfuncs.pfnSetClientMaxspeed( edict(), fSpeed );
 }
 //Opens interact menu from server
-void CMSMonster::OpenMenu( CBasePlayer *pPlayer )
+void CMSMonster::OpenMenu(CBasePlayer *pPlayer)
 {
 	startdbg;
 	m_MenuCurrentOptions = NULL;
 
-	dbg( "PrepClient" );
+	dbg("PrepClient");
 
 	//Thothie SEP2011_07 - prevent menus to players with full inv
-	if ( pPlayer->NumItems() >= THOTH_MAX_ITEMS )
+	if (pPlayer->NumItems() >= THOTH_MAX_ITEMS)
 	{
-		pPlayer->SendEventMsg( HUDEVENT_UNABLE, "Cannot use menus while inventory is full." );
+		pPlayer->SendEventMsg(HUDEVENT_UNABLE, "Cannot use menus while inventory is full.");
 		return;
 	}
-	
-	MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pPlayer->pev );
-		WRITE_BYTE( 25 );
-		WRITE_LONG( entindex() );
-		WRITE_STRING( DisplayName() );
+
+	MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pPlayer->pev);
+	WRITE_BYTE(25);
+	WRITE_LONG(entindex());
+	WRITE_STRING(DisplayName());
 	MESSAGE_END();
 
-	dbg( "Read:game_menu_getoptions" );
+	dbg("Read:game_menu_getoptions");
 
 	static msstringlist Params;
-	Params.clearitems( );
-	Params.add( EntToString(pPlayer) );
+	Params.clearitems();
+	Params.add(EntToString(pPlayer));
 
 	m_MenuCurrentOptions = &m_MenuOptions[pPlayer->entindex()];
 	mslist<menuoption_t> &Menuoptions = *m_MenuCurrentOptions;
 	Menuoptions.clearitems();
 
-	CallScriptEvent( "game_menu_getoptions", &Params );
+	CallScriptEvent("game_menu_getoptions", &Params);
 	pPlayer->CallScriptEvent("ext_remove_afk"); //NOV2014_15 - flag player as non-afk when first uses a menu
 
 	m_MenuCurrentOptions = NULL;
 
-	dbg( "SendMenu" );
+	dbg("SendMenu");
 
-	 for (int i = 0; i < Menuoptions.size(); i++) 
+	for (int i = 0; i < Menuoptions.size(); i++)
 	{
 		menuoption_t &MenuOption = Menuoptions[i];
-		if( MenuOption.Access != MOA_ALL )
+		if (MenuOption.Access != MOA_ALL)
 			continue;
-		
-		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pPlayer->pev );
-			WRITE_BYTE( 26 );
-			WRITE_BYTE( MenuOption.Access );
-			WRITE_STRING( MenuOption.Title );
-			WRITE_BYTE( MenuOption.Type );
-			WRITE_STRING( MenuOption.Data );
+
+		MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pPlayer->pev);
+		WRITE_BYTE(26);
+		WRITE_BYTE(MenuOption.Access);
+		WRITE_STRING(MenuOption.Title);
+		WRITE_BYTE(MenuOption.Type);
+		WRITE_STRING(MenuOption.Data);
 		MESSAGE_END();
 	}
 	pPlayer->InMenu = true;
 	enddbg;
 }
-void CMSMonster::UseMenuOption( CBasePlayer *pPlayer, int Option )
+void CMSMonster::UseMenuOption(CBasePlayer *pPlayer, int Option)
 {
 	pPlayer->InMenu = false;
 	//Thothie AUG2013_09 - attempt to fix bug where refuses to release +use on menu exit, since the Steam update. (failed)
-	//CLIENT_COMMAND( pPlayer->edict(), "-use" ); 
+	//CLIENT_COMMAND( pPlayer->edict(), "-use" );
 	//pPlayer->m_afButtonReleased = IN_USE;
 	//pPlayer->pev->button = 0;
 	//pPlayer->m_StatusFlags = ClearBits(pPlayer->m_StatusFlags,IN_USE);
-	CLIENT_COMMAND( pPlayer->edict(), "+use;-use\n" );
+	CLIENT_COMMAND(pPlayer->edict(), "+use;-use\n");
 
 	mslist<menuoption_t> &Menuoptions = m_MenuOptions[pPlayer->entindex()];
 
 	//Thothie JAN2008a - need a way of dealing with canceled menus
-	if ( Option == -1 )
+	if (Option == -1)
 	{
 		static msstringlist Params;
-		Params.clearitems( );
-		Params.add( EntToString(pPlayer) );
-		CallScriptEvent( "game_menu_cancel", &Params );
+		Params.clearitems();
+		Params.add(EntToString(pPlayer));
+		CallScriptEvent("game_menu_cancel", &Params);
 	}
 
-	if( Option < 0 || Option >= (signed)Menuoptions.size() ) 
+	if (Option < 0 || Option >= (signed)Menuoptions.size())
 		return;
 
 	menuoption_t &MenuOption = Menuoptions[Option];
 
 	bool PlayerCanPay = true;
 
-	if( MenuOption.Type == MOT_SAY )
+	if (MenuOption.Type == MOT_SAY)
 	{
-		pPlayer->Speak( MenuOption.Data, SPEECH_LOCAL );
+		pPlayer->Speak(MenuOption.Data, SPEECH_LOCAL);
 	}
-	else if( MenuOption.Type == MOT_PAYMENT )
+	else if (MenuOption.Type == MOT_PAYMENT)
 	{
 		static msstringlist Payments;
-		Payments.clearitems( );
+		Payments.clearitems();
 
-		TokenizeString( MenuOption.Data, Payments );
+		TokenizeString(MenuOption.Data, Payments);
 
 		int TotalGold = 0;
 		static mslist<CGenericItem *> TotalFoundItems;
-		TotalFoundItems.clearitems( );
+		TotalFoundItems.clearitems();
 
-		 for (int i = 0; i < Payments.size(); i++) 
+		for (int i = 0; i < Payments.size(); i++)
 		{
 			msstring &Payment = Payments[i];
-			if( Payment.starts_with("gold") )
-				TotalGold += atoi( Payment.substr( 5 ) );
+			if (Payment.starts_with("gold"))
+				TotalGold += atoi(Payment.substr(5));
 			else
 			{
 				//Find x number of specified item
 				int Amount = 1;
-				if( Payment.contains(":") )
+				if (Payment.contains(":"))
 				{
-					Amount = atoi( Payment.substr( Payment.findchar(":") + 1 ) );
-					if( !Amount ) 
+					Amount = atoi(Payment.substr(Payment.findchar(":") + 1));
+					if (!Amount)
 						Amount = 1;
 				}
 
@@ -2767,82 +2899,80 @@ void CMSMonster::UseMenuOption( CBasePlayer *pPlayer, int Option )
 				ulong FirstItem = 0;
 				CGenericItem *pItem = NULL;
 				static mslist<CGenericItem *> FoundItems;
-				FoundItems.clearitems( );
-				while( (pItem = pPlayer->GetItemInInventory( LastItem, false, true, true )) && ((signed)FoundItems.size() < Amount) )
+				FoundItems.clearitems();
+				while ((pItem = pPlayer->GetItemInInventory(LastItem, false, true, true)) && ((signed)FoundItems.size() < Amount))
 				{
-					if( pItem->ItemName == ItemName )
+					if (pItem->ItemName == ItemName)
 						FoundItems.add(pItem);
 
 					LastItem = pItem->m_iId;
 
-					if( FirstItem == 0 ) FirstItem = LastItem;
-					else if( LastItem == FirstItem ) break;
+					if (FirstItem == 0)
+						FirstItem = LastItem;
+					else if (LastItem == FirstItem)
+						break;
 				}
 
-				if( (signed)FoundItems.size() < Amount )
+				if ((signed)FoundItems.size() < Amount)
 				{
-					msstring ItemDispName = CGenericItemMgr::GetItemDisplayName( ItemName, false, true, Amount );
+					msstring ItemDispName = CGenericItemMgr::GetItemDisplayName(ItemName, false, true, Amount);
 
-					if( !MenuOption.SilentPayment )
-						pPlayer->SendEventMsg( HUDEVENT_UNABLE, msstring("You can't afford the payment of ") + ItemDispName );
+					if (!MenuOption.SilentPayment)
+						pPlayer->SendEventMsg(HUDEVENT_UNABLE, msstring("You can't afford the payment of ") + ItemDispName);
 					PlayerCanPay = false;
 					break;
 				}
-				
-				 for (int i = 0; i < FoundItems.size(); i++) 
-					TotalFoundItems.add( FoundItems[i] );
+
+				for (int i = 0; i < FoundItems.size(); i++)
+					TotalFoundItems.add(FoundItems[i]);
 			}
 		}
 
 		int PlayerGold = pPlayer->m_Gold;
-		if( PlayerGold < TotalGold )
+		if (PlayerGold < TotalGold)
 		{
-			if( !MenuOption.SilentPayment )
-				pPlayer->SendEventMsg( HUDEVENT_UNABLE, msstring("You can't afford the payment of ") + TotalGold + " Gold" );
+			if (!MenuOption.SilentPayment)
+				pPlayer->SendEventMsg(HUDEVENT_UNABLE, msstring("You can't afford the payment of ") + TotalGold + " Gold");
 			PlayerCanPay = false;
 		}
 
-		if( PlayerCanPay )
+		if (PlayerCanPay)
 		{
 			pPlayer->m_Gold -= TotalGold;
-			 for (int i = 0; i < TotalFoundItems.size(); i++) 
-				TotalFoundItems[i]->SUB_Remove( ); //MIB JUN2010_14 (original line commented below)
-				//pPlayer->RemoveItem( TotalFoundItems[i] );
+			for (int i = 0; i < TotalFoundItems.size(); i++)
+				TotalFoundItems[i]->SUB_Remove(); //MIB JUN2010_14 (original line commented below)
+												  //pPlayer->RemoveItem( TotalFoundItems[i] );
 		}
 	}
 
 	//Handle callback
 	static msstringlist Params;
-	Params.clearitems( );
-	Params.add( EntToString(pPlayer) );
-	Params.add ( MenuOption.Data ); //Thothie - reg.mitem.data function wasn't returning as PARAM2 in type callback as described by docs, so I tried this, seems to work
+	Params.clearitems();
+	Params.add(EntToString(pPlayer));
+	Params.add(MenuOption.Data); //Thothie - reg.mitem.data function wasn't returning as PARAM2 in type callback as described by docs, so I tried this, seems to work
 
 	msstring CallbackEvent = MenuOption.CB_Name;
 
-	if( MenuOption.Type == MOT_PAYMENT )
+	if (MenuOption.Type == MOT_PAYMENT)
 	{
-		if( !PlayerCanPay )
+		if (!PlayerCanPay)
 			CallbackEvent = MenuOption.CB_Failed_Name;
 	}
 
-	if( CallbackEvent.len( ) )
+	if (CallbackEvent.len())
 	{
-		CallScriptEvent( CallbackEvent, &Params );
+		CallScriptEvent(CallbackEvent, &Params);
 	}
 	Menuoptions.clearitems();
 }
 
-
-
-
-
-void AlignToNormal( /*In*/ Vector &vNormal, /*In - yaw must be set | Out - Sets pitch and roll*/ Vector &vAngles )
+void AlignToNormal(/*In*/ Vector &vNormal, /*In - yaw must be set | Out - Sets pitch and roll*/ Vector &vAngles)
 {
-	Vector VNormalAngles = UTIL_VecToAngles( vNormal );
+	Vector VNormalAngles = UTIL_VecToAngles(vNormal);
 	float yDiff = UTIL_AngleDiff(VNormalAngles.y, vAngles.y);
 	float yDiffMult = yDiff > 0 ? 1 : -1;
-	float yoffset = -((fabs(yDiff)/90) - 1);
+	float yoffset = -((fabs(yDiff) / 90) - 1);
 
 	vAngles.x = (VNormalAngles.x - 90) * yoffset;
-	vAngles.z = (VNormalAngles.x - 90) * (1 - fabs(yoffset)) *  yDiffMult;
+	vAngles.z = (VNormalAngles.x - 90) * (1 - fabs(yoffset)) * yDiffMult;
 }

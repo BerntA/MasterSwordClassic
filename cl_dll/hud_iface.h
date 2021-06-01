@@ -1,9 +1,9 @@
-#if !defined( HUD_IFACEH )
+#if !defined(HUD_IFACEH)
 #define HUD_IFACEH
 #pragma once
 
-#define EXPORT		_declspec( dllexport )
-#define _DLLEXPORT __declspec( dllexport )
+#define EXPORT _declspec(dllexport)
+#define _DLLEXPORT __declspec(dllexport)
 
 typedef int (*pfnUserMsgHook)(const char *pszName, int iSize, void *pbuf);
 #include "wrect.h"

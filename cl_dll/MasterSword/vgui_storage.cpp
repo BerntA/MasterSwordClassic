@@ -5,7 +5,7 @@
 // Valve, L.L.C., or in accordance with the terms and conditions stipulated in
 // the agreement/contract under which the contents have been supplied.
 //
-// Purpose: NPC Store sell menu 
+// Purpose: NPC Store sell menu
 //
 // $Workfile:     $
 // $Date: 2005/01/17 13:16:49 $
@@ -44,8 +44,8 @@
 #include "../MSShared/vgui_MenuDefsShared.h"
 #include "logfile.h"
 
-msstring_ref	CStoragePanel::Text_Subtitle_Storage = "#STORAGE_SUBTITLE_STORAGE";
-msstring_ref	CStoragePanel::Text_Subtitle_Inventory = "#STORAGE_SUBTITLE_INVENTORY";
+msstring_ref CStoragePanel::Text_Subtitle_Storage = "#STORAGE_SUBTITLE_STORAGE";
+msstring_ref CStoragePanel::Text_Subtitle_Inventory = "#STORAGE_SUBTITLE_INVENTORY";
 
 /*class CAction_Take : public ActionSignal
 {
@@ -56,38 +56,40 @@ public:
 	virtual void actionPerformed(Panel* panel) { m_Panel->TakeAll( ); }
 };*/
 
-
 //------------
 
 // Creation
-CStoragePanel::CStoragePanel( Panel *pParent ) : CStorePanel( )
+CStoragePanel::CStoragePanel(Panel *pParent) : CStorePanel()
 {
-	setParent( pParent );
+	setParent(pParent);
 
-	m_pSubtitle->setText( Localized(Text_Subtitle_Storage) );
+	m_pSubtitle->setText(Localized(Text_Subtitle_Storage));
 
-	m_ActButton->setVisible( false );
-	m_pCancelButton->setText( Localized("#CLOSE") );
+	m_ActButton->setVisible(false);
+	m_pCancelButton->setText(Localized("#CLOSE"));
 
 	/*m_ActButton->setText( Localized("#TAKE") );
 	m_ActButton->addActionSignal( new CAction_Take(this) );*/
 }
 
 //Update
-void CStoragePanel::AddInventoryItems( )
+void CStoragePanel::AddInventoryItems()
 {
 	//Find the storage on the player
 	storage_t *pStorage = NULL;
-	 for (int s = 0; s < player.m_Storages.size(); s++) 
-		if( player.m_Storages[s].Name == player.m_CurrentStorage.StorageName )
-			{ pStorage = &player.m_Storages[s]; break; }
+	for (int s = 0; s < player.m_Storages.size(); s++)
+		if (player.m_Storages[s].Name == player.m_CurrentStorage.StorageName)
+		{
+			pStorage = &player.m_Storages[s];
+			break;
+		}
 
-	if( !pStorage )
+	if (!pStorage)
 	{
 		//If the storage doesn't exist, create it real quick.  This should never happen.
 		storage_t Storage;
 		Storage.Name = player.m_CurrentStorage.StorageName;
-		pStorage = player.Storage_CreateAccount( Storage );
+		pStorage = player.Storage_CreateAccount(Storage);
 	}
 
 	//Add the 'storage' container
@@ -95,7 +97,7 @@ void CStoragePanel::AddInventoryItems( )
 	GearItem.Name = "Storage";
 	GearItem.ID = 1;
 
-	VGUI_Inv_GearItem *pGearItemButton = m_GearPanel->AddGearItem( GearItem );
+	VGUI_Inv_GearItem *pGearItemButton = m_GearPanel->AddGearItem(GearItem);
 
 	//Add the storage items
 	storage_t &Storage = *pStorage;
@@ -106,58 +108,58 @@ void CStoragePanel::AddInventoryItems( )
 	}
 
 	//Add my local inventory items
-	CStorePanel::AddInventoryItems( );
+	CStorePanel::AddInventoryItems();
 
 	return;
 }
-void CStoragePanel::Update( )
+void CStoragePanel::Update()
 {
-	if( !player.m_CurrentStorage.Active ) 
+	if (!player.m_CurrentStorage.Active)
 		return;
 
 	m_LastGearItem = -1;
-	m_SelectedItems.clear( );
-	m_SaleLabel->setVisible( false );
+	m_SelectedItems.clear();
+	m_SaleLabel->setVisible(false);
 
-	CStorePanel::Update( );
+	CStorePanel::Update();
 
-	m_pTitle->setText( player.m_CurrentStorage.DisplayName );
+	m_pTitle->setText(player.m_CurrentStorage.DisplayName);
 }
 
-void CStoragePanel::GearItemSelected( ulong ID )
+void CStoragePanel::GearItemSelected(ulong ID)
 {
-	if( m_LastGearItem == ID )
+	if (m_LastGearItem == ID)
 		return;
 
-	//Set the proper subtitle 
-	if( ID == 1 )
+	//Set the proper subtitle
+	if (ID == 1)
 	{
 		//Unselect all items when going to storage from inventory
-		UnSelectAllItems( );
-		m_pSubtitle->setText( Localized(Text_Subtitle_Storage) );
+		UnSelectAllItems();
+		m_pSubtitle->setText(Localized(Text_Subtitle_Storage));
 	}
 	else
 	{
-		if( m_LastGearItem == 1 )
+		if (m_LastGearItem == 1)
 		{
 			//Unselect all items when going to inventory from storage
-			UnSelectAllItems( );
+			UnSelectAllItems();
 		}
-		m_pSubtitle->setText(  Localized(Text_Subtitle_Inventory) );
+		m_pSubtitle->setText(Localized(Text_Subtitle_Inventory));
 	}
 
 	m_LastGearItem = ID;
 }
-bool CStoragePanel::GearItemClicked( ulong ID )
+bool CStoragePanel::GearItemClicked(ulong ID)
 {
-	if( !m_SelectedItems.size() )
+	if (!m_SelectedItems.size())
 		return false;
 
 	//If the last gearitem and this one are f the same category (storage or inventory), don't try to move the items
-	if( (m_LastGearItem == 1) == (ID == 1) )
+	if ((m_LastGearItem == 1) == (ID == 1))
 		return false;
 
-	m_InfoPanel->setVisible( false );
+	m_InfoPanel->setVisible(false);
 
 	//Move the selected items either from inventory to storage, or storage to inventory
 	bool AddOrRemove = (ID == 1) ? true : false;
@@ -165,17 +167,17 @@ bool CStoragePanel::GearItemClicked( ulong ID )
 
 	bool leftAnItemOff = false;
 
-	 for (int i = 0; i < m_SelectedItems.size(); i++) 
+	for (int i = 0; i < m_SelectedItems.size(); i++)
 	{
-		if( checkValid( m_SelectedItems[i] ) ) //Check it against the bank mask (MiB Feb2008a)
+		if (checkValid(m_SelectedItems[i])) //Check it against the bank mask (MiB Feb2008a)
 		{
 			//Send the command
-			if( AddOrRemove )
+			if (AddOrRemove)
 				Command = msstring("storage add ") + (int)m_SelectedItems[i].ID + "\n";
 			else
 				Command = msstring("storage remove ") + (int)m_SelectedItems[i].ID + " " + (int)ID + "\n";
 
-			gEngfuncs.pfnClientCmd( Command );
+			gEngfuncs.pfnClientCmd(Command);
 		}
 		else
 			leftAnItemOff = true;
@@ -185,86 +187,92 @@ bool CStoragePanel::GearItemClicked( ulong ID )
 }
 
 //MiB FEB2008a
-bool CStoragePanel::checkValid( containeritem_t &item )
+bool CStoragePanel::checkValid(containeritem_t &item)
 {
 	msstring name = item.Name.m_string;
-	if( name.starts_with("pack_") ) return false;
-	if( name.starts_with("sheath_") ) return false;
-	if( name.starts_with("mana_") ) return false;
-	if( name.starts_with("health_") ) return false;
-	if( name.starts_with("proj_" ) ) return false;
+	if (name.starts_with("pack_"))
+		return false;
+	if (name.starts_with("sheath_"))
+		return false;
+	if (name.starts_with("mana_"))
+		return false;
+	if (name.starts_with("health_"))
+		return false;
+	if (name.starts_with("proj_"))
+		return false;
 
 	return true;
 }
 
 //Item selected
-int CStoragePanel::ItemRetrievalCost( containeritem_t &Item )
+int CStoragePanel::ItemRetrievalCost(containeritem_t &Item)
 {
 	return int(Item.Value * player.m_CurrentStorage.flFeeRatio);
 }
-void CStoragePanel::ItemHighlighted( void *pData )
+void CStoragePanel::ItemHighlighted(void *pData)
 {
-	CStorePanel::ItemHighlighted( pData );
+	CStorePanel::ItemHighlighted(pData);
 
-	if( m_LastGearItem != 1 )
+	if (m_LastGearItem != 1)
 	{
-		m_InfoPanel->m_SaleText->setVisible( false );
-		m_InfoPanel->setVisible( true );
+		m_InfoPanel->m_SaleText->setVisible(false);
+		m_InfoPanel->setVisible(true);
 		return;
 	}
 
 	VGUI_ItemButton &ItemButton = *(VGUI_ItemButton *)pData;
-	if( ItemButton.m_Highlighted )
+	if (ItemButton.m_Highlighted)
 	{
-		int Value = ItemRetrievalCost( ItemButton.m_Data );
-		if( Value ) 
+		int Value = ItemRetrievalCost(ItemButton.m_Data);
+		if (Value)
 		{
 			char cTemp[256];
-			sprintf( cTemp, Localized("#STORAGE_ITEM_COST"), Value );
-			m_InfoPanel->m_SaleText->setText( cTemp );
+			sprintf(cTemp, Localized("#STORAGE_ITEM_COST"), Value);
+			m_InfoPanel->m_SaleText->setText(cTemp);
 		}
 		else
-			m_InfoPanel->m_SaleText->setText( Localized("#STORAGE_ITEM_FREE") );
-		m_InfoPanel->m_SaleText->setVisible( true );
+			m_InfoPanel->m_SaleText->setText(Localized("#STORAGE_ITEM_FREE"));
+		m_InfoPanel->m_SaleText->setVisible(true);
 	}
-	m_InfoPanel->m_Scroll->validate( );
-	m_InfoPanel->setVisible( true );
+	m_InfoPanel->m_Scroll->validate();
+	m_InfoPanel->setVisible(true);
 }
 
 //Item selected
-void CStoragePanel::ItemSelectChanged( ulong ID, bool fSelected )
+void CStoragePanel::ItemSelectChanged(ulong ID, bool fSelected)
 {
-	m_SelectedItems.clear( );
+	m_SelectedItems.clear();
 
-	m_SaleLabel->setVisible( true );
+	m_SaleLabel->setVisible(true);
 
 	int Valuetotal = 0;
 
-	 for (int g = 0; g < m_GearPanel->GearItemButtonTotal; g++) 
+	for (int g = 0; g < m_GearPanel->GearItemButtonTotal; g++)
 	{
 		VGUI_Inv_GearItem &GearItem = *m_GearPanel->GearItemButtons[g];
-		 for (int i = 0; i < GearItem.m_ItemContainer->m_ItemButtonTotal; i++) 
+		for (int i = 0; i < GearItem.m_ItemContainer->m_ItemButtonTotal; i++)
 		{
 			VGUI_ItemButton &ItemButton = *GearItem.m_ItemContainer->m_ItemButtons[i];
-			if( !ItemButton.m_Selected ) continue;
+			if (!ItemButton.m_Selected)
+				continue;
 
-			m_SelectedItems.add( ItemButton.m_Data );
+			m_SelectedItems.add(ItemButton.m_Data);
 
-			if( m_LastGearItem == 1 )
-				Valuetotal += ItemRetrievalCost( ItemButton.m_Data );
+			if (m_LastGearItem == 1)
+				Valuetotal += ItemRetrievalCost(ItemButton.m_Data);
 		}
 	}
 
-	if( m_SelectedItems.size() )
+	if (m_SelectedItems.size())
 	{
-		if( m_LastGearItem == 1 )
-			m_SaleLabel->setText( msstring( "Removing ") + (int)m_SelectedItems.size() + " items from storage for " + Valuetotal + " gold" );
+		if (m_LastGearItem == 1)
+			m_SaleLabel->setText(msstring("Removing ") + (int)m_SelectedItems.size() + " items from storage for " + Valuetotal + " gold");
 		else
-			m_SaleLabel->setText( msstring( "Moving ") + (int)m_SelectedItems.size() + " items into storage" );
-		m_SaleLabel->setVisible( true );
+			m_SaleLabel->setText(msstring("Moving ") + (int)m_SelectedItems.size() + " items into storage");
+		m_SaleLabel->setVisible(true);
 	}
-	else m_SaleLabel->setVisible( false );
-
+	else
+		m_SaleLabel->setVisible(false);
 }
 
 //Take button pressed
@@ -285,61 +293,62 @@ void CStoragePanel::ItemSelectChanged( ulong ID, bool fSelected )
 
 	gEngfuncs.pfnClientCmd( CommandString );
 }*/
-void CStoragePanel::Close( )
+void CStoragePanel::Close()
 {
 	player.m_CurrentStorage.Active = false;
-	ClientCmd( "storage stop" );
-	VGUI_ContainerPanel::Close( );	//Skip CStorePanel::Close()
+	ClientCmd("storage stop");
+	VGUI_ContainerPanel::Close(); //Skip CStorePanel::Close()
 }
 
 //Item msg
-void Storage_ItemReset( )
+void Storage_ItemReset()
 {
-	player.m_Storages.clear( );
+	player.m_Storages.clear();
 }
-void Storage_Update( )
+void Storage_Update()
 {
-	if( gViewPort && gViewPort->m_pStoreStorageMenu )
-		gViewPort->m_pStoreStorageMenu->Update( );
+	if (gViewPort && gViewPort->m_pStoreStorageMenu)
+		gViewPort->m_pStoreStorageMenu->Update();
 }
 
-void Storage_ItemMsg( )
+void Storage_ItemMsg()
 {
-	msstring StorageName = READ_STRING( );
+	msstring StorageName = READ_STRING();
 	storage_t *pStorage = NULL;
 
-	 for (int s = 0; s < player.m_Storages.size(); s++) 
-		if( player.m_Storages[s].Name == StorageName )
-			{ pStorage = &player.m_Storages[s]; break; }
+	for (int s = 0; s < player.m_Storages.size(); s++)
+		if (player.m_Storages[s].Name == StorageName)
+		{
+			pStorage = &player.m_Storages[s];
+			break;
+		}
 
-	if( !pStorage )
+	if (!pStorage)
 	{
 		storage_t Storage;
 		Storage.Name = StorageName;
-		pStorage = player.Storage_CreateAccount( Storage );
+		pStorage = player.Storage_CreateAccount(Storage);
 	}
 
-	bool AddItem = READ_BYTE( ) ? true : false;
+	bool AddItem = READ_BYTE() ? true : false;
 
-	if( AddItem )
+	if (AddItem)
 	{
-		CGenericItem *pItem = ReadGenericItem( true );
-		if( pItem )
-			pStorage->Items.add( genericitem_full_t(pItem) );
+		CGenericItem *pItem = ReadGenericItem(true);
+		if (pItem)
+			pStorage->Items.add(genericitem_full_t(pItem));
 
-		pItem->SUB_Remove( );
+		pItem->SUB_Remove();
 	}
 
-	Storage_Update( );
+	Storage_Update();
 }
-void Storage_Show( msstring_ref DisplayName, msstring_ref StorageName, float flFeeRatio )
+void Storage_Show(msstring_ref DisplayName, msstring_ref StorageName, float flFeeRatio)
 {
 	player.m_CurrentStorage.Active = true;
 	player.m_CurrentStorage.DisplayName = DisplayName;
 	player.m_CurrentStorage.StorageName = StorageName;
 	player.m_CurrentStorage.flFeeRatio = flFeeRatio;
 
-	ShowVGUIMenu( MENU_STORAGE );
+	ShowVGUIMenu(MENU_STORAGE);
 }
-
-

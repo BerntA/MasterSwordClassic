@@ -13,7 +13,7 @@
 *
 ****/
 // Physics info string definition
-#if !defined( PM_INFOH )
+#if !defined(PM_INFOH)
 #define PM_INFOH
 #ifdef _WIN32
 #pragma once

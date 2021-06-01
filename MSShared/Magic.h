@@ -11,12 +11,12 @@ typedef msstringlist spellgroup_v;
 class Magic
 {
 public:
-	#ifndef VALVE_DLL
-		static spellgroup_v Spells;	//The spell script names
-		static void AddSpell( const char *pszName );							//Spell script adding itself to the global list at precache time
-	#endif
+#ifndef VALVE_DLL
+	static spellgroup_v Spells;				   //The spell script names
+	static void AddSpell(const char *pszName); //Spell script adding itself to the global list at precache time
+#endif
 
-	static bool Prepare( const char *pszName, class CBasePlayer *pPlayer );	//Create the GenericItem for this spell and give it to the player
+	static bool Prepare(const char *pszName, class CBasePlayer *pPlayer); //Create the GenericItem for this spell and give it to the player
 };
 
 /*#ifdef VALVE_DLL

@@ -16,31 +16,31 @@
 // GameRules.cpp
 //=========================================================
 
-#include	"MSDLLHeaders.h"
-#include	"Player/player.h"
-#include	"Weapons/Weapons.h"
-#include	"gamerules.h"
-#include	"skill.h"
-#include	"MSGamerules.h"
+#include "MSDLLHeaders.h"
+#include "Player/player.h"
+#include "Weapons/Weapons.h"
+#include "gamerules.h"
+#include "skill.h"
+#include "MSGamerules.h"
 
-extern edict_t *EntSelectSpawnPoint( CBaseEntity *pPlayer );
+extern edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer);
 
-DLL_GLOBAL CGameRules*	g_pGameRules = NULL;
-extern DLL_GLOBAL BOOL	g_fGameOver;
-extern int gmsgDeathMsg;	// client dll messages
+DLL_GLOBAL CGameRules *g_pGameRules = NULL;
+extern DLL_GLOBAL BOOL g_fGameOver;
+extern int gmsgDeathMsg; // client dll messages
 extern int gmsgScoreInfo;
 extern int gmsgMOTD;
 
 //=========================================================
 //=========================================================
-BOOL CGameRules::CanHaveAmmo( CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry )
+BOOL CGameRules::CanHaveAmmo(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry)
 {
 	return FALSE;
 }
 
 //=========================================================
 //=========================================================
-edict_t *CGameRules :: GetPlayerSpawnSpot( CBasePlayer *pPlayer )
+edict_t *CGameRules ::GetPlayerSpawnSpot(CBasePlayer *pPlayer)
 {
 	return NULL;
 }
@@ -81,19 +81,19 @@ edict_t *CGameRules :: GetPlayerSpawnSpot( CBasePlayer *pPlayer )
 //=========================================================
 // load the SkillData struct with the proper values based on the skill level.
 //=========================================================
-void CGameRules::RefreshSkillData ( void )
+void CGameRules::RefreshSkillData(void)
 {
-	int	iSkill;
+	int iSkill;
 
 	iSkill = (int)CVAR_GET_FLOAT("skill");
 
-	if ( iSkill < 1 )
+	if (iSkill < 1)
 	{
 		iSkill = 1;
 	}
-	else if ( iSkill > 3 )
+	else if (iSkill > 3)
 	{
-		iSkill = 3; 
+		iSkill = 3;
 	}
 
 	gSkillData.iSkillLevel = iSkill;
@@ -105,13 +105,10 @@ void CGameRules::RefreshSkillData ( void )
 // instantiate the proper game rules object
 //=========================================================
 
-CGameRules *InstallGameRules( void )
+CGameRules *InstallGameRules(void)
 {
-	SERVER_COMMAND( "exec game.cfg\n" );
-	SERVER_EXECUTE( );
+	SERVER_COMMAND("exec game.cfg\n");
+	SERVER_EXECUTE();
 
 	return msnew CHalfLifeMultiplay;
 }
-
-
-

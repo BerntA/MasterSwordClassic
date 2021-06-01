@@ -13,23 +13,22 @@
 #include "logfile.h"
 
 //Callback for save file transaction
-void ReceivedSaveFile( CNetFileTransaction *pTransaction );
-CGenericItem *ReadItem( CPlayer_DataBuffer &Data, bool fStripItems, Vector &vOrigin );
-
+void ReceivedSaveFile(CNetFileTransaction *pTransaction);
+CGenericItem *ReadItem(CPlayer_DataBuffer &Data, bool fStripItems, Vector &vOrigin);
 
 //Initailizes the network
-void CNetCode::InitNetCode( )
+void CNetCode::InitNetCode()
 {
-	pNetCode = msnew CNetCodeServer( );
-	pNetCode->Init( );
+	pNetCode = msnew CNetCodeServer();
+	pNetCode->Init();
 }
 
-CNetCodeServer::CNetCodeServer( ) : CNetCode( ) { m.HostIP = "127.0.0.1"; }
+CNetCodeServer::CNetCodeServer() : CNetCode() { m.HostIP = "127.0.0.1"; }
 
 //Finds the server IP and enumerates the network interfaces
-bool CNetCodeServer::Init( )
+bool CNetCodeServer::Init()
 {
-	if( !CNetCode::Init( ) )
+	if (!CNetCode::Init())
 		return false;
 
 	//GetHostName
@@ -150,16 +149,16 @@ bool CNetCodeServer::Init( )
 	return true;
 }
 
-msstring_ref CNetCodeServer::GetServerIPForPlayer( CBasePlayer *pPlayer )
+msstring_ref CNetCodeServer::GetServerIPForPlayer(CBasePlayer *pPlayer)
 {
 	//Finds the server address that this particular client should use.
 	//This is different for lan clients than internet clients (unless for some reason your lan uses your internet IP)
 	char cPlayerIP[32];
-	strcpy( cPlayerIP, pPlayer->m_ClientAddress );
-	*strstr( cPlayerIP, ":" ) = 0;
+	strcpy(cPlayerIP, pPlayer->m_ClientAddress);
+	*strstr(cPlayerIP, ":") = 0;
 	ULONG plyrAddr = inet_addr(cPlayerIP);
 
-	 for (int i = 0; i < s.Interfaces.size(); i++) 
+	for (int i = 0; i < s.Interfaces.size(); i++)
 	{
 		//Find an interface that masks correctly with the client IP address
 		//If a client is coming from lan, we'll select the proper lan IP the client should use to contact the server
@@ -169,7 +168,7 @@ msstring_ref CNetCodeServer::GetServerIPForPlayer( CBasePlayer *pPlayer )
 		ulong InterfaceMask = *(ULONG *)&Interface.iiNetmask.AddressIn.sin_addr;
 		ulong addr_result = InterfaceAddr & InterfaceMask;
 		ulong plyr_result = plyrAddr & InterfaceMask;
-		if( addr_result != INADDR_ANY && addr_result == plyr_result )
+		if (addr_result != INADDR_ANY && addr_result == plyr_result)
 			return inet_ntoa(Interface.iiAddress.AddressIn.sin_addr);
 	}
 
@@ -191,16 +190,17 @@ msstring_ref CNetCodeServer::GetServerIPForPlayer( CBasePlayer *pPlayer )
 
 	return NULL;
 }*/
-CBasePlayer *CNetCodeServer::GetPlayerByFileID( ulong ID )
+CBasePlayer *CNetCodeServer::GetPlayerByFileID(ulong ID)
 {
 	//The format for Address is IP:Port
 	//Don't call this with just the IP!
-	for( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex( i );
-		if( !pPlayer ) continue;
-		
-		if( pPlayer->m_SaveFileID == ID ) 
+		CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(i);
+		if (!pPlayer)
+			continue;
+
+		if (pPlayer->m_SaveFileID == ID)
 			return pPlayer;
 	}
 
@@ -208,77 +208,74 @@ CBasePlayer *CNetCodeServer::GetPlayerByFileID( ulong ID )
 }
 
 //Checks the listening socket for incoming connections by clients
-void CNetCodeServer::Think( )
+void CNetCodeServer::Think()
 {
 	sockaddr_in addr;
 	int addrlen = sizeof(sockaddr);
-	memset( &addr.sin_zero, 0, sizeof(addr.sin_zero) );
+	memset(&addr.sin_zero, 0, sizeof(addr.sin_zero));
 	addrlen = sizeof(sockaddr);
 
 	//Attempt to accept a client connection for receiving a file
 
-	SOCKET newsock = accept( s.FileSock, (sockaddr *)&addr, &addrlen );
+	SOCKET newsock = accept(s.FileSock, (sockaddr *)&addr, &addrlen);
 
-	if( newsock != INVALID_SOCKET )
+	if (newsock != INVALID_SOCKET)
 	{
-		m.Transactons.push_back( msnew CNetFileTransaction( newsock, ReceivedSaveFile ) );	//Create incoming file transaction
-		byte SendByte = 1;																	//Send the first ack packet
-		send( newsock, (char *)&SendByte, 1, 0 );											//
+		m.Transactons.push_back(msnew CNetFileTransaction(newsock, ReceivedSaveFile)); //Create incoming file transaction
+		byte SendByte = 1;															   //Send the first ack packet
+		send(newsock, (char *)&SendByte, 1, 0);										   //
 
 		char Address[32];
-		sprintf( Address, "%s:%i", inet_ntoa(addr.sin_addr), ntohs( addr.sin_port ) );
+		sprintf(Address, "%s:%i", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
 
 		logfile << "[Net] Incoming savefile connection from: " << Address << "\r\n";
 	}
 
-	CNetCode::Think( );
+	CNetCode::Think();
 }
 
-void CNetCodeServer::Shutdown( )
+void CNetCodeServer::Shutdown()
 {
-	if( s.FileSock ) closesocket( s.FileSock );
-	CNetCode::Shutdown( );
+	if (s.FileSock)
+		closesocket(s.FileSock);
+	CNetCode::Shutdown();
 }
 
-
-void ReceivedSaveFile( CNetFileTransaction *pTransaction )
+void ReceivedSaveFile(CNetFileTransaction *pTransaction)
 {
 	//Finished receiving file
-	CBasePlayer *pPlayer = CNetCodeServer::GetPlayerByFileID( pTransaction->m.FileID );
-	pPlayer->RestoreAllServer( pTransaction->m.Data, pTransaction->m.DataSize );
+	CBasePlayer *pPlayer = CNetCodeServer::GetPlayerByFileID(pTransaction->m.FileID);
+	pPlayer->RestoreAllServer(pTransaction->m.Data, pTransaction->m.DataSize);
 }
 
-
-
-
 //Called when the server has received the entire save file
-#define TAMPER_ERROR ALERT( at_console, "%s may be tampering with their save file!!\n", STRING(pev->netname) )
+#define TAMPER_ERROR ALERT(at_console, "%s may be tampering with their save file!!\n", STRING(pev->netname))
 //#include "Monsters/Bodyparts/Bodyparts_Human.h"
-bool CBasePlayer::RestoreAllServer( void *pData, ulong Size )
+bool CBasePlayer::RestoreAllServer(void *pData, ulong Size)
 {
 	startdbg;
-	dbg("Begin" );
+	dbg("Begin");
 
-	Log( "Load Character: %s", DisplayName() );
+	Log("Load Character: %s", DisplayName());
 
 	//Thothie JAN2010_10 - flag to tell "char" function character is loaded, so no clickie
 	m_CharacterState = CHARSTATE_LOADING;
 
 	//Thothie JUL2007 - prevent loading of STEAM_ID_PENDING chars
 	msstring thoth_displayname = DisplayName();
-	if ( thoth_displayname.starts_with("LOAD_FAILED-RECONNECT") )
+	if (thoth_displayname.starts_with("LOAD_FAILED-RECONNECT"))
 	{
-		KickPlayer( "\nNo clicky means no clicky. Please reconnect.\n" );
+		KickPlayer("\nNo clicky means no clicky. Please reconnect.\n");
 		return false;
 	}
 
-	RemoveAllItems( false, true );						//Remove all items
-	CallScriptEvent( "game_reset_wear_positions" );		//Re-initialize all the wearable positions for items
+	RemoveAllItems(false, true);				  //Remove all items
+	CallScriptEvent("game_reset_wear_positions"); //Re-initialize all the wearable positions for items
 
 	chardata_t Data;
-	if( !MSChar_Interface::ReadCharData( pData, Size, &Data ) )
+	if (!MSChar_Interface::ReadCharData(pData, Size, &Data))
 	{
-		KickPlayer( "\nTampering with the save file results in a ban!\n" );
+		KickPlayer("\nTampering with the save file results in a ban!\n");
 		return false;
 	}
 
@@ -288,21 +285,21 @@ bool CBasePlayer::RestoreAllServer( void *pData, ulong Size )
 
 	m_MapStatus = INVALID_MAP;
 	char cCurrentMap[32];
-	strcpy( cCurrentMap, STRING(gpGlobals->mapname) );
-	strncpy( m_NextMap, cCurrentMap, 32 );
+	strcpy(cCurrentMap, STRING(gpGlobals->mapname));
+	strncpy(m_NextMap, cCurrentMap, 32);
 
 	//Determine whether a transition took place and set the spawn transition accordingly
-	if( FStrEq(Data.MapName,cCurrentMap) ) 
+	if (FStrEq(Data.MapName, cCurrentMap))
 	{
 		m_MapStatus = OLD_MAP;
-		strncpy( m_OldTransition, Data.OldTrans, 32 );		//Copy transition names to savable memory
+		strncpy(m_OldTransition, Data.OldTrans, 32); //Copy transition names to savable memory
 	}
-	else if( FStrEq(Data.NextMap,cCurrentMap) ) 
+	else if (FStrEq(Data.NextMap, cCurrentMap))
 	{
 		m_MapStatus = NEW_MAP;
-		strncpy( m_OldTransition, Data.NewTrans, 32 );		//The new transition becomes the old transition
+		strncpy(m_OldTransition, Data.NewTrans, 32); //The new transition becomes the old transition
 	}
-	
+
 	m_SpawnTransition = m_OldTransition;
 	m_NextTransition[0] = 0;
 	m_NextMap[0] = 0;
@@ -317,43 +314,44 @@ bool CBasePlayer::RestoreAllServer( void *pData, ulong Size )
 	//This is so the engine will run its name check routine and append (x) if people have the same names
 	//I need that check because if two people were to forecefully get assigned the same name (with g_engfuncs.pfnSetClientKeyValue),
 	//Then the whole server does the "5 minute delayed messages" bug
-	CLIENT_COMMAND( edict(), "name %s\n", Data.Name );
+	CLIENT_COMMAND(edict(), "name %s\n", Data.Name);
 	//g_engfuncs.pfnSetClientKeyValue( entindex(), g_engfuncs.pfnGetInfoKeyBuffer( edict() ), "name", (char *)Data.Name );
 
-	strncpy( m_Race, Data.Race, 16 );
+	strncpy(m_Race, Data.Race, 16);
 
-	dbg( "Read Stats" );
+	dbg("Read Stats");
 	m_Gold = Data.Gold;
 
 	//MiB JAN2010_15 Gold Change on Spawn.rtf
 	m_Gold.m_Changed = false;
-	MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_SETSTAT], NULL, pev );
-		WRITE_BYTE( 3 );
-		WRITE_BYTE( 0 );
-		WRITE_LONG( m_Gold );
+	MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_SETSTAT], NULL, pev);
+	WRITE_BYTE(3);
+	WRITE_BYTE(0);
+	WRITE_LONG(m_Gold);
 	MESSAGE_END();
 
 	// MIB FEB2015_21 [RACE_MENU] - Send race
-	MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_SETSTAT], NULL, pev );
-		WRITE_BYTE( 11 );
-		WRITE_STRING( m_Race );
+	MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_SETSTAT], NULL, pev);
+	WRITE_BYTE(11);
+	WRITE_STRING(m_Race);
 	MESSAGE_END();
 
-	if( Data.HP > 0 ) 
+	if (Data.HP > 0)
 	{
-		float CappedHP = max(Data.HP,0);
-		float CappedMP = max(Data.MP,0);
+		float CappedHP = max(Data.HP, 0);
+		float CappedMP = max(Data.MP, 0);
 		pev->health = m_HP = CappedHP;
 		m_MP = CappedMP;
 		m_MaxHP = Data.MaxHP;
 		m_MaxMP = Data.MaxMP;
 	}
 	//Player saved while dead
-	else pev->deadflag = DEAD_DEAD;
+	else
+		pev->deadflag = DEAD_DEAD;
 
-	strcpy( m_cEnterMap, Data.MapName );
+	strcpy(m_cEnterMap, Data.MapName);
 
-	SetTeam( CTeam::CreateTeam(Data.Party, Data.PartyID) );	
+	SetTeam(CTeam::CreateTeam(Data.Party, Data.PartyID));
 	m_Gender = Data.Gender;
 	m_fIsElite = Data.IsElite ? true : false;
 	m_PlayersKilled = Data.PlayerKills;
@@ -361,15 +359,16 @@ bool CBasePlayer::RestoreAllServer( void *pData, ulong Size )
 	m_TimeWaitedToForgetSteal = Data.TimeWaitedToForgetSteal;
 
 	//MiB JAN2010 - Player Kill Stickiness.rtf
-	MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev );
-		WRITE_BYTE( 8 );
-		WRITE_SHORT( m_PlayersKilled );
+	MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev);
+	WRITE_BYTE(8);
+	WRITE_SHORT(m_PlayersKilled);
 	MESSAGE_END();
 
-	m_JoinType = MSChar_Interface::CanJoinThisMap( Data, m_Maps );
+	m_JoinType = MSChar_Interface::CanJoinThisMap(Data, m_Maps);
 
 	//Create our Human body -- Must be done here
-	if( Body ) Body->Delete( );	//Moved to SUB_Remove
+	if (Body)
+		Body->Delete(); //Moved to SUB_Remove
 	Body = msnew CHumanBody;
 	//Body->Initialize( this );
 
@@ -377,31 +376,31 @@ bool CBasePlayer::RestoreAllServer( void *pData, ulong Size )
 	m_Stats = Data.m_Stats;
 
 	//MiB Aug 2008a (JAN2010_15) - Reset tomes on client
-	MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_SETPROP], NULL, pev );
-		WRITE_BYTE( PROP_SPELL );
-		WRITE_BYTE( -1 );
+	MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_SETPROP], NULL, pev);
+	WRITE_BYTE(PROP_SPELL);
+	WRITE_BYTE(-1);
 	MESSAGE_END();
 
 	//Read Magic spells
-	 for (int s = 0; s < Data.m_Spells.size(); s++) 
-		LearnSpell( Data.m_Spells[s] );
+	for (int s = 0; s < Data.m_Spells.size(); s++)
+		LearnSpell(Data.m_Spells[s]);
 
-	mslist<CGenericItem *> Items;  //Keep track of ALL items, for quickslot assignment later
+	mslist<CGenericItem *> Items; //Keep track of ALL items, for quickslot assignment later
 
 	//Read Items
-	dbg( "Read Items" );
-	 for (int i = 0; i < Data.m_Items.size(); i++) 
+	dbg("Read Items");
+	for (int i = 0; i < Data.m_Items.size(); i++)
 	{
 		CGenericItem *pItem = Data.m_Items[i].operator CGenericItem *();
 
-		if( pItem->m_Location == ITEMPOS_HANDS )
-			AddItem( pItem, true, false, pItem->m_Hand );
+		if (pItem->m_Location == ITEMPOS_HANDS)
+			AddItem(pItem, true, false, pItem->m_Hand);
 		else
-			pItem->AddToOwner( this );
+			pItem->AddToOwner(this);
 
-		Items.add( pItem );
-		 for (int c = 0; c < pItem->Container_ItemCount(); c++) 
-			Items.add( pItem->Container_GetItem( c ) );		
+		Items.add(pItem);
+		for (int c = 0; c < pItem->Container_ItemCount(); c++)
+			Items.add(pItem->Container_GetItem(c));
 
 		//if( FBitSet(pItem->MSProperties(), ITEM_WEARABLE) && pItem->IsWorn() )	//Wear the wearable items
 		//	pItem->WearItem( );
@@ -409,37 +408,39 @@ bool CBasePlayer::RestoreAllServer( void *pData, ulong Size )
 
 	//Read storage items
 	m_Storages = Data.m_Storages;
-	Storage_Send( );				//Send all the items in storage
+	Storage_Send(); //Send all the items in storage
 
 	//Read Companions
-	dbg( "Read Companions" );
+	dbg("Read Companions");
 
 	m_Companions = Data.m_Companions;
 	//Thothie JUN2008a - just read in companions, save the summoning until the script command "summonpets"
 	//- scratch the above, if the player saves while his pet is not present, it corrupts the pet and character
-	 for (int c = 0; c < m_Companions.size(); c++) 
+	for (int c = 0; c < m_Companions.size(); c++)
 	{
 		companion_t &Companion = m_Companions[c];
 
-		CMSMonster *pCompanion = (CMSMonster *)CREATE_ENT( "ms_npc" );
-		if( !pCompanion ) continue;
+		CMSMonster *pCompanion = (CMSMonster *)CREATE_ENT("ms_npc");
+		if (!pCompanion)
+			continue;
 		Companion.Active = true;
 		Companion.Entity = pCompanion;
 
-		pCompanion->StoreEntity( this, ENT_OWNER );
+		pCompanion->StoreEntity(this, ENT_OWNER);
 		edict_t *pEdict = pCompanion->edict();
-		pCompanion->Spawn( Companion.ScriptName );
-		if( pEdict->free )
+		pCompanion->Spawn(Companion.ScriptName);
+		if (pEdict->free)
 			continue;
-		
-		pCompanion->pev->origin = pev->origin + Vector(0,0,128);
 
-		IScripted *pScripted = pCompanion->GetScripted( );
-		if( !pScripted || !pScripted->m_Scripts.size() ) continue;
-		 for (int v = 0; v < Companion.SaveVarName.size(); v++) 
-			pScripted->SetScriptVar( Companion.SaveVarName[v], Companion.SaveVarValue[v] );
+		pCompanion->pev->origin = pev->origin + Vector(0, 0, 128);
 
-		pScripted->CallScriptEvent( "game_companion_restore" );
+		IScripted *pScripted = pCompanion->GetScripted();
+		if (!pScripted || !pScripted->m_Scripts.size())
+			continue;
+		for (int v = 0; v < Companion.SaveVarName.size(); v++)
+			pScripted->SetScriptVar(Companion.SaveVarName[v], Companion.SaveVarValue[v]);
+
+		pScripted->CallScriptEvent("game_companion_restore");
 	}
 
 	//Read Help tips
@@ -449,12 +450,12 @@ bool CBasePlayer::RestoreAllServer( void *pData, ulong Size )
 	m_Quests = Data.m_Quests;
 
 	//Read QuickSlots
-	 for (int q = 0; q < Data.m_QuickSlots.size(); q++) 
+	for (int q = 0; q < Data.m_QuickSlots.size(); q++)
 	{
 		quickslot_t &QuickSlot = Data.m_QuickSlots[q];
-		if( QuickSlot.Active && QuickSlot.Type == QS_ITEM )
-			 for (unsigned int i = 0; i < Items.size(); i++) 
-				if( Items[i]->m_OldID == QuickSlot.ID )
+		if (QuickSlot.Active && QuickSlot.Type == QS_ITEM)
+			for (unsigned int i = 0; i < Items.size(); i++)
+				if (Items[i]->m_OldID == QuickSlot.ID)
 				{
 					QuickSlot.ID = Items[i]->m_iId;
 					break;
@@ -464,21 +465,22 @@ bool CBasePlayer::RestoreAllServer( void *pData, ulong Size )
 
 	//if( !fSuccess ) TAMPER_ERROR;
 	//Print( "Loaded character. (%s)(%i/%i)\n", Data.Name, FileSize, sizeof(savedata_t) );
-	
+
 	//Make sure an update is sent from UpdateClientData ASAP
-	 for (int i = 0; i < m_Stats.size(); i++) m_Stats[i].OutDate();
-//	m_Gold.m_Changed = true;
+	for (int i = 0; i < m_Stats.size(); i++)
+		m_Stats[i].OutDate();
+	//	m_Gold.m_Changed = true;
 
 	m_CharacterState = CHARSTATE_LOADED;
 
 	//Send the character name down to client
-	MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev );
-		WRITE_BYTE( 4 );
-		WRITE_STRING( Data.Name );
+	MESSAGE_BEGIN(MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pev);
+	WRITE_BYTE(4);
+	WRITE_STRING(Data.Name);
 	MESSAGE_END();
 
-	dbg( "Call CBasePlayer::Spawn()" );
-	Spawn( );
+	dbg("Call CBasePlayer::Spawn()");
+	Spawn();
 
 	enddbg;
 

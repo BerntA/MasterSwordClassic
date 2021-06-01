@@ -1,6 +1,6 @@
-//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
+//========= Copyright ï¿½ 1996-2002, Valve LLC, All rights reserved. ============
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -8,18 +8,14 @@
 #include <assert.h>
 #include "vgui_grid.h"
 
-
 using namespace vgui;
 
-
 #define AssertCheck(expr, msg) \
-	if(!(expr))\
-	{\
-		assert(!msg);\
-		return 0;\
+	if (!(expr))               \
+	{                          \
+		assert(!msg);          \
+		return 0;              \
 	}
-
-
 
 // ------------------------------------------------------------------------------ //
 // CGrid::CGridEntry.
@@ -35,7 +31,6 @@ CGrid::CGridEntry::~CGridEntry()
 {
 }
 
-
 // ------------------------------------------------------------------------------ //
 // CGrid.
 // ------------------------------------------------------------------------------ //
@@ -45,91 +40,83 @@ CGrid::CGrid()
 	Clear();
 }
 
-
 CGrid::~CGrid()
 {
 	Term();
 }
-
 
 bool CGrid::SetDimensions(int xCols, int yRows)
 {
 	Term();
 
 	m_GridEntries = new CGridEntry[xCols * yRows];
-	m_Widths = new int[xCols*2 + yRows*2];
+	m_Widths = new int[xCols * 2 + yRows * 2];
 	m_Heights = m_Widths + xCols;
 	m_ColOffsets = m_Heights + yRows;
 	m_RowOffsets = m_ColOffsets + xCols;
 
-	if(!m_GridEntries || !m_Widths)
+	if (!m_GridEntries || !m_Widths)
 	{
 		Term();
 		return false;
 	}
 
-	memset(m_Widths, 0, sizeof(int) * (xCols*2 + yRows*2));
+	memset(m_Widths, 0, sizeof(int) * (xCols * 2 + yRows * 2));
 
 	m_xCols = xCols;
 	m_yRows = yRows;
 	return true;
 }
 
-
 void CGrid::Term()
 {
-	delete [] m_GridEntries;
-	delete [] m_Widths;
+	delete[] m_GridEntries;
+	delete[] m_Widths;
 	Clear();
 }
 
-
-Panel* CGrid::GetEntry(int x, int y)
+Panel *CGrid::GetEntry(int x, int y)
 {
 	return GridEntry(x, y)->m_pPanel;
 }
 
-
 bool CGrid::SetEntry(int x, int y, Panel *pPanel)
 {
 	CGridEntry *pEntry = GridEntry(x, y);
-	if(!pEntry)
+	if (!pEntry)
 		return false;
 
-	if(pEntry->m_pPanel)
+	if (pEntry->m_pPanel)
 		pEntry->m_pPanel->setParent(NULL);
 
 	pEntry->m_pPanel = pPanel;
-	if(pPanel)
+	if (pPanel)
 		pPanel->setParent(this);
 
 	m_bDirty = true;
 	return true;
 }
 
-
 int CGrid::GetXSpacing()
 {
 	return m_xSpacing;
 }
-
 
 int CGrid::GetYSpacing()
 {
 	return m_ySpacing;
 }
 
-
 void CGrid::SetSpacing(int xSpacing, int ySpacing)
 {
-	if(xSpacing != m_xSpacing)
+	if (xSpacing != m_xSpacing)
 	{
 		m_xSpacing = xSpacing;
 		CalcColOffsets(0);
 		m_bDirty = true;
 	}
 
-	if(ySpacing != m_ySpacing)
+	if (ySpacing != m_ySpacing)
 	{
 		m_ySpacing = ySpacing;
 		CalcRowOffsets(0);
@@ -137,26 +124,23 @@ void CGrid::SetSpacing(int xSpacing, int ySpacing)
 	}
 }
 
-
 bool CGrid::SetColumnWidth(int iColumn, int width)
 {
 	AssertCheck(iColumn >= 0 && iColumn < m_xCols, "CGrid::SetColumnWidth : invalid location specified");
 	m_Widths[iColumn] = width;
-	CalcColOffsets(iColumn+1);
+	CalcColOffsets(iColumn + 1);
 	m_bDirty = true;
 	return true;
 }
-
 
 bool CGrid::SetRowHeight(int iRow, int height)
 {
 	AssertCheck(iRow >= 0 && iRow < m_yRows, "CGrid::SetColumnWidth : invalid location specified");
 	m_Heights[iRow] = height;
-	CalcRowOffsets(iRow+1);
+	CalcRowOffsets(iRow + 1);
 	m_bDirty = true;
 	return true;
 }
-
 
 int CGrid::GetColumnWidth(int iColumn)
 {
@@ -164,62 +148,57 @@ int CGrid::GetColumnWidth(int iColumn)
 	return m_Widths[iColumn];
 }
 
-
 int CGrid::GetRowHeight(int iRow)
 {
 	AssertCheck(iRow >= 0 && iRow < m_yRows, "CGrid::GetRowHeight: invalid location specified");
 	return m_Heights[iRow];
 }
 
-
 int CGrid::CalcFitColumnWidth(int iColumn)
 {
 	AssertCheck(iColumn >= 0 && iColumn < m_xCols, "CGrid::CalcFitColumnWidth: invalid location specified");
 
 	int maxSize = 0;
-	for(int i=0; i < m_yRows; i++)
+	for (int i = 0; i < m_yRows; i++)
 	{
 		Panel *pPanel = GridEntry(iColumn, i)->m_pPanel;
-		if(!pPanel)
+		if (!pPanel)
 			continue;
 
 		int w, h;
-		pPanel->getSize(w,h);
-		if(w > maxSize)
+		pPanel->getSize(w, h);
+		if (w > maxSize)
 			maxSize = w;
 	}
 
 	return maxSize;
 }
 
-
 int CGrid::CalcFitRowHeight(int iRow)
 {
 	AssertCheck(iRow >= 0 && iRow < m_yRows, "CGrid::CalcFitRowHeight: invalid location specified");
 
 	int maxSize = 0;
-	for(int i=0; i < m_xCols; i++)
+	for (int i = 0; i < m_xCols; i++)
 	{
 		Panel *pPanel = GridEntry(i, iRow)->m_pPanel;
-		if(!pPanel)
+		if (!pPanel)
 			continue;
 
 		int w, h;
-		pPanel->getSize(w,h);
-		if(h > maxSize)
+		pPanel->getSize(w, h);
+		if (h > maxSize)
 			maxSize = h;
 	}
 
 	return maxSize;
 }
 
-
 void CGrid::AutoSetRowHeights()
 {
-	for(int i=0; i < m_yRows; i++)
+	for (int i = 0; i < m_yRows; i++)
 		SetRowHeight(i, CalcFitRowHeight(i));
 }
-
 
 bool CGrid::GetEntryBox(
 	int col, int row, int &x, int &y, int &w, int &h)
@@ -231,16 +210,15 @@ bool CGrid::GetEntryBox(
 
 	y = m_RowOffsets[row];
 	h = m_Heights[row];
-	return true;	
+	return true;
 }
-
 
 bool CGrid::CopyColumnWidths(CGrid *pOther)
 {
-	if(!pOther || pOther->m_xCols != m_xCols)
+	if (!pOther || pOther->m_xCols != m_xCols)
 		return false;
 
-	for(int i=0; i < m_xCols; i++)
+	for (int i = 0; i < m_xCols; i++)
 		m_Widths[i] = pOther->m_Widths[i];
 
 	CalcColOffsets(0);
@@ -248,21 +226,20 @@ bool CGrid::CopyColumnWidths(CGrid *pOther)
 	return true;
 }
 
-
 void CGrid::RepositionContents()
 {
-	for(int x=0; x < m_xCols; x++)
+	for (int x = 0; x < m_xCols; x++)
 	{
-		for(int y=0; y < m_yRows; y++)
+		for (int y = 0; y < m_yRows; y++)
 		{
-			Panel *pPanel = GridEntry(x,y)->m_pPanel;
-			if(!pPanel)
+			Panel *pPanel = GridEntry(x, y)->m_pPanel;
+			if (!pPanel)
 				continue;
 
 			pPanel->setBounds(
-				m_ColOffsets[x], 
+				m_ColOffsets[x],
 				m_RowOffsets[y],
-				m_Widths[x], 
+				m_Widths[x],
 				m_Heights[y]);
 		}
 	}
@@ -270,12 +247,11 @@ void CGrid::RepositionContents()
 	m_bDirty = false;
 }
 
-
 int CGrid::CalcDrawHeight()
 {
-	if(m_yRows > 0)
+	if (m_yRows > 0)
 	{
-		return m_RowOffsets[m_yRows-1] + m_Heights[m_yRows - 1] + m_ySpacing;
+		return m_RowOffsets[m_yRows - 1] + m_Heights[m_yRows - 1] + m_ySpacing;
 	}
 	else
 	{
@@ -283,10 +259,9 @@ int CGrid::CalcDrawHeight()
 	}
 }
 
-
 void CGrid::paint()
 {
-	if(m_bDirty)
+	if (m_bDirty)
 		RepositionContents();
 
 	Panel::paint();
@@ -337,35 +312,32 @@ void CGrid::Clear()
 	m_bDirty = false;
 }
 
-
-CGrid::CGridEntry* CGrid::GridEntry(int x, int y)
+CGrid::CGridEntry *CGrid::GridEntry(int x, int y)
 {
 	AssertCheck(x >= 0 && x < m_xCols && y >= 0 && y < m_yRows, "CGrid::GridEntry: invalid location specified");
-	return &m_GridEntries[y*m_xCols + x];
+	return &m_GridEntries[y * m_xCols + x];
 }
-
 
 void CGrid::CalcColOffsets(int iStart)
 {
 	int cur = m_xSpacing;
-	if(iStart != 0)
-		cur += m_ColOffsets[iStart-1] + m_Widths[iStart-1];
+	if (iStart != 0)
+		cur += m_ColOffsets[iStart - 1] + m_Widths[iStart - 1];
 
-	for(int i=iStart; i < m_xCols; i++)
+	for (int i = iStart; i < m_xCols; i++)
 	{
 		m_ColOffsets[i] = cur;
 		cur += m_Widths[i] + m_xSpacing;
 	}
 }
 
-
 void CGrid::CalcRowOffsets(int iStart)
 {
 	int cur = m_ySpacing;
-	if(iStart != 0)
-		cur += m_RowOffsets[iStart-1];
+	if (iStart != 0)
+		cur += m_RowOffsets[iStart - 1];
 
-	for(int i=iStart; i < m_yRows; i++)
+	for (int i = iStart; i < m_yRows; i++)
 	{
 		m_RowOffsets[i] = cur;
 		cur += m_Heights[i] + m_ySpacing;
@@ -374,12 +346,13 @@ void CGrid::CalcRowOffsets(int iStart)
 
 bool CGrid::getCellAtPoint(int worldX, int worldY, int &row, int &col)
 {
-	row = -1; col = -1;
-	for(int x=0; x < m_xCols; x++)
+	row = -1;
+	col = -1;
+	for (int x = 0; x < m_xCols; x++)
 	{
-		for(int y=0; y < m_yRows; y++)
+		for (int y = 0; y < m_yRows; y++)
 		{
-			Panel *pPanel = GridEntry(x,y)->m_pPanel;
+			Panel *pPanel = GridEntry(x, y)->m_pPanel;
 			if (!pPanel)
 				continue;
 
@@ -391,8 +364,6 @@ bool CGrid::getCellAtPoint(int worldX, int worldY, int &row, int &col)
 			}
 		}
 	}
-		
+
 	return false;
 }
-
-

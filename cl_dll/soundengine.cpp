@@ -1,10 +1,10 @@
 //===============================================
-// Amnesia Sound Engine Class 
+// Amnesia Sound Engine Class
 //
-// Created by Richard Roháè
+// Created by Richard Rohï¿½ï¿½
 //
 // Thanks Andrew Luke for sentences.txt parser
-//		  Hunk Guerrius for beta testing 
+//		  Hunk Guerrius for beta testing
 //
 // Following work is released under LGPL license,
 // shipped with this source code.
@@ -21,12 +21,12 @@
 
 extern "C"
 {
-	#include "pm_shared.h"
+#include "pm_shared.h"
 }
 
-#pragma warning( disable: 4018 )
+#pragma warning(disable : 4018)
 
-Vector g_vecZero(0,0,0);
+Vector g_vecZero(0, 0, 0);
 
 /*
 ========================================
@@ -61,44 +61,45 @@ typedef struct thread_s
 
 thread_t sThreadData;
 
-FMOD_RESULT (_stdcall *SetPaused) ( FMOD_CHANNEL *channel, FMOD_BOOL paused );
+FMOD_RESULT(_stdcall *SetPaused)
+(FMOD_CHANNEL *channel, FMOD_BOOL paused);
 
-DWORD WINAPI WatchThread( LPVOID lpParam )
+DWORD WINAPI WatchThread(LPVOID lpParam)
 {
-	thread_t *pThreadData = (thread_t*)lpParam;
+	thread_t *pThreadData = (thread_t *)lpParam;
 	bool bAppStatus, bCleaned;
 
 	HMODULE hFmodDll = GetModuleHandle("fmodex.dll");
-	if(!hFmodDll)
+	if (!hFmodDll)
 	{
 		return 0;
 	}
 
-	(FARPROC&)SetPaused = GetProcAddress(hFmodDll, "FMOD_Channel_SetPaused");
-	if(!SetPaused)
+	(FARPROC &)SetPaused = GetProcAddress(hFmodDll, "FMOD_Channel_SetPaused");
+	if (!SetPaused)
 	{
 		return 0;
 	}
 
-	while(1)
+	while (1)
 	{
-		if(WaitForSingleObject(g_hExitEvent, 0) == WAIT_OBJECT_0)
+		if (WaitForSingleObject(g_hExitEvent, 0) == WAIT_OBJECT_0)
 		{
 			ExitThread(0);
 			return 0; //let's be sure
 		}
 
 		g_hWnd = FindWindow("Half-Life", NULL);
-		if(!g_hWnd)
+		if (!g_hWnd)
 		{
 			g_hWnd = FindWindow("Valve001", NULL);
-			if(!g_hWnd)
+			if (!g_hWnd)
 				return 0;
 		}
 
 		LONG nStyle = GetWindowLongPtr(g_hWnd, GWL_STYLE);
 
-		if(!(nStyle & WS_VISIBLE) || (nStyle & WS_MINIMIZE))
+		if (!(nStyle & WS_VISIBLE) || (nStyle & WS_MINIMIZE))
 		{
 			bAppStatus = false;
 		}
@@ -108,12 +109,12 @@ DWORD WINAPI WatchThread( LPVOID lpParam )
 			bAppStatus = true;
 		}
 
-		if(bAppStatus == false && bCleaned == false)
+		if (bAppStatus == false && bCleaned == false)
 		{
 			EnterCriticalSection(&g_CS);
-			for(int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
+			for (int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
 			{
-				if(pThreadData->pSounds[i].pSound)
+				if (pThreadData->pSounds[i].pSound)
 				{
 					SetPaused(pThreadData->pSounds[i].pChannel, true);
 				}
@@ -133,7 +134,7 @@ GetDllPointers
 
 ====================
 */
-void CSoundEngine::GetDllPointers( void )
+void CSoundEngine::GetDllPointers(void)
 {
 	char szPath[256];
 
@@ -141,43 +142,43 @@ void CSoundEngine::GetDllPointers( void )
 	strcat(szPath, "/dlls/fmodex.dll");
 
 	m_hFmodDll = LoadLibrary(szPath);
-	if(!m_hFmodDll)
+	if (!m_hFmodDll)
 		FatalError("Couldn't load %s!\n", szPath);
 
-	(FARPROC&)_FMOD_System_Create = GetProcAddress(m_hFmodDll, "FMOD_System_Create");
-	(FARPROC&)_FMOD_System_GetVersion = GetProcAddress(m_hFmodDll, "FMOD_System_GetVersion");
-	(FARPROC&)_FMOD_System_GetNumDrivers = GetProcAddress(m_hFmodDll, "FMOD_System_GetNumDrivers");
-	(FARPROC&)_FMOD_System_SetOutput = GetProcAddress(m_hFmodDll, "FMOD_System_SetOutput");
-	(FARPROC&)_FMOD_System_GetDriverCaps = GetProcAddress(m_hFmodDll, "FMOD_System_GetDriverCaps");
-	(FARPROC&)_FMOD_System_SetSpeakerMode = GetProcAddress(m_hFmodDll, "FMOD_System_SetSpeakerMode");
-	(FARPROC&)_FMOD_System_SetDSPBufferSize = GetProcAddress(m_hFmodDll, "FMOD_System_SetDSPBufferSize");
-	(FARPROC&)_FMOD_System_GetDriverInfo = GetProcAddress(m_hFmodDll, "FMOD_System_GetDriverInfo");
-	(FARPROC&)_FMOD_System_SetSoftwareFormat = GetProcAddress(m_hFmodDll, "FMOD_System_SetSoftwareFormat");
-	(FARPROC&)_FMOD_System_Init = GetProcAddress(m_hFmodDll, "FMOD_System_Init");
-	(FARPROC&)_FMOD_System_Set3DSettings = GetProcAddress(m_hFmodDll, "FMOD_System_Set3DSettings");
-	(FARPROC&)_FMOD_System_Release = GetProcAddress(m_hFmodDll, "FMOD_System_Release");
-	(FARPROC&)_FMOD_Channel_Stop = GetProcAddress(m_hFmodDll, "FMOD_Channel_Stop");
-	(FARPROC&)_FMOD_Sound_Release = GetProcAddress(m_hFmodDll, "FMOD_Sound_Release");
-	(FARPROC&)_FMOD_System_SetReverbAmbientProperties = GetProcAddress(m_hFmodDll, "FMOD_System_SetReverbAmbientProperties");
-	(FARPROC&)_FMOD_Channel_SetPaused = GetProcAddress(m_hFmodDll, "FMOD_Channel_SetPaused");
-	(FARPROC&)_FMOD_System_Update = GetProcAddress(m_hFmodDll, "FMOD_System_Update");
-	(FARPROC&)_FMOD_System_Set3DListenerAttributes = GetProcAddress(m_hFmodDll, "FMOD_System_Set3DListenerAttributes");
-	(FARPROC&)_FMOD_Channel_IsPlaying = GetProcAddress(m_hFmodDll, "FMOD_Channel_IsPlaying");
-	(FARPROC&)_FMOD_Channel_GetPaused = GetProcAddress(m_hFmodDll, "FMOD_Channel_GetPaused");
-	(FARPROC&)_FMOD_Channel_Set3DAttributes = GetProcAddress(m_hFmodDll, "FMOD_Channel_Set3DAttributes");
-	(FARPROC&)_FMOD_Channel_GetPosition = GetProcAddress(m_hFmodDll, "FMOD_Channel_GetPosition");
-	(FARPROC&)_FMOD_Channel_SetVolume = GetProcAddress(m_hFmodDll, "FMOD_Channel_SetVolume");
-	(FARPROC&)_FMOD_Channel_SetFrequency = GetProcAddress(m_hFmodDll, "FMOD_Channel_SetFrequency");
-	(FARPROC&)_FMOD_Channel_GetFrequency = GetProcAddress(m_hFmodDll, "FMOD_Channel_GetFrequency");
-	(FARPROC&)_FMOD_System_CreateSound = GetProcAddress(m_hFmodDll, "FMOD_System_CreateSound");
-	(FARPROC&)_FMOD_System_PlaySound = GetProcAddress(m_hFmodDll, "FMOD_System_PlaySound");
-	(FARPROC&)_FMOD_Channel_Set3DMinMaxDistance = GetProcAddress(m_hFmodDll, "FMOD_Channel_Set3DMinMaxDistance");
-	(FARPROC&)_FMOD_System_CreateStream = GetProcAddress(m_hFmodDll, "FMOD_System_CreateStream");
-	(FARPROC&)_FMOD_Channel_SetDelay = GetProcAddress(m_hFmodDll, "FMOD_Channel_SetDelay");
-	(FARPROC&)_FMOD_Channel_SetPosition = GetProcAddress(m_hFmodDll, "FMOD_Channel_SetPosition");
-	(FARPROC&)_FMOD_Sound_GetFormat = GetProcAddress(m_hFmodDll, "FMOD_Sound_GetFormat");
+	(FARPROC &)_FMOD_System_Create = GetProcAddress(m_hFmodDll, "FMOD_System_Create");
+	(FARPROC &)_FMOD_System_GetVersion = GetProcAddress(m_hFmodDll, "FMOD_System_GetVersion");
+	(FARPROC &)_FMOD_System_GetNumDrivers = GetProcAddress(m_hFmodDll, "FMOD_System_GetNumDrivers");
+	(FARPROC &)_FMOD_System_SetOutput = GetProcAddress(m_hFmodDll, "FMOD_System_SetOutput");
+	(FARPROC &)_FMOD_System_GetDriverCaps = GetProcAddress(m_hFmodDll, "FMOD_System_GetDriverCaps");
+	(FARPROC &)_FMOD_System_SetSpeakerMode = GetProcAddress(m_hFmodDll, "FMOD_System_SetSpeakerMode");
+	(FARPROC &)_FMOD_System_SetDSPBufferSize = GetProcAddress(m_hFmodDll, "FMOD_System_SetDSPBufferSize");
+	(FARPROC &)_FMOD_System_GetDriverInfo = GetProcAddress(m_hFmodDll, "FMOD_System_GetDriverInfo");
+	(FARPROC &)_FMOD_System_SetSoftwareFormat = GetProcAddress(m_hFmodDll, "FMOD_System_SetSoftwareFormat");
+	(FARPROC &)_FMOD_System_Init = GetProcAddress(m_hFmodDll, "FMOD_System_Init");
+	(FARPROC &)_FMOD_System_Set3DSettings = GetProcAddress(m_hFmodDll, "FMOD_System_Set3DSettings");
+	(FARPROC &)_FMOD_System_Release = GetProcAddress(m_hFmodDll, "FMOD_System_Release");
+	(FARPROC &)_FMOD_Channel_Stop = GetProcAddress(m_hFmodDll, "FMOD_Channel_Stop");
+	(FARPROC &)_FMOD_Sound_Release = GetProcAddress(m_hFmodDll, "FMOD_Sound_Release");
+	(FARPROC &)_FMOD_System_SetReverbAmbientProperties = GetProcAddress(m_hFmodDll, "FMOD_System_SetReverbAmbientProperties");
+	(FARPROC &)_FMOD_Channel_SetPaused = GetProcAddress(m_hFmodDll, "FMOD_Channel_SetPaused");
+	(FARPROC &)_FMOD_System_Update = GetProcAddress(m_hFmodDll, "FMOD_System_Update");
+	(FARPROC &)_FMOD_System_Set3DListenerAttributes = GetProcAddress(m_hFmodDll, "FMOD_System_Set3DListenerAttributes");
+	(FARPROC &)_FMOD_Channel_IsPlaying = GetProcAddress(m_hFmodDll, "FMOD_Channel_IsPlaying");
+	(FARPROC &)_FMOD_Channel_GetPaused = GetProcAddress(m_hFmodDll, "FMOD_Channel_GetPaused");
+	(FARPROC &)_FMOD_Channel_Set3DAttributes = GetProcAddress(m_hFmodDll, "FMOD_Channel_Set3DAttributes");
+	(FARPROC &)_FMOD_Channel_GetPosition = GetProcAddress(m_hFmodDll, "FMOD_Channel_GetPosition");
+	(FARPROC &)_FMOD_Channel_SetVolume = GetProcAddress(m_hFmodDll, "FMOD_Channel_SetVolume");
+	(FARPROC &)_FMOD_Channel_SetFrequency = GetProcAddress(m_hFmodDll, "FMOD_Channel_SetFrequency");
+	(FARPROC &)_FMOD_Channel_GetFrequency = GetProcAddress(m_hFmodDll, "FMOD_Channel_GetFrequency");
+	(FARPROC &)_FMOD_System_CreateSound = GetProcAddress(m_hFmodDll, "FMOD_System_CreateSound");
+	(FARPROC &)_FMOD_System_PlaySound = GetProcAddress(m_hFmodDll, "FMOD_System_PlaySound");
+	(FARPROC &)_FMOD_Channel_Set3DMinMaxDistance = GetProcAddress(m_hFmodDll, "FMOD_Channel_Set3DMinMaxDistance");
+	(FARPROC &)_FMOD_System_CreateStream = GetProcAddress(m_hFmodDll, "FMOD_System_CreateStream");
+	(FARPROC &)_FMOD_Channel_SetDelay = GetProcAddress(m_hFmodDll, "FMOD_Channel_SetDelay");
+	(FARPROC &)_FMOD_Channel_SetPosition = GetProcAddress(m_hFmodDll, "FMOD_Channel_SetPosition");
+	(FARPROC &)_FMOD_Sound_GetFormat = GetProcAddress(m_hFmodDll, "FMOD_Sound_GetFormat");
 
-	if(!_FMOD_System_Create ||
+	if (!_FMOD_System_Create ||
 		!_FMOD_System_GetVersion ||
 		!_FMOD_System_GetNumDrivers ||
 		!_FMOD_System_SetOutput ||
@@ -220,7 +221,7 @@ Init
 
 ====================
 */
-void CSoundEngine::Init( void )
+void CSoundEngine::Init(void)
 {
 	//Parse fmodex.dll
 	GetDllPointers();
@@ -231,13 +232,13 @@ void CSoundEngine::Init( void )
 	m_hResult = _FMOD_System_GetVersion(m_pSystem, &m_iVersion);
 	ErrorCheck(true);
 
-	if(m_iVersion != FMOD_VERSION)
+	if (m_iVersion != FMOD_VERSION)
 		FatalError("Engine detected wrong version of FMOD Ex library loaded!\nPress OK to exit the game.");
 
 	m_hResult = _FMOD_System_GetNumDrivers(m_pSystem, &m_iNumDrivers);
 	ErrorCheck(true);
 
-	if(m_iNumDrivers == 0)
+	if (m_iNumDrivers == 0)
 	{
 		m_hResult = _FMOD_System_SetOutput(m_pSystem, FMOD_OUTPUTTYPE_NOSOUND);
 		ErrorCheck(true);
@@ -250,9 +251,9 @@ void CSoundEngine::Init( void )
 		m_hResult = _FMOD_System_SetSpeakerMode(m_pSystem, m_sSpeakerMode);
 		ErrorCheck(true);
 
-		if(m_sCaps & FMOD_CAPS_HARDWARE_EMULATED)
+		if (m_sCaps & FMOD_CAPS_HARDWARE_EMULATED)
 		{
-			gEngfuncs.pfnClientCmd("escape\n");	
+			gEngfuncs.pfnClientCmd("escape\n");
 			MessageBox(NULL, "Engine detected sound device acceleration turned off!\nThis may cause sound issues in game!\nPress OK to continue.", "Warning", MB_OK | MB_SETFOREGROUND | MB_ICONWARNING);
 
 			m_hResult = _FMOD_System_SetDSPBufferSize(m_pSystem, 1024, 10);
@@ -262,15 +263,15 @@ void CSoundEngine::Init( void )
 		m_hResult = _FMOD_System_GetDriverInfo(m_pSystem, 0, m_szDeviceName, 256, 0);
 		ErrorCheck(true);
 
-		if(strstr(m_szDeviceName, "SigmaTel"))
+		if (strstr(m_szDeviceName, "SigmaTel"))
 		{
-			m_hResult = _FMOD_System_SetSoftwareFormat(m_pSystem, 48000, FMOD_SOUND_FORMAT_PCMFLOAT, 0,0, FMOD_DSP_RESAMPLER_LINEAR);
+			m_hResult = _FMOD_System_SetSoftwareFormat(m_pSystem, 48000, FMOD_SOUND_FORMAT_PCMFLOAT, 0, 0, FMOD_DSP_RESAMPLER_LINEAR);
 			ErrorCheck(true);
 		}
 	}
 
 	m_hResult = _FMOD_System_Init(m_pSystem, MAX_ACTIVE_SOUNDS, FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED, 0);
-	if(m_hResult == FMOD_ERR_OUTPUT_CREATEBUFFER)
+	if (m_hResult == FMOD_ERR_OUTPUT_CREATEBUFFER)
 	{
 		m_hResult = _FMOD_System_SetSpeakerMode(m_pSystem, FMOD_SPEAKERMODE_STEREO);
 		ErrorCheck(true);
@@ -297,7 +298,7 @@ void CSoundEngine::Init( void )
 	InitializeCriticalSection(&g_CS);
 
 	g_hExitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	if(!g_hExitEvent)
+	if (!g_hExitEvent)
 		FatalError("Couldn't create thread exit event!\n");
 
 	sThreadData.pSounds = m_sSounds;
@@ -312,7 +313,7 @@ Shutdown
 
 ====================
 */
-void CSoundEngine::Shutdown( void )
+void CSoundEngine::Shutdown(void)
 {
 	SetEvent(g_hExitEvent);
 	WaitForSingleObject(g_hThreadHandle, 500);
@@ -324,7 +325,7 @@ void CSoundEngine::Shutdown( void )
 
 	DeleteCriticalSection(&g_CS);
 
-	if(m_hFmodDll)
+	if (m_hFmodDll)
 		FreeLibrary(m_hFmodDll);
 }
 
@@ -334,15 +335,15 @@ ResetEngine
 
 ====================
 */
-void CSoundEngine::ResetEngine( void )
+void CSoundEngine::ResetEngine(void)
 {
-	if(m_iNumActiveSounds != 0)
+	if (m_iNumActiveSounds != 0)
 	{
 		EnterCriticalSection(&g_CS);
-		for(int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
+		for (int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
 		{
 			sound_t *pSound = &m_sSounds[i];
-			if(!pSound->pSound)
+			if (!pSound->pSound)
 				continue;
 
 			_FMOD_Channel_Stop(pSound->pChannel);
@@ -354,11 +355,11 @@ void CSoundEngine::ResetEngine( void )
 		LeaveCriticalSection(&g_CS);
 	}
 
-	if(m_iNumCachedSounds != 0)
+	if (m_iNumCachedSounds != 0)
 	{
-		for(int i = 0; i < m_iNumCachedSounds; i++)
+		for (int i = 0; i < m_iNumCachedSounds; i++)
 		{
-			delete [] m_sSoundCache[i].pFile;
+			delete[] m_sSoundCache[i].pFile;
 		}
 
 		memset(m_sSoundCache, 0, sizeof(m_sSoundCache));
@@ -379,15 +380,15 @@ VidInit
 
 ====================
 */
-void CSoundEngine::VidInit( void )
+void CSoundEngine::VidInit(void)
 {
-	if(gEngfuncs.pfnGetCvarFloat("s_eax"))
+	if (gEngfuncs.pfnGetCvarFloat("s_eax"))
 	{
-		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(NULL, 
-			"Amnesia Sound Engine detected EAX enabled by Half-Life.\nThis mod isn't compatible with this setting.\nIn order to continue, turn off EAX in Half-Life, and restart the game.\n", 
-			"Sound engine warning", 
-			MB_OK | MB_SETFOREGROUND | MB_ICONWARNING); 
+		gEngfuncs.pfnClientCmd("escape\n");
+		MessageBox(NULL,
+				   "Amnesia Sound Engine detected EAX enabled by Half-Life.\nThis mod isn't compatible with this setting.\nIn order to continue, turn off EAX in Half-Life, and restart the game.\n",
+				   "Sound engine warning",
+				   MB_OK | MB_SETFOREGROUND | MB_ICONWARNING);
 	}
 
 	m_bReloaded = false;
@@ -400,11 +401,11 @@ ErrorCheck
 
 ====================
 */
-void CSoundEngine::ErrorCheck( bool bInit )
+void CSoundEngine::ErrorCheck(bool bInit)
 {
-	if(m_hResult != FMOD_OK)
+	if (m_hResult != FMOD_OK)
 	{
-		if(bInit)
+		if (bInit)
 			FatalError("FMOD error! (%d) %s\n", m_hResult, FMOD_ErrorString(m_hResult));
 		else
 			gEngfuncs.Con_Printf("FMOD error! (%d) %s\n", m_hResult, FMOD_ErrorString(m_hResult));
@@ -417,19 +418,19 @@ FatalError
 
 ====================
 */
-void CSoundEngine::FatalError( char *pszFormat, ... )
+void CSoundEngine::FatalError(char *pszFormat, ...)
 {
 	va_list pszArgList;
 	char szText[1024];
 
-	gEngfuncs.pfnClientCmd("escape\n");	
+	gEngfuncs.pfnClientCmd("escape\n");
 
 	va_start(pszArgList, pszFormat);
 	vsprintf(szText, pszFormat, pszArgList);
 	va_end(pszArgList);
 
 	MessageBox(NULL, szText, "Sound engine error!", MB_OK | MB_SETFOREGROUND | MB_ICONERROR);
-	
+
 	gEngfuncs.pfnClientCmd("quit\n");
 };
 
@@ -439,16 +440,16 @@ SetupFrame
 
 ====================
 */
-void CSoundEngine::SetupFrame( ref_params_t *pparams )
+void CSoundEngine::SetupFrame(ref_params_t *pparams)
 {
 	VectorCopy(pparams->vieworg, m_vViewOrigin);
 	VectorCopy(pparams->viewangles, m_vViewAngles);
 	m_iViewEntity = pparams->viewentity;
 
 	// Setup reverbation
-	if(pmove->waterlevel == 3)
+	if (pmove->waterlevel == 3)
 	{
-		if(m_iCurrentRoomType != 13)
+		if (m_iCurrentRoomType != 13)
 		{
 			FMOD_REVERB_PROPERTIES sReverb = FMOD_PRESET_UNDERWATER;
 			_FMOD_System_SetReverbAmbientProperties(m_pSystem, &sReverb);
@@ -474,7 +475,7 @@ SetupListener
 
 ====================
 */
-void CSoundEngine::SetupListener( void )
+void CSoundEngine::SetupListener(void)
 {
 	vec3_t vForward, vUp;
 	FMOD_VECTOR vOriginFM, vForwardFM, vUpFM;
@@ -494,9 +495,9 @@ SetupSounds
 
 ====================
 */
-void CSoundEngine::SetupSounds( void )
+void CSoundEngine::SetupSounds(void)
 {
-	FMOD_BOOL	bState, bPaused;
+	FMOD_BOOL bState, bPaused;
 	FMOD_VECTOR vPos;
 	cl_entity_t *pEntity = NULL;
 	uint iChanPos = NULL;
@@ -507,35 +508,35 @@ void CSoundEngine::SetupSounds( void )
 	flLastTime = flTime;
 
 	EnterCriticalSection(&g_CS);
-	for(int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
+	for (int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
 	{
 		sound_t *pSound = &m_sSounds[i];
-		if(!pSound->pSound)
+		if (!pSound->pSound)
 			continue;
 
 		_FMOD_Channel_IsPlaying(pSound->pChannel, &bState);
 		_FMOD_Channel_GetPaused(pSound->pChannel, &bPaused);
 
-		if(pSound->iFlags & SND_SENTENCE)
+		if (pSound->iFlags & SND_SENTENCE)
 		{
 			pEntity = gEngfuncs.GetEntityByIndex(pSound->iEntIndex);
 
 			// Get playback position
 			_FMOD_Channel_GetPosition(pSound->pChannel, &iChanPos, FMOD_TIMEUNIT_PCMBYTES);
-			if(pSound->iStopPos > 0 && iChanPos >= pSound->iStopPos)
+			if (pSound->iStopPos > 0 && iChanPos >= pSound->iStopPos)
 			{
 				sentence_t *pSentence = pSound->pSentence;
 				pEntity->mouth.mouthopen = 0;
 				pEntity->mouth.sndavg = 0;
 				pEntity->mouth.sndcount = 0;
 
-				if(pSound->iCurChunk >= pSentence->pOptions.size())
+				if (pSound->iCurChunk >= pSentence->pOptions.size())
 				{
 					_FMOD_Channel_Stop(pSound->pChannel);
 					_FMOD_Sound_Release(pSound->pSound);
 
 					memset(&m_sSounds[i], 0, sizeof(sound_t));
-					m_iNumActiveSounds--; 
+					m_iNumActiveSounds--;
 					continue;
 				}
 				else
@@ -549,22 +550,22 @@ void CSoundEngine::SetupSounds( void )
 			}
 		}
 
-		if(!bState)
+		if (!bState)
 		{
-			if(pSound->iFlags & SND_SENTENCE)
+			if (pSound->iFlags & SND_SENTENCE)
 			{
 				sentence_t *pSentence = pSound->pSentence;
 				pEntity->mouth.mouthopen = 0;
 				pEntity->mouth.sndavg = 0;
 				pEntity->mouth.sndcount = 0;
 
-				if(pSound->iCurChunk >= pSentence->pOptions.size())
+				if (pSound->iCurChunk >= pSentence->pOptions.size())
 				{
 					_FMOD_Channel_Stop(pSound->pChannel);
 					_FMOD_Sound_Release(pSound->pSound);
 
 					memset(&m_sSounds[i], 0, sizeof(sound_t));
-					m_iNumActiveSounds--; 
+					m_iNumActiveSounds--;
 					continue;
 				}
 				else
@@ -581,29 +582,29 @@ void CSoundEngine::SetupSounds( void )
 				_FMOD_Channel_Stop(pSound->pChannel);
 				_FMOD_Sound_Release(pSound->pSound);
 				memset(&m_sSounds[i], 0, sizeof(sound_t));
-				m_iNumActiveSounds--; 
+				m_iNumActiveSounds--;
 				continue;
 			}
 		}
 
-		if(flFrameTime <= 0 && !bPaused)
+		if (flFrameTime <= 0 && !bPaused)
 			_FMOD_Channel_SetPaused(pSound->pChannel, true);
 
-		if(flFrameTime > 0 && bPaused)
+		if (flFrameTime > 0 && bPaused)
 			_FMOD_Channel_SetPaused(pSound->pChannel, false);
 
-		if(pSound->iFlags & SND_RELATIVE)
+		if (pSound->iFlags & SND_RELATIVE)
 		{
 			VectorCopyFM(m_vViewOrigin, vPos);
 			_FMOD_Channel_Set3DAttributes(pSound->pChannel, &vPos, NULL);
 		}
-		else if(pSound->pEdict)
+		else if (pSound->pEdict)
 		{
 			edict_t *pEdict = pSound->pEdict;
-			if(pEdict->free)
+			if (pEdict->free)
 				continue;
 
-			if(pEdict->v.modelindex)
+			if (pEdict->v.modelindex)
 			{
 				vec3_t vRealMins = pEdict->v.mins + pEdict->v.origin;
 				vec3_t vRealMaxs = pEdict->v.maxs + pEdict->v.origin;
@@ -618,37 +619,37 @@ void CSoundEngine::SetupSounds( void )
 				_FMOD_Channel_Set3DAttributes(pSound->pChannel, &vPos, NULL);
 			}
 		}
-		else if(!(pSound->iFlags & SND_2D))
+		else if (!(pSound->iFlags & SND_2D))
 		{
 			VectorCopyFM(pSound->vOrigin, vPos);
 			_FMOD_Channel_Set3DAttributes(pSound->pChannel, &vPos, NULL);
 		}
 
-		if(pSound->iFlags & SND_SENTENCE && !bPaused)
+		if (pSound->iFlags & SND_SENTENCE && !bPaused)
 		{
-			if(pEntity)
+			if (pEntity)
 			{
 				BYTE *pData, *pEnd;
-				double nInput[2] = { 0, 0 }, nOutput[2] = { 0, 0 };
+				double nInput[2] = {0, 0}, nOutput[2] = {0, 0};
 				int iMouthOpen = NULL;
 
 				// Get pointer to sound data at this position
-				pData = (BYTE*)pSound->pCache->pFile + iChanPos;
-				pEnd = (BYTE*)pSound->pCache->pFile + pSound->pCache->iSize;
+				pData = (BYTE *)pSound->pCache->pFile + iChanPos;
+				pEnd = (BYTE *)pSound->pCache->pFile + pSound->pCache->iSize;
 
 				// Something can go wrong so to be sure
-				if(pData >= pEnd)
+				if (pData >= pEnd)
 					continue;
 
 				// Fill input array with sound data
-				for(int i = 0; i < 2; i++)
+				for (int i = 0; i < 2; i++)
 				{
 					pData += i;
 
-					if(pData >= pEnd)
+					if (pData >= pEnd)
 						continue;
 
-					if(!pData)
+					if (!pData)
 						continue;
 
 					nInput[i] = *pData;
@@ -657,7 +658,7 @@ void CSoundEngine::SetupSounds( void )
 				FFT(0, 1, nInput, nOutput);
 
 				// Calculate average value
-				for(int i = 0; i < 2; i++)
+				for (int i = 0; i < 2; i++)
 				{
 					int iReal = nInput[i];
 					int iImaginary = nOutput[i];
@@ -667,9 +668,9 @@ void CSoundEngine::SetupSounds( void )
 
 				iMouthOpen = iMouthOpen / 2;
 
-				if(iMouthOpen > 255)
+				if (iMouthOpen > 255)
 					iMouthOpen = 255;
-		
+
 				pEntity->mouth.mouthopen = iMouthOpen;
 			}
 		}
@@ -683,9 +684,9 @@ SetupMusic
 
 ====================
 */
-void CSoundEngine::SetupMusic( void )
+void CSoundEngine::SetupMusic(void)
 {
-	if(!m_bPlayingMusic)
+	if (!m_bPlayingMusic)
 		return;
 
 	FMOD_BOOL bPaused;
@@ -697,10 +698,10 @@ void CSoundEngine::SetupMusic( void )
 
 	_FMOD_Channel_GetPaused(m_pMusicChannel, &bPaused);
 
-	if(flFrameTime <= 0 && !bPaused)
+	if (flFrameTime <= 0 && !bPaused)
 		_FMOD_Channel_SetPaused(m_pMusicChannel, true);
 
-	if(flFrameTime > 0 && bPaused)
+	if (flFrameTime > 0 && bPaused)
 		_FMOD_Channel_SetPaused(m_pMusicChannel, false);
 }
 
@@ -710,9 +711,9 @@ SetupGeometry
 
 ======================
 */
-void CSoundEngine::SetupGeometry( void )
+void CSoundEngine::SetupGeometry(void)
 {
-	if(m_bReloaded)
+	if (m_bReloaded)
 		return;
 
 	//I've decided to remove geometry, was slow and not very reliable on some places
@@ -726,72 +727,72 @@ SetupReverbation
 
 ====================
 */
-void CSoundEngine::SetupReverbation( void )
+void CSoundEngine::SetupReverbation(void)
 {
-	if(m_pCvarRoomType->value == m_iCurrentRoomType)
+	if (m_pCvarRoomType->value == m_iCurrentRoomType)
 		return;
 
 	m_iCurrentRoomType = m_pCvarRoomType->value;
 
-	if(m_pCvarRoomType->value == 0)
+	if (m_pCvarRoomType->value == 0)
 	{
 		FMOD_REVERB_PROPERTIES sReverb = FMOD_PRESET_OFF;
 		_FMOD_System_SetReverbAmbientProperties(m_pSystem, &sReverb);
 	}
-	else if(m_pCvarRoomType->value == 1)
+	else if (m_pCvarRoomType->value == 1)
 	{
 		// Room
 		FMOD_REVERB_PROPERTIES sReverb = FMOD_PRESET_ROOM;
 		_FMOD_System_SetReverbAmbientProperties(m_pSystem, &sReverb);
 	}
-	else if(m_pCvarRoomType->value == 2 || m_pCvarRoomType->value == 3 || m_pCvarRoomType->value == 4)
+	else if (m_pCvarRoomType->value == 2 || m_pCvarRoomType->value == 3 || m_pCvarRoomType->value == 4)
 	{
 		// Metal small/medium/large
 		FMOD_REVERB_PROPERTIES sReverb = FMOD_PRESET_SEWERPIPE;
 		_FMOD_System_SetReverbAmbientProperties(m_pSystem, &sReverb);
 	}
-	else if(m_pCvarRoomType->value == 5 || m_pCvarRoomType->value == 6 || m_pCvarRoomType->value == 7)
+	else if (m_pCvarRoomType->value == 5 || m_pCvarRoomType->value == 6 || m_pCvarRoomType->value == 7)
 	{
 		// Tunnel small/large/medium
 		FMOD_REVERB_PROPERTIES sReverb = FMOD_PRESET_HANGAR;
 		_FMOD_System_SetReverbAmbientProperties(m_pSystem, &sReverb);
 	}
-	else if(m_pCvarRoomType->value == 8 || m_pCvarRoomType->value == 9 || m_pCvarRoomType->value == 10)
+	else if (m_pCvarRoomType->value == 8 || m_pCvarRoomType->value == 9 || m_pCvarRoomType->value == 10)
 	{
 		// Chamber small/large/medium
 		FMOD_REVERB_PROPERTIES sReverb = FMOD_PRESET_STONECORRIDOR;
 		_FMOD_System_SetReverbAmbientProperties(m_pSystem, &sReverb);
 	}
-	else if(m_pCvarRoomType->value == 11 || m_pCvarRoomType->value == 12 || m_pCvarRoomType->value == 13)
+	else if (m_pCvarRoomType->value == 11 || m_pCvarRoomType->value == 12 || m_pCvarRoomType->value == 13)
 	{
 		// Bright small/large/medium
 		FMOD_REVERB_PROPERTIES sReverb = FMOD_PRESET_STONECORRIDOR;
 		_FMOD_System_SetReverbAmbientProperties(m_pSystem, &sReverb);
 	}
-	else if(m_pCvarRoomType->value == 14 || m_pCvarRoomType->value == 15 || m_pCvarRoomType->value == 16)
+	else if (m_pCvarRoomType->value == 14 || m_pCvarRoomType->value == 15 || m_pCvarRoomType->value == 16)
 	{
 		// Underwater
 		FMOD_REVERB_PROPERTIES sReverb = FMOD_PRESET_UNDERWATER;
 		_FMOD_System_SetReverbAmbientProperties(m_pSystem, &sReverb);
 	}
-	else if(m_pCvarRoomType->value == 17 || m_pCvarRoomType->value == 18 || m_pCvarRoomType->value == 19)
+	else if (m_pCvarRoomType->value == 17 || m_pCvarRoomType->value == 18 || m_pCvarRoomType->value == 19)
 	{
 		//Concrete small/large/medium
 		FMOD_REVERB_PROPERTIES sReverb = FMOD_PRESET_STONECORRIDOR;
 		_FMOD_System_SetReverbAmbientProperties(m_pSystem, &sReverb);
 	}
-	else if(m_pCvarRoomType->value == 20 || m_pCvarRoomType->value == 21 || m_pCvarRoomType->value == 22)
+	else if (m_pCvarRoomType->value == 20 || m_pCvarRoomType->value == 21 || m_pCvarRoomType->value == 22)
 	{
 		// Big 1/2/3
 		FMOD_REVERB_PROPERTIES sReverb = FMOD_PRESET_MOUNTAINS;
 		_FMOD_System_SetReverbAmbientProperties(m_pSystem, &sReverb);
 	}
-	else if(m_pCvarRoomType->value == 23 || m_pCvarRoomType->value == 24 || m_pCvarRoomType->value == 25)
+	else if (m_pCvarRoomType->value == 23 || m_pCvarRoomType->value == 24 || m_pCvarRoomType->value == 25)
 	{
 		FMOD_REVERB_PROPERTIES sReverb = FMOD_PRESET_ARENA;
 		_FMOD_System_SetReverbAmbientProperties(m_pSystem, &sReverb);
 	}
-	else if(m_pCvarRoomType->value == 26 || m_pCvarRoomType->value == 27 || m_pCvarRoomType->value == 28)
+	else if (m_pCvarRoomType->value == 26 || m_pCvarRoomType->value == 27 || m_pCvarRoomType->value == 28)
 	{
 		FMOD_REVERB_PROPERTIES sReverb = FMOD_PRESET_SEWERPIPE;
 		_FMOD_System_SetReverbAmbientProperties(m_pSystem, &sReverb);
@@ -804,23 +805,22 @@ PrepareSound
 
 ====================
 */
-sound_t *CSoundEngine::PrepareSound( const char *szFile, int iEntIndex, int iFlags, int iChannel )
-{	
+sound_t *CSoundEngine::PrepareSound(const char *szFile, int iEntIndex, int iFlags, int iChannel)
+{
 	EnterCriticalSection(&g_CS);
-	if((iFlags & SND_HUD) || (iFlags & SND_TEMPENT))
+	if ((iFlags & SND_HUD) || (iFlags & SND_TEMPENT))
 	{
 		int iNumTempSounds = 0;
-		for(int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
+		for (int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
 		{
-			if(!m_sSounds[i].pSound)
+			if (!m_sSounds[i].pSound)
 				continue;
 
-			if((m_sSounds[i].iFlags & SND_HUD) && (iFlags & SND_HUD)
-				|| (m_sSounds[i].iFlags & SND_TEMPENT) && (iFlags & SND_TEMPENT))
+			if ((m_sSounds[i].iFlags & SND_HUD) && (iFlags & SND_HUD) || (m_sSounds[i].iFlags & SND_TEMPENT) && (iFlags & SND_TEMPENT))
 			{
-				if(m_sSounds[i].iFlags & SND_TEMPENT)
+				if (m_sSounds[i].iFlags & SND_TEMPENT)
 				{
-					if(iNumTempSounds < MAX_ACTIVE_TEMP_SOUNDS)
+					if (iNumTempSounds < MAX_ACTIVE_TEMP_SOUNDS)
 					{
 						iNumTempSounds++;
 						continue;
@@ -843,21 +843,20 @@ sound_t *CSoundEngine::PrepareSound( const char *szFile, int iEntIndex, int iFla
 		}
 	}
 
-	if(iEntIndex)
+	if (iEntIndex)
 	{
-		for(int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
+		for (int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
 		{
-			if(!m_sSounds[i].pSound)
+			if (!m_sSounds[i].pSound)
 				continue;
 
-			if(m_sSounds[i].iFlags & SND_HUD)
+			if (m_sSounds[i].iFlags & SND_HUD)
 				continue;
 
-			if(m_sSounds[i].iEntIndex == 0)
+			if (m_sSounds[i].iEntIndex == 0)
 				continue;
 
-			if(m_sSounds[i].iEntIndex == iEntIndex
-				&& m_sSounds[i].iChannel == iChannel)
+			if (m_sSounds[i].iEntIndex == iEntIndex && m_sSounds[i].iChannel == iChannel)
 			{
 				_FMOD_Channel_Stop(m_sSounds[i].pChannel);
 				_FMOD_Sound_Release(m_sSounds[i].pSound);
@@ -870,20 +869,20 @@ sound_t *CSoundEngine::PrepareSound( const char *szFile, int iEntIndex, int iFla
 		}
 	}
 
-	if(m_iNumActiveSounds == MAX_ACTIVE_SOUNDS)
+	if (m_iNumActiveSounds == MAX_ACTIVE_SOUNDS)
 	{
-		for(int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
+		for (int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
 		{
-			if(!m_sSounds[i].pSound)
+			if (!m_sSounds[i].pSound)
 				continue;
 
-			if(m_sSounds[i].iFlags & SND_AMBIENT)
+			if (m_sSounds[i].iFlags & SND_AMBIENT)
 				continue;
 
-			if(m_sSounds[i].iFlags & SND_SENTENCE)
+			if (m_sSounds[i].iFlags & SND_SENTENCE)
 				continue;
 
-			if(m_sSounds[i].iChannel == CHAN_WEAPON)
+			if (m_sSounds[i].iChannel == CHAN_WEAPON)
 				continue;
 
 			_FMOD_Channel_Stop(m_sSounds[i].pChannel);
@@ -894,9 +893,9 @@ sound_t *CSoundEngine::PrepareSound( const char *szFile, int iEntIndex, int iFla
 		}
 	}
 
-	for(int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
+	for (int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
 	{
-		if(!m_sSounds[i].pSound)
+		if (!m_sSounds[i].pSound)
 		{
 			LeaveCriticalSection(&g_CS);
 			return &m_sSounds[i];
@@ -913,14 +912,14 @@ PlaySound
 
 ====================
 */
-void CSoundEngine::PlaySound( const char *szFile, vec3_t vOrigin, int iFlags, int iChannel, float fVolume, int iPitch, float flAttenuation, edict_t *pEdict, int iEntIndex )
+void CSoundEngine::PlaySound(const char *szFile, vec3_t vOrigin, int iFlags, int iChannel, float fVolume, int iPitch, float flAttenuation, edict_t *pEdict, int iEntIndex)
 {
 	char szPath[256];
 	sentence_t *pSentence = NULL;
 	FMOD_CREATESOUNDEXINFO sSoundInfo;
 	int iSoundFlags = NULL;
 
-	if(szFile[0] == '!')
+	if (szFile[0] == '!')
 	{
 		iFlags |= SND_SENTENCE;
 		int iID = atoi(&szFile[1]);
@@ -929,13 +928,13 @@ void CSoundEngine::PlaySound( const char *szFile, vec3_t vOrigin, int iFlags, in
 		strcpy(szPath, "sound/");
 		strcat(szPath, pSentence->szParentDir);
 
-		if(pSentence->pOptions[0].szFile[strlen(pSentence->pOptions[0].szFile)-1] == '.')
-			pSentence->pOptions[0].szFile[strlen(pSentence->pOptions[0].szFile)-1] = '\0';
+		if (pSentence->pOptions[0].szFile[strlen(pSentence->pOptions[0].szFile) - 1] == '.')
+			pSentence->pOptions[0].szFile[strlen(pSentence->pOptions[0].szFile) - 1] = '\0';
 
 		strcat(szPath, pSentence->pOptions[0].szFile);
 		strcat(szPath, ".wav");
 	}
-	else if(szFile[0] == '*')
+	else if (szFile[0] == '*')
 	{
 		strcpy(szPath, "sound/");
 		strcat(szPath, &szFile[1]);
@@ -947,20 +946,19 @@ void CSoundEngine::PlaySound( const char *szFile, vec3_t vOrigin, int iFlags, in
 	}
 
 	EnterCriticalSection(&g_CS);
-	if((iFlags & SND_STOP) || (iFlags & SND_CHANGE_VOL) || (iFlags & SND_CHANGE_PITCH))
+	if ((iFlags & SND_STOP) || (iFlags & SND_CHANGE_VOL) || (iFlags & SND_CHANGE_PITCH))
 	{
-		for(int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
+		for (int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
 		{
-			if(!m_sSounds[i].pSound)
+			if (!m_sSounds[i].pSound)
 				continue;
 
-			if(m_sSounds[i].iEntIndex == 0)
+			if (m_sSounds[i].iEntIndex == 0)
 				continue;
 
-			if(!strcmp(m_sSounds[i].pCache->szFile, szPath)
-				&& m_sSounds[i].iEntIndex == iEntIndex)
+			if (!strcmp(m_sSounds[i].pCache->szFile, szPath) && m_sSounds[i].iEntIndex == iEntIndex)
 			{
-				if(iFlags & SND_STOP)
+				if (iFlags & SND_STOP)
 				{
 					_FMOD_Channel_Stop(m_sSounds[i].pChannel);
 					_FMOD_Sound_Release(m_sSounds[i].pSound);
@@ -970,21 +968,21 @@ void CSoundEngine::PlaySound( const char *szFile, vec3_t vOrigin, int iFlags, in
 					LeaveCriticalSection(&g_CS);
 					return;
 				}
-				else if(iFlags & SND_CHANGE_VOL)
+				else if (iFlags & SND_CHANGE_VOL)
 				{
 					m_sSounds[i].flVolume = fVolume;
-					if(m_sSounds[i].flVolume > 1)
+					if (m_sSounds[i].flVolume > 1)
 						m_sSounds[i].flVolume = 1;
 
-					if(m_sSounds[i].bStereo)
-						_FMOD_Channel_SetVolume(m_sSounds[i].pChannel, (m_sSounds[i].flVolume/1.3f));
+					if (m_sSounds[i].bStereo)
+						_FMOD_Channel_SetVolume(m_sSounds[i].pChannel, (m_sSounds[i].flVolume / 1.3f));
 					else
 						_FMOD_Channel_SetVolume(m_sSounds[i].pChannel, m_sSounds[i].flVolume);
 
 					LeaveCriticalSection(&g_CS);
 					return;
 				}
-				else if(iFlags & SND_CHANGE_PITCH)
+				else if (iFlags & SND_CHANGE_PITCH)
 				{
 					m_sSounds[i].iPitch = iPitch;
 					_FMOD_Channel_SetFrequency(m_sSounds[i].pChannel, ((float)m_sSounds[i].iPitch / 100) * m_sSounds[i].flFrequency);
@@ -1000,11 +998,11 @@ void CSoundEngine::PlaySound( const char *szFile, vec3_t vOrigin, int iFlags, in
 	LeaveCriticalSection(&g_CS);
 
 	scache_t *pSoundData = GetSoundFromCache(szPath);
-	if(!pSoundData)
+	if (!pSoundData)
 		return;
 
 	sound_t *pSound = PrepareSound(szPath, iEntIndex, iFlags, iChannel);
-	if(!pSound)
+	if (!pSound)
 		return;
 
 	pSound->pCache = pSoundData;
@@ -1013,8 +1011,8 @@ void CSoundEngine::PlaySound( const char *szFile, vec3_t vOrigin, int iFlags, in
 	pSound->iEntIndex = iEntIndex;
 	pSound->iChannel = iChannel;
 	pSound->iStopPos = -1;
-	
-	if(pSentence && (iFlags & SND_SENTENCE))
+
+	if (pSentence && (iFlags & SND_SENTENCE))
 	{
 		pSound->iPitch = pSentence->pOptions[0].iPitch;
 		pSound->flVolume = (float)pSentence->pOptions[0].iVolume / 100;
@@ -1023,20 +1021,20 @@ void CSoundEngine::PlaySound( const char *szFile, vec3_t vOrigin, int iFlags, in
 	{
 		pSound->iPitch = iPitch;
 		pSound->flVolume = fVolume;
-		if(pSound->iChannel & CHAN_WEAPON)
+		if (pSound->iChannel & CHAN_WEAPON)
 			pSound->flVolume *= 2;
 	}
 
-	if(pSentence && (iFlags & SND_SENTENCE))
+	if (pSentence && (iFlags & SND_SENTENCE))
 	{
 		pSound->pSentence = pSentence;
 		pSound->iCurChunk++;
 	}
 
-	if(!iEntIndex)
+	if (!iEntIndex)
 		pSound->pEdict = 0;
 
-	if(pSound->pEdict)
+	if (pSound->pEdict)
 	{
 		vec3_t vRealMins = pSound->pEdict->v.maxs + pSound->pEdict->v.origin;
 		vec3_t vRealMaxs = pSound->pEdict->v.mins + pSound->pEdict->v.origin;
@@ -1047,20 +1045,20 @@ void CSoundEngine::PlaySound( const char *szFile, vec3_t vOrigin, int iFlags, in
 		VectorCopy(vOrigin, pSound->vOrigin);
 	}
 
-	if(pSound->iEntIndex == m_iViewEntity)
+	if (pSound->iEntIndex == m_iViewEntity)
 	{
 		pSound->iFlags |= SND_RELATIVE;
 	}
 	else
 	{
-		if(flAttenuation != ATTN_NONE)
+		if (flAttenuation != ATTN_NONE)
 		{
-			if(flAttenuation >= ATTN_NORM)
-				pSound->flRadius = MAX_DISTANCE + (1.0 - flAttenuation) * (0.5*MAX_DISTANCE);
+			if (flAttenuation >= ATTN_NORM)
+				pSound->flRadius = MAX_DISTANCE + (1.0 - flAttenuation) * (0.5 * MAX_DISTANCE);
 			else
-				pSound->flRadius = MAX_DISTANCE + (1.0 - flAttenuation) * (4.0*MAX_DISTANCE);
-		
-			if(pSound->flRadius < 0)
+				pSound->flRadius = MAX_DISTANCE + (1.0 - flAttenuation) * (4.0 * MAX_DISTANCE);
+
+			if (pSound->flRadius < 0)
 				pSound->flRadius = 0;
 		}
 		else
@@ -1069,9 +1067,9 @@ void CSoundEngine::PlaySound( const char *szFile, vec3_t vOrigin, int iFlags, in
 		}
 	}
 
-	if(!vOrigin.Length() && !pSound->pEdict && !iEntIndex || !pSound->flRadius)
+	if (!vOrigin.Length() && !pSound->pEdict && !iEntIndex || !pSound->flRadius)
 	{
-		if(!(pSound->iFlags & SND_RELATIVE))
+		if (!(pSound->iFlags & SND_RELATIVE))
 			pSound->iFlags |= SND_2D;
 	}
 
@@ -1080,36 +1078,36 @@ void CSoundEngine::PlaySound( const char *szFile, vec3_t vOrigin, int iFlags, in
 	sSoundInfo.length = pSoundData->iSize;
 
 	iSoundFlags = (FMOD_SOFTWARE | FMOD_OPENMEMORY);
-	if(pSound->iFlags & SND_2D)
+	if (pSound->iFlags & SND_2D)
 		iSoundFlags |= FMOD_2D;
 	else
 		iSoundFlags |= (FMOD_3D | FMOD_3D_LINEARROLLOFF);
 
-	if(pSound->pCache->iLoopStart != -1 && pSound->pEdict)
+	if (pSound->pCache->iLoopStart != -1 && pSound->pEdict)
 		iSoundFlags |= FMOD_LOOP_NORMAL;
 	else
 		iSoundFlags |= FMOD_LOOP_OFF;
 
-	m_hResult = _FMOD_System_CreateSound(m_pSystem, (const char*)pSound->pCache->pFile, iSoundFlags, &sSoundInfo, &pSound->pSound);
+	m_hResult = _FMOD_System_CreateSound(m_pSystem, (const char *)pSound->pCache->pFile, iSoundFlags, &sSoundInfo, &pSound->pSound);
 	ErrorCheck();
 
 	int iChannels = 0;
 	m_hResult = _FMOD_Sound_GetFormat(pSound->pSound, NULL, NULL, &iChannels, NULL);
-	if(iChannels >= 2)
+	if (iChannels >= 2)
 		pSound->bStereo = true;
 	else
 		pSound->bStereo = false;
 
-	if(pSound->pEdict)
+	if (pSound->pEdict)
 		m_hResult = _FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, pSound->pSound, true, &pSound->pChannel);
 	else
 		m_hResult = _FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, pSound->pSound, false, &pSound->pChannel);
 
 	ErrorCheck();
 
-	if(pSentence && (iFlags & SND_SENTENCE))
+	if (pSentence && (iFlags & SND_SENTENCE))
 	{
-		unsigned int iDelay = (pSentence->pOptions[0].flDelay*250) + (pSentence->pOptions[0].iTime);
+		unsigned int iDelay = (pSentence->pOptions[0].flDelay * 250) + (pSentence->pOptions[0].iTime);
 		m_hResult = _FMOD_Channel_SetDelay(pSound->pChannel, FMOD_DELAYTYPE_END_MS, iDelay, 0);
 		ErrorCheck();
 
@@ -1117,11 +1115,11 @@ void CSoundEngine::PlaySound( const char *szFile, vec3_t vOrigin, int iFlags, in
 		m_hResult = _FMOD_Channel_SetPosition(pSound->pChannel, (int)flStartPos, FMOD_TIMEUNIT_PCMBYTES);
 		ErrorCheck();
 
-		if(pSentence->pOptions[0].iEnd > 0)
+		if (pSentence->pOptions[0].iEnd > 0)
 			pSound->iStopPos = (int)((pSound->pCache->iSize - 44) * (pSentence->pOptions[0].iEnd)) / 100;
 	}
 
-	if(!(pSound->iFlags & SND_2D))
+	if (!(pSound->iFlags & SND_2D))
 	{
 		FMOD_VECTOR vOriginFM;
 		VectorCopyFM(pSound->vOrigin, vOriginFM);
@@ -1130,11 +1128,11 @@ void CSoundEngine::PlaySound( const char *szFile, vec3_t vOrigin, int iFlags, in
 		_FMOD_Channel_Set3DMinMaxDistance(pSound->pChannel, MIN_DISTANCE, pSound->flRadius);
 	}
 
-	if(pSound->flVolume > 1)
+	if (pSound->flVolume > 1)
 		pSound->flVolume = 1;
 
-	if(pSound->bStereo)
-		_FMOD_Channel_SetVolume(pSound->pChannel, (pSound->flVolume/1.3f));
+	if (pSound->bStereo)
+		_FMOD_Channel_SetVolume(pSound->pChannel, (pSound->flVolume / 1.3f));
 	else
 		_FMOD_Channel_SetVolume(pSound->pChannel, pSound->flVolume);
 
@@ -1150,16 +1148,15 @@ StopSound
 
 ====================
 */
-void CSoundEngine::StopSound( int iEntIndex, int iChannel )
+void CSoundEngine::StopSound(int iEntIndex, int iChannel)
 {
 	EnterCriticalSection(&g_CS);
-	for(int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
+	for (int i = 0; i < MAX_ACTIVE_SOUNDS; i++)
 	{
-		if(!m_sSounds[i].pSound)
+		if (!m_sSounds[i].pSound)
 			continue;
 
-		if(m_sSounds[i].iEntIndex == iEntIndex
-			&& m_sSounds[i].iChannel == iChannel)
+		if (m_sSounds[i].iEntIndex == iEntIndex && m_sSounds[i].iChannel == iChannel)
 		{
 			_FMOD_Channel_Stop(m_sSounds[i].pChannel);
 			_FMOD_Sound_Release(m_sSounds[i].pSound);
@@ -1179,7 +1176,7 @@ PlaySentenceChunk
 
 ====================
 */
-void CSoundEngine::PlaySentenceChunk( sound_t *pSound, sentence_t *pSentence, soption_t *pChunk )
+void CSoundEngine::PlaySentenceChunk(sound_t *pSound, sentence_t *pSentence, soption_t *pChunk)
 {
 	char szPath[256];
 	FMOD_CREATESOUNDEXINFO sSoundInfo;
@@ -1187,14 +1184,14 @@ void CSoundEngine::PlaySentenceChunk( sound_t *pSound, sentence_t *pSentence, so
 	strcpy(szPath, "sound/");
 	strcat(szPath, pSentence->szParentDir);
 
-	if(pChunk->szFile[strlen(pChunk->szFile)-1] == '.')
-		pChunk->szFile[strlen(pChunk->szFile)-1] = '\0';
+	if (pChunk->szFile[strlen(pChunk->szFile) - 1] == '.')
+		pChunk->szFile[strlen(pChunk->szFile) - 1] = '\0';
 
 	strcat(szPath, pChunk->szFile);
 	strcat(szPath, ".wav");
 
 	scache_t *pSoundData = GetSoundFromCache(szPath);
-	if(!pSoundData)
+	if (!pSoundData)
 		return;
 
 	pSound->pCache = pSoundData;
@@ -1208,13 +1205,13 @@ void CSoundEngine::PlaySentenceChunk( sound_t *pSound, sentence_t *pSentence, so
 	FMOD_VECTOR vOriginFM;
 	VectorCopyFM(pSound->vOrigin, vOriginFM);
 
-	_FMOD_System_CreateSound(m_pSystem, (const char *)pSoundData->pFile, 
-		(FMOD_SOFTWARE | FMOD_OPENMEMORY | FMOD_3D | FMOD_3D_LINEARROLLOFF), 
-		&sSoundInfo, &pSound->pSound);
+	_FMOD_System_CreateSound(m_pSystem, (const char *)pSoundData->pFile,
+							 (FMOD_SOFTWARE | FMOD_OPENMEMORY | FMOD_3D | FMOD_3D_LINEARROLLOFF),
+							 &sSoundInfo, &pSound->pSound);
 
 	_FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, pSound->pSound, false, &pSound->pChannel);
 
-	unsigned int iDelay = (pChunk->flDelay*250) + (pChunk->iTime);
+	unsigned int iDelay = (pChunk->flDelay * 250) + (pChunk->iTime);
 	m_hResult = _FMOD_Channel_SetDelay(pSound->pChannel, FMOD_DELAYTYPE_END_MS, iDelay, 0);
 	ErrorCheck();
 
@@ -1222,16 +1219,16 @@ void CSoundEngine::PlaySentenceChunk( sound_t *pSound, sentence_t *pSentence, so
 	m_hResult = _FMOD_Channel_SetPosition(pSound->pChannel, (int)flStartPos, FMOD_TIMEUNIT_PCMBYTES);
 	ErrorCheck();
 
-	if(pChunk->iEnd > 0)
+	if (pChunk->iEnd > 0)
 		pSound->iStopPos = (int)((pSound->pCache->iSize - 44) * (pChunk->iEnd)) / 100;
 	else
 		pSound->iStopPos = -1;
 
-	if(pSound->flVolume > 1)
+	if (pSound->flVolume > 1)
 		pSound->flVolume = 1;
 
-	if(pSound->bStereo)
-		_FMOD_Channel_SetVolume(pSound->pChannel, (pSound->flVolume/1.3f));
+	if (pSound->bStereo)
+		_FMOD_Channel_SetVolume(pSound->pChannel, (pSound->flVolume / 1.3f));
 	else
 		_FMOD_Channel_SetVolume(pSound->pChannel, pSound->flVolume);
 
@@ -1248,9 +1245,9 @@ PlayMusic
 
 ====================
 */
-void CSoundEngine::PlayMusic( char *pszFile )
+void CSoundEngine::PlayMusic(char *pszFile)
 {
-	if(m_bPlayingMusic)
+	if (m_bPlayingMusic)
 	{
 		_FMOD_Channel_Stop(m_pMusicChannel);
 		_FMOD_Sound_Release(m_pMusicSound);
@@ -1272,48 +1269,48 @@ GetLoopPoint
 
 ====================
 */
-void CSoundEngine::GetLoopPoint( scache_t *pCache )
+void CSoundEngine::GetLoopPoint(scache_t *pCache)
 {
-	BYTE *pFile = (BYTE*)pCache->pFile;
-	BYTE *pEnd = (BYTE*)pCache->pFile + pCache->iSize;
+	BYTE *pFile = (BYTE *)pCache->pFile;
+	BYTE *pEnd = (BYTE *)pCache->pFile + pCache->iSize;
 	BYTE *pPosition = pFile;
 
 	Int32BigEndian nChunkName;
 
-	while(1)
+	while (1)
 	{
 		// reached end of the file
-		if(pFile >= pEnd)
+		if (pFile >= pEnd)
 			break;
 
 		pPosition = pFile + 4;
-		if(pPosition >= pEnd)
+		if (pPosition >= pEnd)
 			break;
 
 		// read chunk name
 		nChunkName =
-		((Int32BigEndian)*(pFile)<<24) |
-		((Int32BigEndian)*(pFile+1)<<16) |
-		((Int32BigEndian)*(pFile+2)<<8) | 
-		((Int32BigEndian)*(pFile+3));
+			((Int32BigEndian) * (pFile) << 24) |
+			((Int32BigEndian) * (pFile + 1) << 16) |
+			((Int32BigEndian) * (pFile + 2) << 8) |
+			((Int32BigEndian) * (pFile + 3));
 
-		if(nChunkName == 0x63756520) //"cue " chunk
+		if (nChunkName == 0x63756520) //"cue " chunk
 		{
 			UInt32LittleEndian nChunkLength;
 
 			pPosition = pFile + 8;
-			if(pPosition >= pEnd)
+			if (pPosition >= pEnd)
 				break;
 
 			pFile = pFile + 4;
 
 			nChunkLength =
-			((UInt32LittleEndian)*(pFile+3)<<24) |
-			((UInt32LittleEndian)*(pFile+2)<<16) |
-			((UInt32LittleEndian)*(pFile+1)<<8) | 
-			((UInt32LittleEndian)*(pFile));
-			
-			if(nChunkLength / 24 > 0)
+				((UInt32LittleEndian) * (pFile + 3) << 24) |
+				((UInt32LittleEndian) * (pFile + 2) << 16) |
+				((UInt32LittleEndian) * (pFile + 1) << 8) |
+				((UInt32LittleEndian) * (pFile));
+
+			if (nChunkLength / 24 > 0)
 			{
 				pCache->iLoopStart = 0;
 			}
@@ -1333,35 +1330,35 @@ PrecacheSound
 
 ====================
 */
-scache_t* CSoundEngine::PrecacheSound( char *szFile )
+scache_t *CSoundEngine::PrecacheSound(char *szFile)
 {
-	for(int i = 0; i < m_iNumCachedSounds; i++)
+	for (int i = 0; i < m_iNumCachedSounds; i++)
 	{
-		if(!strcmp(m_sSoundCache[i].szFile, szFile))
+		if (!strcmp(m_sSoundCache[i].szFile, szFile))
 		{
 			return &m_sSoundCache[i];
 		}
 	}
 
-	if(m_iNumCachedSounds == MAX_CACHED_SOUNDS)
+	if (m_iNumCachedSounds == MAX_CACHED_SOUNDS)
 	{
 		gEngfuncs.Con_Printf("Sound cache is full! Sound (%s) won't be part of playback!\n", szFile);
 		return 0;
 	}
 
-	int	iSize = 0;
+	int iSize = 0;
 	byte *pData = (byte *)gEngfuncs.COM_LoadFile(szFile, 5, &iSize);
 
-	if(!pData)
+	if (!pData)
 	{
 		gEngfuncs.Con_Printf("Couldn't precache (%s).\n", szFile);
 		return 0;
 	}
 
 	scache_t *pCache = &m_sSoundCache[m_iNumCachedSounds];
-	
+
 	pCache->pFile = new byte[iSize];
-	memcpy(pCache->pFile, pData, sizeof(byte)*iSize);
+	memcpy(pCache->pFile, pData, sizeof(byte) * iSize);
 	pCache->iSize = iSize;
 
 	strcpy(pCache->szFile, szFile);
@@ -1383,11 +1380,11 @@ GetSoundFromCache
 
 ====================
 */
-scache_t* CSoundEngine::GetSoundFromCache( char *szFile )
+scache_t *CSoundEngine::GetSoundFromCache(char *szFile)
 {
-	for(int i = 0; i < m_iNumCachedSounds; i++)
+	for (int i = 0; i < m_iNumCachedSounds; i++)
 	{
-		if(!strcmp(szFile, m_sSoundCache[i].szFile))
+		if (!strcmp(szFile, m_sSoundCache[i].szFile))
 			return &m_sSoundCache[i];
 	}
 
@@ -1400,17 +1397,17 @@ TempEntPlaySound
 
 ====================
 */
-void CSoundEngine::TempEntPlaySound( TEMPENTITY *pTemp, float flVolume )
+void CSoundEngine::TempEntPlaySound(TEMPENTITY *pTemp, float flVolume)
 {
-	if(pTemp->entity.origin == pTemp->entity.prevstate.origin)
+	if (pTemp->entity.origin == pTemp->entity.prevstate.origin)
 		return;
 
 	pTemp->entity.prevstate.origin = pTemp->entity.origin;
 
 	// Glass impact
-	if(pTemp->hitSound & BOUNCE_GLASS)
+	if (pTemp->hitSound & BOUNCE_GLASS)
 	{
-		switch(gEngfuncs.pfnRandomLong(0, 2))
+		switch (gEngfuncs.pfnRandomLong(0, 2))
 		{
 		case 1:
 			PlaySound("debris/glass1.wav", pTemp->entity.origin, SND_TEMPENT, CHAN_AUTO, flVolume, PITCH_NORM);
@@ -1420,11 +1417,11 @@ void CSoundEngine::TempEntPlaySound( TEMPENTITY *pTemp, float flVolume )
 			PlaySound("debris/glass3.wav", pTemp->entity.origin, SND_TEMPENT, CHAN_AUTO, flVolume, PITCH_NORM);
 		}
 	}
-	
+
 	// Metal Impact
-	if(pTemp->hitSound & BOUNCE_METAL)
+	if (pTemp->hitSound & BOUNCE_METAL)
 	{
-		switch(gEngfuncs.pfnRandomLong(0, 5))
+		switch (gEngfuncs.pfnRandomLong(0, 5))
 		{
 		case 1:
 			PlaySound("debris/metal1.wav", pTemp->entity.origin, SND_TEMPENT, CHAN_AUTO, flVolume, PITCH_NORM);
@@ -1440,13 +1437,13 @@ void CSoundEngine::TempEntPlaySound( TEMPENTITY *pTemp, float flVolume )
 	}
 
 	// Flesh impact
-	if(pTemp->hitSound & BOUNCE_FLESH)
+	if (pTemp->hitSound & BOUNCE_FLESH)
 	{
-		switch(gEngfuncs.pfnRandomLong(0, 6))
+		switch (gEngfuncs.pfnRandomLong(0, 6))
 		{
 		case 1:
 			PlaySound("debris/flesh1.wav", pTemp->entity.origin, SND_TEMPENT, CHAN_AUTO, flVolume, PITCH_NORM);
-		case 2: 
+		case 2:
 			PlaySound("debris/flesh2.wav", pTemp->entity.origin, SND_TEMPENT, CHAN_AUTO, flVolume, PITCH_NORM);
 		case 3:
 			PlaySound("debris/flesh3.wav", pTemp->entity.origin, SND_TEMPENT, CHAN_AUTO, flVolume, PITCH_NORM);
@@ -1462,9 +1459,9 @@ void CSoundEngine::TempEntPlaySound( TEMPENTITY *pTemp, float flVolume )
 	}
 
 	// Wood impact
-	if(pTemp->hitSound & BOUNCE_WOOD)
+	if (pTemp->hitSound & BOUNCE_WOOD)
 	{
-		switch(gEngfuncs.pfnRandomLong(0, 2))
+		switch (gEngfuncs.pfnRandomLong(0, 2))
 		{
 		case 1:
 			PlaySound("debris/wood1.wav", pTemp->entity.origin, SND_TEMPENT, CHAN_AUTO, flVolume, PITCH_NORM);
@@ -1476,9 +1473,9 @@ void CSoundEngine::TempEntPlaySound( TEMPENTITY *pTemp, float flVolume )
 	}
 
 	// Shell impact
-	if(pTemp->hitSound & BOUNCE_SHELL)
+	if (pTemp->hitSound & BOUNCE_SHELL)
 	{
-		switch(gEngfuncs.pfnRandomLong(0, 2))
+		switch (gEngfuncs.pfnRandomLong(0, 2))
 		{
 		case 1:
 			PlaySound("player/pl_shell2.wav", pTemp->entity.origin, SND_TEMPENT, CHAN_AUTO, flVolume, PITCH_NORM);
@@ -1490,9 +1487,9 @@ void CSoundEngine::TempEntPlaySound( TEMPENTITY *pTemp, float flVolume )
 	}
 
 	// Concrete impact
-	if(pTemp->hitSound & BOUNCE_CONCRETE)
+	if (pTemp->hitSound & BOUNCE_CONCRETE)
 	{
-		switch(gEngfuncs.pfnRandomLong(0, 2))
+		switch (gEngfuncs.pfnRandomLong(0, 2))
 		{
 		case 1:
 			PlaySound("debris/concrete1.wav", pTemp->entity.origin, SND_TEMPENT, CHAN_AUTO, flVolume, PITCH_NORM);
@@ -1504,9 +1501,9 @@ void CSoundEngine::TempEntPlaySound( TEMPENTITY *pTemp, float flVolume )
 	}
 
 	// Shotgun shell impact
-	if(pTemp->hitSound & BOUNCE_SHOTSHELL)
+	if (pTemp->hitSound & BOUNCE_SHOTSHELL)
 	{
-		switch(gEngfuncs.pfnRandomLong(0, 2))
+		switch (gEngfuncs.pfnRandomLong(0, 2))
 		{
 		case 1:
 			PlaySound("weapons/sshell2.wav", pTemp->entity.origin, SND_TEMPENT, CHAN_AUTO, flVolume, PITCH_NORM);
@@ -1524,45 +1521,45 @@ LoadSentences
 
 ====================
 */
-void CSoundEngine::LoadSentences( void )
+void CSoundEngine::LoadSentences(void)
 {
-	if(m_iNumSentences)
+	if (m_iNumSentences)
 		return;
 
 	int iSize = 0;
 	char *pFile = (char *)gEngfuncs.COM_LoadFile("sound/sentences.txt", 5, &iSize);
 
-	if(!pFile || !iSize)
+	if (!pFile || !iSize)
 	{
 		gEngfuncs.Con_Printf("ERROR: Couldn't load sentences.txt!");
 		return;
 	}
 
 	int i = 0;
-	while(1)
+	while (1)
 	{
-		if(i >= iSize)
+		if (i >= iSize)
 			break;
 
-		if(pFile[i] == '\n' || pFile[i] == '\r')
+		if (pFile[i] == '\n' || pFile[i] == '\r')
 		{
 			i++;
 
-			if(i >= iSize)
+			if (i >= iSize)
 				break;
 
 			continue;
 		}
 
 		// Skip whitelines
-		if(pFile[i] == ' ' || pFile[i] == '\0')
+		if (pFile[i] == ' ' || pFile[i] == '\0')
 		{
-			while(1)
+			while (1)
 			{
-				if(pFile[i] != ' ' && pFile[i] == '\0')
+				if (pFile[i] != ' ' && pFile[i] == '\0')
 					break;
 
-				if(pFile[i] == '\n')
+				if (pFile[i] == '\n')
 				{
 					i++;
 					break;
@@ -1573,15 +1570,15 @@ void CSoundEngine::LoadSentences( void )
 			continue;
 		}
 
-		if(pFile[i] == '/' || pFile[i] == '\\')
+		if (pFile[i] == '/' || pFile[i] == '\\')
 		{
 			// Skip comments
-			while(1)
+			while (1)
 			{
-				if(i >= iSize)
+				if (i >= iSize)
 					break;
 
-				if(pFile[i] == '\n')
+				if (pFile[i] == '\n')
 				{
 					i++;
 					break;
@@ -1606,28 +1603,28 @@ void CSoundEngine::LoadSentences( void )
 		int iDefaultVol = 100;
 
 		// Skip sentence name
-		while(1)
+		while (1)
 		{
-			if(i >= iSize)
+			if (i >= iSize)
 			{
 				gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 				gEngfuncs.COM_FreeFile(pFile);
 				return;
 			}
 
-			if(pFile[i] == ' ')
+			if (pFile[i] == ' ')
 			{
 				// Skip to next token
-				while(1)
+				while (1)
 				{
-					if(i >= iSize)
+					if (i >= iSize)
 					{
 						gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 						gEngfuncs.COM_FreeFile(pFile);
 						return;
 					}
 
-					if(pFile[i] != ' ')
+					if (pFile[i] != ' ')
 						break;
 
 					i++;
@@ -1638,28 +1635,28 @@ void CSoundEngine::LoadSentences( void )
 		}
 
 		int j = i;
-		while(1)
+		while (1)
 		{
-			if(j >= iSize)
+			if (j >= iSize)
 			{
 				gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 				gEngfuncs.COM_FreeFile(pFile);
 				return;
 			}
 
-			if(pFile[j] == '\n' || pFile[j] == '\r')
+			if (pFile[j] == '\n' || pFile[j] == '\r')
 			{
 				// Seems Valve takes a default as "vox/"
 				strcpy(pSentence->szParentDir, "vox/");
 				break;
 			}
 
-			if(pFile[j] == '\\' || pFile[j] == '/')
+			if (pFile[j] == '\\' || pFile[j] == '/')
 			{
 				j = 0;
-				while(1)
+				while (1)
 				{
-					if(i >= iSize)
+					if (i >= iSize)
 					{
 						gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 						gEngfuncs.COM_FreeFile(pFile);
@@ -1667,11 +1664,12 @@ void CSoundEngine::LoadSentences( void )
 					}
 
 					pSentence->szParentDir[j] = pFile[i];
-					i++; j++;
+					i++;
+					j++;
 
-					if(pFile[(i - 1)] == '\\' || pFile[(i - 1)] == '/')
+					if (pFile[(i - 1)] == '\\' || pFile[(i - 1)] == '/')
 					{
-						pSentence->szParentDir[i] = 0;//terminate
+						pSentence->szParentDir[i] = 0; //terminate
 						break;
 					}
 				}
@@ -1682,37 +1680,37 @@ void CSoundEngine::LoadSentences( void )
 		}
 
 		//Lets set options up
-		while(1)
+		while (1)
 		{
 			//Skip white spaces
-			while(1)
+			while (1)
 			{
-				if(i >= iSize)
+				if (i >= iSize)
 				{
 					// Reached EOF
 					break;
 				}
 
-				if(pFile[i] != ' ')
+				if (pFile[i] != ' ')
 					break;
 
 				i++;
 			}
 
-			if(i >= iSize)
+			if (i >= iSize)
 			{
 				// Reached EOF
 				break;
 			}
 
-			if(pFile[i] == '\n' || pFile[i] == '\r')
+			if (pFile[i] == '\n' || pFile[i] == '\r')
 			{
 				i++;
 				break;
 			}
 
-			pSentence->pOptions.resize((pSentence->pOptions.size()+1));
-			soption_t *pOption = &pSentence->pOptions[(pSentence->pOptions.size()-1)];
+			pSentence->pOptions.resize((pSentence->pOptions.size() + 1));
+			soption_t *pOption = &pSentence->pOptions[(pSentence->pOptions.size() - 1)];
 			memset(pOption, 0, sizeof(soption_t));
 
 			// Set defaults
@@ -1723,46 +1721,46 @@ void CSoundEngine::LoadSentences( void )
 			pOption->iVolume = iDefaultVol;
 			pOption->flDelay = 0.0f;
 
-			while(1)
+			while (1)
 			{
 				// Skip whitespace
-				while(1)
+				while (1)
 				{
-					if(i >= iSize)
+					if (i >= iSize)
 					{
 						gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 						gEngfuncs.COM_FreeFile(pFile);
 						return;
 					}
 
-					if(pFile[i] != ' ')
+					if (pFile[i] != ' ')
 						break;
 
 					i++;
 				}
 
-				if(pFile[i] != '(')
+				if (pFile[i] != '(')
 					break;
 
 				//If there's a bracelet before any sentence chunk, it means that it's defaulted for forthcoming options.
 				i++; // Go into bracelet
-				while(1)
+				while (1)
 				{
-					if(i >= iSize)
+					if (i >= iSize)
 					{
 						gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 						gEngfuncs.COM_FreeFile(pFile);
 						return;
 					}
 
-					if(pFile[i] != ' ')
+					if (pFile[i] != ' ')
 						break;
 
 					// Go ahead
 					i++;
 				}
 
-				if(pFile[i] == '\n' || pFile[i] == '\r')
+				if (pFile[i] == '\n' || pFile[i] == '\r')
 				{
 					gEngfuncs.Con_Printf("Sentences.txt error: Unexpected newline\n");
 					return;
@@ -1770,31 +1768,31 @@ void CSoundEngine::LoadSentences( void )
 
 				//Extract option parameters
 				j = 0;
-				while(1)
+				while (1)
 				{
 					// Yes, this sucks
-					while(1)
+					while (1)
 					{
-						if(i >= iSize)
+						if (i >= iSize)
 						{
 							gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 							gEngfuncs.COM_FreeFile(pFile);
 							return;
 						}
 
-						if(pFile[i] != ' ')
+						if (pFile[i] != ' ')
 							break;
 
 						i++;
 					}
 
-					if(pFile[i] == ')')
+					if (pFile[i] == ')')
 					{
 						i++;
 						break;
 					}
 
-					if(i >= iSize)
+					if (i >= iSize)
 					{
 						gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 						gEngfuncs.COM_FreeFile(pFile);
@@ -1802,52 +1800,52 @@ void CSoundEngine::LoadSentences( void )
 					}
 
 					char szValue[5];
-					char *pName = &pFile[i]; 
+					char *pName = &pFile[i];
 					i++; //Skip to value
 
 					// Skip any whitespace(who knows)
-					while(1)
+					while (1)
 					{
-						if(i >= iSize)
+						if (i >= iSize)
 						{
 							gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 							gEngfuncs.COM_FreeFile(pFile);
 							return;
 						}
 
-						if(pFile[i] != ' ')
+						if (pFile[i] != ' ')
 							break;
 
 						i++;
 					}
 
 					int j = 0;
-					while(1)
+					while (1)
 					{
 						// Skip whitespace
-						while(1)
+						while (1)
 						{
-							if(i >= iSize)
+							if (i >= iSize)
 							{
 								gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 								gEngfuncs.COM_FreeFile(pFile);
 								return;
 							}
 
-							if(pFile[i] != ' ')
+							if (pFile[i] != ' ')
 								break;
 
 							i++;
 						}
 
-						if(i >= iSize)
+						if (i >= iSize)
 						{
 							gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 							gEngfuncs.COM_FreeFile(pFile);
 							return;
 						}
 
-						if(pFile[i] != '0' && pFile[i] != '1' &&
+						if (pFile[i] != '0' && pFile[i] != '1' &&
 							pFile[i] != '2' && pFile[i] != '3' &&
 							pFile[i] != '4' && pFile[i] != '5' &&
 							pFile[i] != '6' && pFile[i] != '7' &&
@@ -1858,63 +1856,64 @@ void CSoundEngine::LoadSentences( void )
 						}
 
 						szValue[j] = pFile[i];
-						i++; j++;
+						i++;
+						j++;
 					}
-					
-					if(*pName == 'p')
+
+					if (*pName == 'p')
 						pOption->iPitch = iDefaultPitch = atoi(szValue);
-					else if(*pName == 't')
+					else if (*pName == 't')
 						pOption->iTime = iDefaultTime = atoi(szValue);
-					else if(*pName == 's')
+					else if (*pName == 's')
 						pOption->iStart = iDefaultStart = atoi(szValue);
-					else if(*pName == 'e')
+					else if (*pName == 'e')
 						pOption->iEnd = iDefaultEnd = atoi(szValue);
-					else if(*pName == 'v')
+					else if (*pName == 'v')
 						pOption->iVolume = iDefaultVol = atoi(szValue);
 				}
 			}
 
 			j = 0;
-			while(1)
+			while (1)
 			{
-				if(i >= iSize)
+				if (i >= iSize)
 				{
 					// Reached EOF
 					break;
 				}
 
-				if(pFile[i] == ' ')
+				if (pFile[i] == ' ')
 				{
 					i++;
 					break;
 				}
 
-				if(pFile[i] == '\n' || pFile[i] == '\r')
+				if (pFile[i] == '\n' || pFile[i] == '\r')
 				{
 					pOption->szFile[j] = 0;
 					break;
 				}
 
 				// Sound params
-				if(pFile[i] == '(')
+				if (pFile[i] == '(')
 				{
 					i++; // Go into bracelet
-					while(1)
+					while (1)
 					{
-						if(i >= iSize)
+						if (i >= iSize)
 						{
 							gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 							gEngfuncs.COM_FreeFile(pFile);
 							return;
 						}
 
-						if(pFile[i] != ' ')
+						if (pFile[i] != ' ')
 							break;
 
 						i++;
 					}
 
-					if(pFile[i] == '\n' || pFile[i] == '\r')
+					if (pFile[i] == '\n' || pFile[i] == '\r')
 					{
 						gEngfuncs.Con_Printf("Sentences.txt error: Unexpected newline\n");
 						return;
@@ -1922,81 +1921,82 @@ void CSoundEngine::LoadSentences( void )
 
 					//Extract option parameters
 					j = 0;
-					while(1)
+					while (1)
 					{
 						// Yes, this sucks
-						while(1)
+						while (1)
 						{
-							if(i >= iSize)
+							if (i >= iSize)
 							{
 								gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 								gEngfuncs.COM_FreeFile(pFile);
 								return;
 							}
 
-							if(pFile[i] != ' ')
+							if (pFile[i] != ' ')
 								break;
 
 							i++;
 						}
 
-						if(pFile[i] == ')')
+						if (pFile[i] == ')')
 						{
 							i++;
 
-							if(pFile[i] == ',')
-								pOption->flDelay = 0.5; i++;
-	
+							if (pFile[i] == ',')
+								pOption->flDelay = 0.5;
+							i++;
+
 							break;
 						}
 
 						char szValue[5];
-						char *pName = &pFile[i]; 
+						char *pName = &pFile[i];
 						i++; //Skip to value
 
 						// Skip any whiteline(who knows)
-						while(1)
+						while (1)
 						{
-							if(i >= iSize)
+							if (i >= iSize)
 							{
 								gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 								gEngfuncs.COM_FreeFile(pFile);
 								return;
 							}
 
-							if(pFile[i] != ' ')
+							if (pFile[i] != ' ')
 								break;
 
 							i++;
 						}
 
 						int j = 0;
-						while(1)
+						while (1)
 						{
 							// Skip whitespace
-							while(1)
+							while (1)
 							{
-								if(i >= iSize)
+								if (i >= iSize)
 								{
 									gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 									gEngfuncs.COM_FreeFile(pFile);
 									return;
 								}
 
-								if(pFile[i] != ' ')
+								if (pFile[i] != ' ')
 									break;
 
 								i++;
 							}
 
-							if(i >= iSize)
+							if (i >= iSize)
 							{
 								gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 								gEngfuncs.COM_FreeFile(pFile);
 								return;
 							}
 
-							if(pFile[i] != '0' && pFile[i] != '1' &&
+							if (pFile[i] != '0' && pFile[i] != '1' &&
 								pFile[i] != '2' && pFile[i] != '3' &&
 								pFile[i] != '4' && pFile[i] != '5' &&
 								pFile[i] != '6' && pFile[i] != '7' &&
@@ -2007,18 +2007,19 @@ void CSoundEngine::LoadSentences( void )
 							}
 
 							szValue[j] = pFile[i];
-							i++; j++;
+							i++;
+							j++;
 						}
-						
-						if(*pName == 'p')
+
+						if (*pName == 'p')
 							pOption->iPitch = atoi(szValue);
-						else if(*pName == 't')
+						else if (*pName == 't')
 							pOption->iTime = atoi(szValue);
-						else if(*pName == 's')
+						else if (*pName == 's')
 							pOption->iStart = atoi(szValue);
-						else if(*pName == 'e')
+						else if (*pName == 'e')
 							pOption->iEnd = atoi(szValue);
-						else if(*pName == 'v')
+						else if (*pName == 'v')
 							pOption->iVolume = atoi(szValue);
 					}
 
@@ -2026,13 +2027,14 @@ void CSoundEngine::LoadSentences( void )
 					break;
 				}
 
-				if(pFile[i] == ',')
+				if (pFile[i] == ',')
 				{
-					pOption->flDelay = 0.5; i++;
+					pOption->flDelay = 0.5;
+					i++;
 					continue;
 				}
 
-				if(i >= iSize)
+				if (i >= iSize)
 				{
 					gEngfuncs.Con_Printf("Sentences.txt error: Unexpected end!\n");
 					gEngfuncs.COM_FreeFile(pFile);
@@ -2040,11 +2042,12 @@ void CSoundEngine::LoadSentences( void )
 				}
 
 				pOption->szFile[j] = pFile[i];
-				i++; j++;
+				i++;
+				j++;
 			}
 		}
 	}
-	
+
 	// Free file
 	gEngfuncs.COM_FreeFile(pFile);
 }
@@ -2055,7 +2058,7 @@ MsgFunc_PlayAudio
 
 ====================
 */
-int CSoundEngine::MsgFunc_PlayAudio( const char *pszName, int iSize, void *pBuf )
+int CSoundEngine::MsgFunc_PlayAudio(const char *pszName, int iSize, void *pBuf)
 {
 	BEGIN_READ(pBuf, iSize);
 	char *pszFile = READ_STRING();
@@ -2073,11 +2076,10 @@ PM_PlaySample
 
 ===================================
 */
-extern "C" void PM_PlaySample( const char *szFile, float fVolume, int iPitch, float *origin )
-{ 
-	gSoundEngine.PlaySound( szFile, origin, SND_RELATIVE, CHAN_BODY, fVolume*2, iPitch );
+extern "C" void PM_PlaySample(const char *szFile, float fVolume, int iPitch, float *origin)
+{
+	gSoundEngine.PlaySound(szFile, origin, SND_RELATIVE, CHAN_BODY, fVolume * 2, iPitch);
 }
-
 
 /*
 ===================================
@@ -2086,11 +2088,10 @@ CL_SoundEngineReset
 
 ===================================
 */
-extern "C" __declspec( dllexport ) void CL_SoundEngineReset( void )
+extern "C" __declspec(dllexport) void CL_SoundEngineReset(void)
 {
 	gSoundEngine.ResetEngine();
 }
-
 
 /*
 ===================================
@@ -2099,15 +2100,14 @@ CL_SoundPrecache
 
 ===================================
 */
-extern "C" __declspec( dllexport ) void CL_SoundPrecache( void *pPath )
+extern "C" __declspec(dllexport) void CL_SoundPrecache(void *pPath)
 {
 	char szPath[256];
 
 	strcpy(szPath, "sound/");
-	strcat(szPath, (char*)pPath);
+	strcat(szPath, (char *)pPath);
 	gSoundEngine.PrecacheSound(szPath);
 }
-
 
 /*
 ===================================
@@ -2116,11 +2116,10 @@ CL_SoundEmit
 
 ===================================
 */
-extern "C" __declspec( dllexport ) void CL_EmitSound( void *pEdict, void *pPath, int iEntIndex, float flVolume, float flAttenuation, int iFlags, int iPitch, int iChannel )
+extern "C" __declspec(dllexport) void CL_EmitSound(void *pEdict, void *pPath, int iEntIndex, float flVolume, float flAttenuation, int iFlags, int iPitch, int iChannel)
 {
 	gSoundEngine.PlaySound((char *)pPath, g_vecZero, iFlags, iChannel, flVolume, iPitch, flAttenuation, (edict_t *)pEdict, iEntIndex);
 }
-
 
 /*
 ===================================
@@ -2129,8 +2128,8 @@ CL_SoundAmbient
 
 ===================================
 */
-extern "C" __declspec( dllexport ) void CL_EmitAmbient( void *pEdict, void *pPath, int iEntIndex, float flVolume, float flAttenuation, float *pOrigin, int iFlags, int iPitch )
+extern "C" __declspec(dllexport) void CL_EmitAmbient(void *pEdict, void *pPath, int iEntIndex, float flVolume, float flAttenuation, float *pOrigin, int iFlags, int iPitch)
 {
 	iFlags |= SND_AMBIENT;
-	gSoundEngine.PlaySound((char *)pPath, pOrigin, iFlags, CHAN_STATIC, flVolume, iPitch, flAttenuation, (edict_t *)pEdict, iEntIndex );
+	gSoundEngine.PlaySound((char *)pPath, pOrigin, iFlags, CHAN_STATIC, flVolume, iPitch, flAttenuation, (edict_t *)pEdict, iEntIndex);
 }

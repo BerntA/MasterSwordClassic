@@ -20,7 +20,6 @@
 #include "msdebug.h"
 #include "logfile.h"
 
-
 #include "cvardef.h"
 
 #ifndef TRUE
@@ -29,54 +28,57 @@
 #endif
 
 // Macros to hook function calls into the HUD object
-#define HOOK_MESSAGE(x) gEngfuncs.pfnHookUserMsg(#x, __MsgFunc_##x );
+#define HOOK_MESSAGE(x) gEngfuncs.pfnHookUserMsg(#x, __MsgFunc_##x);
 
-#define DECLARE_MESSAGE(y, x) int __MsgFunc_##x(const char *pszName, int iSize, void *pbuf) \
-							{ \
-								DBG_INPUT; \
-								int ret = 0; \
-								startdbg; \
-								ret = gHUD.##y.MsgFunc_##x(pszName, iSize, pbuf ); \
-								enddbg; \
-								return ret; \
-							}
+#define DECLARE_MESSAGE(y, x)                                     \
+	int __MsgFunc_##x(const char *pszName, int iSize, void *pbuf) \
+	{                                                             \
+		DBG_INPUT;                                                \
+		int ret = 0;                                              \
+		startdbg;                                                 \
+		ret = gHUD.##y.MsgFunc_##x(pszName, iSize, pbuf);         \
+		enddbg;                                                   \
+		return ret;                                               \
+	}
 
-
-#define HOOK_COMMAND(x, y) gEngfuncs.pfnAddCommand( x, __CmdFunc_##y );
-#define DECLARE_COMMAND(y, x) void __CmdFunc_##x( void ) \
-							{ \
-								DBG_INPUT; \
-								startdbg; \
-								gHUD.##y.UserCmd_##x( ); \
-								enddbg; \
-							}
+#define HOOK_COMMAND(x, y) gEngfuncs.pfnAddCommand(x, __CmdFunc_##y);
+#define DECLARE_COMMAND(y, x)   \
+	void __CmdFunc_##x(void)    \
+	{                           \
+		DBG_INPUT;              \
+		startdbg;               \
+		gHUD.##y.UserCmd_##x(); \
+		enddbg;                 \
+	}
 
 //------------ Master Sword ----------------
-#define MS_DECLARE_MESSAGE(y, x) int __MsgFunc_##x(const char *pszName, int iSize, void *pbuf) \
-							{ \
-								DBG_INPUT; \
-								int ret = 0; \
-								startdbg; \
-								ret = gHUD.##y->MsgFunc_##x(pszName, iSize, pbuf ); \
-								enddbg; \
-								return ret; \
-							}
-#define MS_DECLARE_COMMAND(y, x) void __CmdFunc_##x( void ) \
-							{ \
-								DBG_INPUT; \
-								startdbg; \
-								gHUD.##y->UserCmd_##x( ); \
-								enddbg; \
-							}
+#define MS_DECLARE_MESSAGE(y, x)                                  \
+	int __MsgFunc_##x(const char *pszName, int iSize, void *pbuf) \
+	{                                                             \
+		DBG_INPUT;                                                \
+		int ret = 0;                                              \
+		startdbg;                                                 \
+		ret = gHUD.##y->MsgFunc_##x(pszName, iSize, pbuf);        \
+		enddbg;                                                   \
+		return ret;                                               \
+	}
+#define MS_DECLARE_COMMAND(y, x) \
+	void __CmdFunc_##x(void)     \
+	{                            \
+		DBG_INPUT;               \
+		startdbg;                \
+		gHUD.##y->UserCmd_##x(); \
+		enddbg;                  \
+	}
 //------------------------------------------
 
 //Master Sword
 #undef CVAR_GET_FLOAT
 #undef CVAR_GET_STRING
 #undef CVAR_CREATE
-inline float CVAR_GET_FLOAT( const char *x ) {	return gEngfuncs.pfnGetCvarFloat( (char*)x ); }
-inline char* CVAR_GET_STRING( const char *x ) {	return gEngfuncs.pfnGetCvarString( (char*)x ); }
-inline struct cvar_s *CVAR_CREATE( const char *cv, const char *val, const int flags ) {	return gEngfuncs.pfnRegisterVariable( (char*)cv, (char*)val, flags ); }
+inline float CVAR_GET_FLOAT(const char *x) { return gEngfuncs.pfnGetCvarFloat((char *)x); }
+inline char *CVAR_GET_STRING(const char *x) { return gEngfuncs.pfnGetCvarString((char *)x); }
+inline struct cvar_s *CVAR_CREATE(const char *cv, const char *val, const int flags) { return gEngfuncs.pfnRegisterVariable((char *)cv, (char *)val, flags); }
 
 #define SPR_Load (*gEngfuncs.pfnSPR_Load)
 #define SPR_Set (*gEngfuncs.pfnSPR_Set)
@@ -97,19 +99,18 @@ inline struct cvar_s *CVAR_CREATE( const char *cv, const char *val, const int fl
 //
 #define FillRGBA (*gEngfuncs.pfnFillRGBA)
 
-
 // ScreenHeight returns the height of the screen, in pixels
 #define ScreenHeight (gHUD.m_scrinfo.iHeight)
 // ScreenWidth returns the width of the screen, in pixels
 #define ScreenWidth (gHUD.m_scrinfo.iWidth)
 
 // Use this to set any co-ords in 640x480 space
-#define XRES(x)		((int)(float(x)  * ((float)ScreenWidth / 640.0f) + 0.5f))
-#define YRES(y)		((int)(float(y)  * ((float)ScreenHeight / 480.0f) + 0.5f))
+#define XRES(x) ((int)(float(x) * ((float)ScreenWidth / 640.0f) + 0.5f))
+#define YRES(y) ((int)(float(y) * ((float)ScreenHeight / 480.0f) + 0.5f))
 
 // use this to project world coordinates to screen coordinates
-#define XPROJECT(x)	( (1.0f+(x))*ScreenWidth*0.5f )
-#define YPROJECT(y) ( (1.0f-(y))*ScreenHeight*0.5f )
+#define XPROJECT(x) ((1.0f + (x)) * ScreenWidth * 0.5f)
+#define YPROJECT(y) ((1.0f - (y)) * ScreenHeight * 0.5f)
 
 #define GetScreenInfo (*gEngfuncs.pfnGetScreenInfo)
 #define ServerCmd (*gEngfuncs.pfnServerCmd)
@@ -117,82 +118,101 @@ inline struct cvar_s *CVAR_CREATE( const char *cv, const char *val, const int fl
 #define SetCrosshair (*gEngfuncs.pfnSetCrosshair)
 #define AngleVectors (*gEngfuncs.pfnAngleVectors)
 
-
 // Gets the height & width of a sprite,  at the specified frame
-inline int SPR_Height( HLSPRITE x, int f )	{ return gEngfuncs.pfnSPR_Height(x, f); }
-inline int SPR_Width( HLSPRITE x, int f )	{ return gEngfuncs.pfnSPR_Width(x, f); }
+inline int SPR_Height(HLSPRITE x, int f) { return gEngfuncs.pfnSPR_Height(x, f); }
+inline int SPR_Width(HLSPRITE x, int f) { return gEngfuncs.pfnSPR_Width(x, f); }
 
-inline 	client_textmessage_t	*TextMessageGet( const char *pName ) { return gEngfuncs.pfnTextMessageGet( pName ); }
-inline 	int						TextMessageDrawChar( int x, int y, int number, int r, int g, int b ) 
-{ 
-	return gEngfuncs.pfnDrawCharacter( x, y, number, r, g, b ); 
-}
-
-inline int DrawConsoleString( int x, int y, const char *string )
+inline client_textmessage_t *TextMessageGet(const char *pName) { return gEngfuncs.pfnTextMessageGet(pName); }
+inline int TextMessageDrawChar(int x, int y, int number, int r, int g, int b)
 {
-	return gEngfuncs.pfnDrawConsoleString( x, y, (char*) string );
+	return gEngfuncs.pfnDrawCharacter(x, y, number, r, g, b);
 }
 
-inline void GetConsoleStringSize( const char *string, int *width, int *height )
+inline int DrawConsoleString(int x, int y, const char *string)
 {
-	gEngfuncs.pfnDrawConsoleStringLen( string, width, height );
+	return gEngfuncs.pfnDrawConsoleString(x, y, (char *)string);
 }
 
-inline int ConsoleStringLen( const char *string )
+inline void GetConsoleStringSize(const char *string, int *width, int *height)
+{
+	gEngfuncs.pfnDrawConsoleStringLen(string, width, height);
+}
+
+inline int ConsoleStringLen(const char *string)
 {
 	int _width, _height;
-	GetConsoleStringSize( string, &_width, &_height );
+	GetConsoleStringSize(string, &_width, &_height);
 	return _width;
 }
 
-inline void ConsolePrint( const char *string )
+inline void ConsolePrint(const char *string)
 {
-	if( gEngfuncs.pfnConsolePrint )
-		gEngfuncs.pfnConsolePrint( string );
+	if (gEngfuncs.pfnConsolePrint)
+		gEngfuncs.pfnConsolePrint(string);
 }
 
-inline void CenterPrint( const char *string )
+inline void CenterPrint(const char *string)
 {
-	gEngfuncs.pfnCenterPrint( string );
+	gEngfuncs.pfnCenterPrint(string);
 }
 
 // returns the players name of entity no.
 #define GetPlayerInfo (*gEngfuncs.pfnGetPlayerInfo)
 
 // sound functions
-inline void PlaySound( char *szSound, float vol ) { gEngfuncs.pfnPlaySoundByName( szSound, vol ); }
-inline void PlaySound( int iSound, float vol ) { gEngfuncs.pfnPlaySoundByIndex( iSound, vol ); }
-inline void PlayHUDSound( const char *Sound, float vol ) { PlaySound( (char *)Sound, vol ); }
+inline void PlaySound(char *szSound, float vol) { gEngfuncs.pfnPlaySoundByName(szSound, vol); }
+inline void PlaySound(int iSound, float vol) { gEngfuncs.pfnPlaySoundByIndex(iSound, vol); }
+inline void PlayHUDSound(const char *Sound, float vol) { PlaySound((char *)Sound, vol); }
 
-#define max(a, b)  (((a) > (b)) ? (a) : (b))
-#define min(a, b)  (((a) < (b)) ? (a) : (b))
-#define fabs(x)	   ((x) > 0 ? (x) : 0 - (x))
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#define fabs(x) ((x) > 0 ? (x) : 0 - (x))
 
-void ScaleColors( int &r, int &g, int &b, int a );
+void ScaleColors(int &r, int &g, int &b, int a);
 
-#define DotProduct(x,y) ((x)[0]*(y)[0]+(x)[1]*(y)[1]+(x)[2]*(y)[2])
-#define VectorSubtract(a,b,c) {(c)[0]=(a)[0]-(b)[0];(c)[1]=(a)[1]-(b)[1];(c)[2]=(a)[2]-(b)[2];}
-#define VectorAdd(a,b,c) {(c)[0]=(a)[0]+(b)[0];(c)[1]=(a)[1]+(b)[1];(c)[2]=(a)[2]+(b)[2];}
-#define VectorCopy(a,b) {(b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2];}
-inline void VectorClear(float *a) { a[0]=0.0;a[1]=0.0;a[2]=0.0;}
+#define DotProduct(x, y) ((x)[0] * (y)[0] + (x)[1] * (y)[1] + (x)[2] * (y)[2])
+#define VectorSubtract(a, b, c)   \
+	{                             \
+		(c)[0] = (a)[0] - (b)[0]; \
+		(c)[1] = (a)[1] - (b)[1]; \
+		(c)[2] = (a)[2] - (b)[2]; \
+	}
+#define VectorAdd(a, b, c)        \
+	{                             \
+		(c)[0] = (a)[0] + (b)[0]; \
+		(c)[1] = (a)[1] + (b)[1]; \
+		(c)[2] = (a)[2] + (b)[2]; \
+	}
+#define VectorCopy(a, b) \
+	{                    \
+		(b)[0] = (a)[0]; \
+		(b)[1] = (a)[1]; \
+		(b)[2] = (a)[2]; \
+	}
+inline void VectorClear(float *a)
+{
+	a[0] = 0.0;
+	a[1] = 0.0;
+	a[2] = 0.0;
+}
 float Length(const float *v);
-void VectorMA (const float *veca, float scale, const float *vecb, float *vecc);
-void VectorScale (const float *in, float scale, float *out);
-float VectorNormalize (float *v);
-void VectorInverse ( float *v );
+void VectorMA(const float *veca, float scale, const float *vecb, float *vecc);
+void VectorScale(const float *in, float scale, float *out);
+float VectorNormalize(float *v);
+void VectorInverse(float *v);
 
 extern vec3_t vec3_origin;
 
 // disable 'possible loss of data converting float to int' warning message
-#pragma warning( disable: 4244 )
+#pragma warning(disable : 4244)
 // disable 'truncation from 'const double' to 'float' warning message
-#pragma warning( disable: 4305 )
+#pragma warning(disable : 4305)
 
-inline void UnpackRGB(int &r, int &g, int &b, unsigned long ulRGB)\
-{\
-	r = (ulRGB & 0xFF0000) >>16;\
-	g = (ulRGB & 0xFF00) >> 8;\
-	b = ulRGB & 0xFF;\
+inline void UnpackRGB(int &r, int &g, int &b, unsigned long ulRGB)
+{
+	r = (ulRGB & 0xFF0000) >> 16;
+	g = (ulRGB & 0xFF00) >> 8;
+	b = ulRGB & 0xFF;
 }
 
 HLSPRITE LoadSprite(const char *pszName);

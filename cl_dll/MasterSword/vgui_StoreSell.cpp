@@ -5,7 +5,7 @@
 // Valve, L.L.C., or in accordance with the terms and conditions stipulated in
 // the agreement/contract under which the contents have been supplied.
 //
-// Purpose: NPC Store sell menu 
+// Purpose: NPC Store sell menu
 //
 // $Workfile:     $
 // $Date: 2005/01/17 13:16:49 $
@@ -59,107 +59,107 @@ class CAction_Sell : public ActionSignal
 {
 protected:
 	CStoreSellPanel *m_Panel;
-public:
-	CAction_Sell( CStoreSellPanel *pPanel ) { m_Panel = pPanel; }
-	virtual void actionPerformed(Panel* panel) { m_Panel->SellAll( ); }
-};
 
+public:
+	CAction_Sell(CStoreSellPanel *pPanel) { m_Panel = pPanel; }
+	virtual void actionPerformed(Panel *panel) { m_Panel->SellAll(); }
+};
 
 //------------
 
 // Creation
-CStoreSellPanel::CStoreSellPanel( Panel *pParent ) : CStorePanel( )
+CStoreSellPanel::CStoreSellPanel(Panel *pParent) : CStorePanel()
 {
-	setParent( pParent );
+	setParent(pParent);
 
-	m_pSubtitle->setText( Localized("#SELL_SUBTITLE" ) );
+	m_pSubtitle->setText(Localized("#SELL_SUBTITLE"));
 
-	m_ActButton->setText( Localized("#SELL") );
-	m_ActButton->addActionSignal( new CAction_Sell(this) );
+	m_ActButton->setText(Localized("#SELL"));
+	m_ActButton->addActionSignal(new CAction_Sell(this));
 }
 
-
-bool CStoreSellPanel::InterestedInItem( msstring_ref pszItemName )
+bool CStoreSellPanel::InterestedInItem(msstring_ref pszItemName)
 {
-	 for (int i = 0; i < CStorePanel::StoreItems.size(); i++) 
-		if( CStorePanel::StoreItems[i].Name == pszItemName ) 
+	for (int i = 0; i < CStorePanel::StoreItems.size(); i++)
+		if (CStorePanel::StoreItems[i].Name == pszItemName)
 			return true;
 
 	return false;
 }
 
 //Item selected
-void CStoreSellPanel::ItemCreated( void *pData )
+void CStoreSellPanel::ItemCreated(void *pData)
 {
 	containeritem_t &Item = *(containeritem_t *)pData;
-	Item.Disabled = !InterestedInItem( Item.Name );		//Disabled, if vendor isn't interested in this item
+	Item.Disabled = !InterestedInItem(Item.Name); //Disabled, if vendor isn't interested in this item
 }
 
-void CStoreSellPanel::ItemHighlighted( void *pData )
+void CStoreSellPanel::ItemHighlighted(void *pData)
 {
-	CStorePanel::ItemHighlighted( pData );
+	CStorePanel::ItemHighlighted(pData);
 
 	VGUI_ItemButton &ItemButton = *(VGUI_ItemButton *)pData;
-	if( ItemButton.m_Highlighted )
+	if (ItemButton.m_Highlighted)
 	{
-		m_InfoPanel->m_SaleText->setText( "Worthless" );
+		m_InfoPanel->m_SaleText->setText("Worthless");
 
 		containeritem_t &Item = ItemButton.m_Data;
-		 for (int s = 0; s < CStorePanel::StoreItems.size(); s++) 
+		for (int s = 0; s < CStorePanel::StoreItems.size(); s++)
 		{
 			storeitem_t &StoreItem = CStorePanel::StoreItems[s];
-			if( Item.Name != StoreItem.Name )
+			if (Item.Name != StoreItem.Name)
 				continue;
 
 			int Value = int(StoreItem.iCost * StoreItem.flSellRatio);
 			char cTemp[256];
-			sprintf( cTemp, Localized("#SELL_ITEM_VALUE"), Value );
-			m_InfoPanel->m_SaleText->setText( cTemp );
+			sprintf(cTemp, Localized("#SELL_ITEM_VALUE"), Value);
+			m_InfoPanel->m_SaleText->setText(cTemp);
 			break;
 		}
 	}
 }
 
 //Item selected
-void CStoreSellPanel::ItemSelectChanged( ulong ID, bool fSelected )
+void CStoreSellPanel::ItemSelectChanged(ulong ID, bool fSelected)
 {
-	m_SelectedItems.clear( );
+	m_SelectedItems.clear();
 
 	int Valuetotal = 0;
 
-	 for (int g = 0; g < m_GearPanel->GearItemButtonTotal; g++) 
+	for (int g = 0; g < m_GearPanel->GearItemButtonTotal; g++)
 	{
 		VGUI_Inv_GearItem &GearItem = *m_GearPanel->GearItemButtons[g];
-		 for (int i = 0; i < GearItem.m_ItemContainer->m_ItemButtonTotal; i++) 
+		for (int i = 0; i < GearItem.m_ItemContainer->m_ItemButtonTotal; i++)
 		{
 			VGUI_ItemButton &ItemButton = *GearItem.m_ItemContainer->m_ItemButtons[i];
-			if( !ItemButton.m_Selected ) continue;
+			if (!ItemButton.m_Selected)
+				continue;
 
 			containeritem_t &Item = ItemButton.m_Data;
-			 for (int s = 0; s < CStorePanel::StoreItems.size(); s++) 
+			for (int s = 0; s < CStorePanel::StoreItems.size(); s++)
 			{
 				storeitem_t &StoreItem = CStorePanel::StoreItems[s];
-				if( Item.Name != StoreItem.Name )
+				if (Item.Name != StoreItem.Name)
 					continue;
 
-				m_SelectedItems.push_back( ItemButton.m_Data );
+				m_SelectedItems.push_back(ItemButton.m_Data);
 				Valuetotal += int(StoreItem.iCost * StoreItem.flSellRatio);
 			}
 		}
 	}
 
-	m_SaleLabel->setText( msstring( "Selling ") + (int)m_SelectedItems.size() + " items for " + Valuetotal + " gold" );
+	m_SaleLabel->setText(msstring("Selling ") + (int)m_SelectedItems.size() + " items for " + Valuetotal + " gold");
 }
 
 //Sell button pressed
-void CStoreSellPanel::SellAll( )
+void CStoreSellPanel::SellAll()
 {
 	msstring CommandString = "trade stop"; //If no items selected
 
-	if( m_SelectedItems.size() > 0 )
+	if (m_SelectedItems.size() > 0)
 	{
 		CommandString = "trade sell";
-		 for (int i = 0; i < m_SelectedItems.size(); i++) 
+		for (int i = 0; i < m_SelectedItems.size(); i++)
 		{
 			CommandString += " ";
 			CommandString += (int)m_SelectedItems[i].ID;
@@ -167,11 +167,11 @@ void CStoreSellPanel::SellAll( )
 		CommandString += "\n";
 	}
 
-	ClientCmd( CommandString );
+	ClientCmd(CommandString);
 }
 
-void SellWindow_Update( )
+void SellWindow_Update()
 {
-	if( gViewPort && gViewPort->m_pStoreSellMenu )
-		gViewPort->m_pStoreSellMenu->Update( );
+	if (gViewPort && gViewPort->m_pStoreSellMenu)
+		gViewPort->m_pStoreSellMenu->Update();
 }

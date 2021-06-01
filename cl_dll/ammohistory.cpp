@@ -16,7 +16,6 @@
 //  ammohistory.cpp
 //
 
-
 #include "hud.h"
 #include "cl_util.h"
 #include "parsemsg.h"
@@ -28,11 +27,11 @@
 
 HistoryResource gHR;
 
-#define AMMO_PICKUP_GAP (gHR.iHistoryGap+5)
-#define AMMO_PICKUP_PICK_HEIGHT		(32 + (gHR.iHistoryGap * 2))
-#define AMMO_PICKUP_HEIGHT_MAX		(ScreenHeight - 100)
+#define AMMO_PICKUP_GAP (gHR.iHistoryGap + 5)
+#define AMMO_PICKUP_PICK_HEIGHT (32 + (gHR.iHistoryGap * 2))
+#define AMMO_PICKUP_HEIGHT_MAX (ScreenHeight - 100)
 
-#define MAX_ITEM_NAME	32
+#define MAX_ITEM_NAME 32
 int HISTORY_DRAW_TIME = 5;
 
 // keep a list of items
@@ -43,19 +42,19 @@ struct ITEM_INFO
 	wrect_t rect;
 };
 
-void HistoryResource :: AddToHistory( int iType, int iId, int iCount )
+void HistoryResource ::AddToHistory(int iType, int iId, int iCount)
 {
-	if ( iType == HISTSLOT_AMMO && !iCount )
-		return;  // no amount, so don't add
+	if (iType == HISTSLOT_AMMO && !iCount)
+		return; // no amount, so don't add
 
-	if ( (((AMMO_PICKUP_GAP * iCurrentHistorySlot) + AMMO_PICKUP_PICK_HEIGHT) > AMMO_PICKUP_HEIGHT_MAX) || (iCurrentHistorySlot >= MAX_HISTORY) )
-	{	// the pic would have to be drawn too high
+	if ((((AMMO_PICKUP_GAP * iCurrentHistorySlot) + AMMO_PICKUP_PICK_HEIGHT) > AMMO_PICKUP_HEIGHT_MAX) || (iCurrentHistorySlot >= MAX_HISTORY))
+	{ // the pic would have to be drawn too high
 		// so start from the bottom
 		iCurrentHistorySlot = 0;
 	}
-	
-	HIST_ITEM *freeslot = &rgAmmoHistory[iCurrentHistorySlot++];  // default to just writing to the first slot
-	HISTORY_DRAW_TIME = CVAR_GET_FLOAT( "hud_drawhistory_time" );
+
+	HIST_ITEM *freeslot = &rgAmmoHistory[iCurrentHistorySlot++]; // default to just writing to the first slot
+	HISTORY_DRAW_TIME = CVAR_GET_FLOAT("hud_drawhistory_time");
 
 	freeslot->type = iType;
 	freeslot->iId = iId;
@@ -63,39 +62,38 @@ void HistoryResource :: AddToHistory( int iType, int iId, int iCount )
 	freeslot->DisplayTime = gHUD.m_flTime + HISTORY_DRAW_TIME;
 }
 
-void HistoryResource :: AddToHistory( int iType, const char *szName, int iCount )
+void HistoryResource ::AddToHistory(int iType, const char *szName, int iCount)
 {
-	if ( iType != HISTSLOT_ITEM )
+	if (iType != HISTSLOT_ITEM)
 		return;
 
-	if ( (((AMMO_PICKUP_GAP * iCurrentHistorySlot) + AMMO_PICKUP_PICK_HEIGHT) > AMMO_PICKUP_HEIGHT_MAX) || (iCurrentHistorySlot >= MAX_HISTORY) )
-	{	// the pic would have to be drawn too high
+	if ((((AMMO_PICKUP_GAP * iCurrentHistorySlot) + AMMO_PICKUP_PICK_HEIGHT) > AMMO_PICKUP_HEIGHT_MAX) || (iCurrentHistorySlot >= MAX_HISTORY))
+	{ // the pic would have to be drawn too high
 		// so start from the bottom
 		iCurrentHistorySlot = 0;
 	}
 
-	HIST_ITEM *freeslot = &rgAmmoHistory[iCurrentHistorySlot++];  // default to just writing to the first slot
+	HIST_ITEM *freeslot = &rgAmmoHistory[iCurrentHistorySlot++]; // default to just writing to the first slot
 
 	// I am really unhappy with all the code in this file
 
-	int i = gHUD.GetSpriteIndex( szName );
-	if ( i == -1 )
-		return;  // unknown sprite name, don't add it to history
+	int i = gHUD.GetSpriteIndex(szName);
+	if (i == -1)
+		return; // unknown sprite name, don't add it to history
 
 	freeslot->iId = i;
 	freeslot->type = iType;
 	freeslot->iCount = iCount;
 
-	HISTORY_DRAW_TIME = CVAR_GET_FLOAT( "hud_drawhistory_time" );
+	HISTORY_DRAW_TIME = CVAR_GET_FLOAT("hud_drawhistory_time");
 	freeslot->DisplayTime = gHUD.m_flTime + HISTORY_DRAW_TIME;
 }
 
-
-void HistoryResource :: CheckClearHistory( void )
+void HistoryResource ::CheckClearHistory(void)
 {
-	for ( int i = 0; i < MAX_HISTORY; i++ )
+	for (int i = 0; i < MAX_HISTORY; i++)
 	{
-		if ( rgAmmoHistory[i].type )
+		if (rgAmmoHistory[i].type)
 			return;
 	}
 
@@ -105,7 +103,7 @@ void HistoryResource :: CheckClearHistory( void )
 //
 // Draw Ammo pickup history
 //
-int HistoryResource :: DrawAmmoHistory( float flTime )
+int HistoryResource ::DrawAmmoHistory(float flTime)
 {
 	/*for ( int i = 0; i < MAX_HISTORY; i++ )
 	{
@@ -183,8 +181,5 @@ int HistoryResource :: DrawAmmoHistory( float flTime )
 		}
 	}*/
 
-
 	return 1;
 }
-
-

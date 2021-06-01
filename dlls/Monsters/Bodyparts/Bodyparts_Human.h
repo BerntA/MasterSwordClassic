@@ -1,6 +1,7 @@
 #include "Bodyparts.h"
 
-enum { 
+enum
+{
 	//Human bodyparts
 	HBP_LEGS = 0,
 	HBP_HEAD,
@@ -10,16 +11,17 @@ enum {
 };
 extern char *ModelList[HUMAN_BODYPARTS][2];
 
-
-class CHumanBodypart : public CBodypart {
+class CHumanBodypart : public CBodypart
+{
 public:
-	CHumanBodypart *Duplicate( );
+	CHumanBodypart *Duplicate();
 };
 
-class CHumanBody : public CBaseBody {
+class CHumanBody : public CBaseBody
+{
 public:
-	void Initialize( CBaseEntity *pOwner, void *pvData = NULL );
-	CBaseBody *Duplicate( );
+	void Initialize(CBaseEntity *pOwner, void *pvData = NULL);
+	CBaseBody *Duplicate();
 };
 
-int HitGroupToBodyPart( int HitGroup );
+int HitGroupToBodyPart(int HitGroup);

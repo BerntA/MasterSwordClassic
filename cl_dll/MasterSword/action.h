@@ -9,12 +9,13 @@ struct playeraction_t
 	msstring ID;
 };
 
-class CHudAction: public CHudBase {
+class CHudAction : public CHudBase
+{
 public:
-	int Init( void );
+	int Init(void);
 	int MsgFunc_Action(const char *pszName, int iSize, void *pbuf);
-	void UserCmd_Action( void );
-	void SelectMenuItem( int menu_item );
+	void UserCmd_Action(void);
+	void SelectMenuItem(int menu_item);
 
 	mslist<playeraction_t> PlayerActions;
 };

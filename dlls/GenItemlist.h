@@ -6,16 +6,16 @@ class CGenericItem;
 class CItemList : public mslist<CGenericItem *>
 {
 public:
-	bool CanAddItem( CGenericItem *NewItem );
-	bool AddItem( CGenericItem *NewItem );
-	bool ItemExists( CGenericItem *pItem );
+	bool CanAddItem(CGenericItem *NewItem);
+	bool AddItem(CGenericItem *NewItem);
+	bool ItemExists(CGenericItem *pItem);
 
-	CGenericItem *GetItem( const char *pszName );
-	CGenericItem *GetItem( ulong lID );
+	CGenericItem *GetItem(const char *pszName);
+	CGenericItem *GetItem(ulong lID);
 
-	bool RemoveItem( CGenericItem *pDelItem );
+	bool RemoveItem(CGenericItem *pDelItem);
 
-	float FilledVolume( );
+	float FilledVolume();
 };
 
 #endif //ITEMLIST_H

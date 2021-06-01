@@ -5,17 +5,17 @@
 typedef enum
 {
 	// A dedicated server with no ability to start a client
-	ca_dedicated, 		
+	ca_dedicated,
 	// Full screen console with no connection
-	ca_disconnected, 
+	ca_disconnected,
 	// Challenge requested, waiting for response or to resend connection request.
-	ca_connecting,     
+	ca_connecting,
 	// valid netcon, talking to a server, waiting for server data
-	ca_connected,		
+	ca_connected,
 	// valid netcon, autodownloading
-	ca_uninitialized,   
+	ca_uninitialized,
 	// d/l complete, ready game views should be displayed
-	ca_active			
+	ca_active
 } cactive_t;
 
 #include "engine_launcher_api.h"

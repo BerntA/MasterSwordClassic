@@ -3,6 +3,5 @@
 
 namespace Tartan
 {
-bool LoadTGA(Texture *, const char *);
+    bool LoadTGA(Texture *, const char *);
 }
-

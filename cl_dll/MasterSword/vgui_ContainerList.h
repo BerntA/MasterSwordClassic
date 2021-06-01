@@ -8,21 +8,21 @@ class ContainerButton;
 class CContainerPanel : public VGUI_ContainerPanel
 {
 public:
-	ulong				m_OpenContainerID;
+	ulong m_OpenContainerID;
 
-	CContainerPanel(int iTrans, int iRemoveMe, int x,int y,int wide,int tall);
-	void UpdateSubtitle( );
-	void RemoveGear( );
+	CContainerPanel(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+	void UpdateSubtitle();
+	void RemoveGear();
 
-	virtual void Open( void );
-	virtual void Close( void );
+	virtual void Open(void);
+	virtual void Close(void);
 
 	//From VGUI_ItemCallbackPanel
-	void ItemSelectChanged( ulong ID, bool fSelected );
-	void GearItemSelected( ulong ID );
-	bool GearItemClicked( ulong ID );
-	bool GearItemDoubleClicked( ulong ID );
-	void ItemDoubleclicked( ulong ID );
+	void ItemSelectChanged(ulong ID, bool fSelected);
+	void GearItemSelected(ulong ID);
+	bool GearItemClicked(ulong ID);
+	bool GearItemDoubleClicked(ulong ID);
+	void ItemDoubleclicked(ulong ID);
 
-	void StepInput( bool bDirUp ); // MIB FEB2015_21 [INV_SCROLL]
+	void StepInput(bool bDirUp); // MIB FEB2015_21 [INV_SCROLL]
 };

@@ -210,7 +210,7 @@ void CHalfLifeMultiplay :: Think( void )
 		if( gpGlobals->time >= TimeLastPlayerLeft + flTimeLimit )
 		{
 			//Thothie FEB2008a - let the game master handle the time out thing in case he has to do somethin
-			CBaseEntity *pGameMasterEnt = UTIL_FindEntityByString( NULL, "netname", msstring("¯") + "game_master" );
+			CBaseEntity *pGameMasterEnt = UTIL_FindEntityByString( NULL, "netname", msstring("ï¿½") + "game_master" );
 			IScripted *pGMScript = pGameMasterEnt->GetScripted();
 			pGMScript->CallScriptEvent( "game_timedout" );
 			return;

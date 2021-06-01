@@ -8,62 +8,62 @@
 #include "logfile.h"
 
 #ifndef VALVE_DLL
-	#include "../cl_dll/hud.h"
-	#include "../cl_dll/cl_util.h"
+#include "../cl_dll/hud.h"
+#include "../cl_dll/cl_util.h"
 #endif
 
-void SetSocketBlocking( SOCKET Socket, bool Enabled )
+void SetSocketBlocking(SOCKET Socket, bool Enabled)
 {
 	//Disable socket blocking
 	u_long arg = !Enabled ? 1 : 0;
-	#ifdef _WIN32
-		ioctlsocket( Socket, FIONBIO, &arg );
-	#else
-		fcntl( Socket, F_SETFL, O_NONBLOCK);
-	#endif
+#ifdef _WIN32
+	ioctlsocket(Socket, FIONBIO, &arg);
+#else
+	fcntl(Socket, F_SETFL, O_NONBLOCK);
+#endif
 }
-
 
 CNetCode *CNetCode::pNetCode;
 
-CNetCode::CNetCode( ) { m.HostIP = "127.0.0.1"; }
+CNetCode::CNetCode() { m.HostIP = "127.0.0.1"; }
 
-bool CNetCode::Init( )
+bool CNetCode::Init()
 {
-	#ifdef _WIN32
-		WSAData wsaData;
-		if( WSAStartup( MAKEWORD(2,0), &wsaData ) )
-		{
-			MSErrorConsoleText( "MSGlobalInit", "WSAStartup failed" );
-			return false;
-		}
-	#endif
+#ifdef _WIN32
+	WSAData wsaData;
+	if (WSAStartup(MAKEWORD(2, 0), &wsaData))
+	{
+		MSErrorConsoleText("MSGlobalInit", "WSAStartup failed");
+		return false;
+	}
+#endif
 
 	return true;
 }
-bool CNetCode::ResolveAddress( const char *pszAddress, ushort DefaultPort, sockaddr_in &outSockAddr )
+bool CNetCode::ResolveAddress(const char *pszAddress, ushort DefaultPort, sockaddr_in &outSockAddr)
 {
 	msstring FullAddress = pszAddress;
 	msstring Addr = FullAddress.thru_char(":");
-	msstring PortStr = FullAddress.substr( Addr.len() ).skip(":");
+	msstring PortStr = FullAddress.substr(Addr.len()).skip(":");
 
 	ushort Port = DefaultPort;
-	if( PortStr.len() ) Port = atoi(PortStr);
+	if (PortStr.len())
+		Port = atoi(PortStr);
 
 	ulong ulAddr = inet_addr(Addr);
-	if( ulAddr != INADDR_NONE )	//Is this an IP?
+	if (ulAddr != INADDR_NONE) //Is this an IP?
 	{
-		memcpy( &outSockAddr.sin_addr, &ulAddr, sizeof(ulAddr) );
+		memcpy(&outSockAddr.sin_addr, &ulAddr, sizeof(ulAddr));
 	}
 	else
 	{
-		hostent *Host = gethostbyname( Addr );	//Not an IP.  Try to resolve the hostname
-		if( !Host )
+		hostent *Host = gethostbyname(Addr); //Not an IP.  Try to resolve the hostname
+		if (!Host)
 		{
 			//Not an IP or resolvable hostname
 			return false;
 		}
-		memcpy( &outSockAddr.sin_addr, Host->h_addr, Host->h_length );
+		memcpy(&outSockAddr.sin_addr, Host->h_addr, Host->h_length);
 	}
 
 	outSockAddr.sin_port = htons(Port);
@@ -74,98 +74,101 @@ bool CNetCode::ResolveAddress( const char *pszAddress, ushort DefaultPort, socka
 }
 
 //Checks the listening socket for incoming connections by clients
-void CNetCode::Think( )
+void CNetCode::Think()
 {
 	//Use Iterator because the transactions might delete themselves during think
 
 	mslist<CNetFileTransaction *> Transations = m.Transactons;
 
-	 for (int i = 0; i < Transations.size(); i++) 
-		Transations[i]->Think( );
+	for (int i = 0; i < Transations.size(); i++)
+		Transations[i]->Think();
 }
-void CNetCode::RemoveTransaction( CNetFileTransaction *pTrans )
+void CNetCode::RemoveTransaction(CNetFileTransaction *pTrans)
 {
-	 for (int f = 0; f < m.Transactons.size(); f++) 
-		if( m.Transactons[f] == pTrans )
-			{ m.Transactons.erase( f ); break; }
+	for (int f = 0; f < m.Transactons.size(); f++)
+		if (m.Transactons[f] == pTrans)
+		{
+			m.Transactons.erase(f);
+			break;
+		}
 }
 
-void CNetCode::Shutdown( )
+void CNetCode::Shutdown()
 {
-	for( int i = m.Transactons.size()-1; i > 0; i-- )
-		m.Transactons[i]->Shutdown( );
+	for (int i = m.Transactons.size() - 1; i > 0; i--)
+		m.Transactons[i]->Shutdown();
 
-	WSACleanup( );
+	WSACleanup();
 }
-
 
 // File Transaction
 // ---- -----------
 
-CNetFileTransaction::CNetFileTransaction( SOCKET sock, TransationCallbackFunc pTransCallback )
+CNetFileTransaction::CNetFileTransaction(SOCKET sock, TransationCallbackFunc pTransCallback)
 {
-	clrmem( m );
+	clrmem(m);
 	m.socket = sock;
 	m.fRecv = true;
 	m.TransCallback = pTransCallback;
 }
-CNetFileTransaction::CNetFileTransaction( const msstring_ref sDestAddr, byte *pData, ulong lDataSize, TransationCallbackFunc pTransCallback )
+CNetFileTransaction::CNetFileTransaction(const msstring_ref sDestAddr, byte *pData, ulong lDataSize, TransationCallbackFunc pTransCallback)
 {
-	clrmem( m );
+	clrmem(m);
 
 	m.DestAddr = (const char *)sDestAddr;
-	m.socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+	m.socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	m.DataSize = lDataSize;
-	m.Data = msnew byte[m.DataSize];			//Copy data locally
-	memcpy( m.Data, pData, m.DataSize );
-	m.FileID = RANDOM_LONG(200,66666);
+	m.Data = msnew byte[m.DataSize]; //Copy data locally
+	memcpy(m.Data, pData, m.DataSize);
+	m.FileID = RANDOM_LONG(200, 66666);
 	u_long arg = 1;
-	ioctlsocket( m.socket, FIONBIO, &arg );		//Turn off socket blocking
+	ioctlsocket(m.socket, FIONBIO, &arg); //Turn off socket blocking
 	m.fRecv = false;
 	m.TransCallback = pTransCallback;
-	m.TimeTimeout = gpGlobals->time + NET_CONNECTTIMEOUT;	// Connection time out
+	m.TimeTimeout = gpGlobals->time + NET_CONNECTTIMEOUT; // Connection time out
 }
 
-void CNetFileTransaction::Think( )
+void CNetFileTransaction::Think()
 {
 
-	if( m.TimeTimeout && gpGlobals->time >= m.TimeTimeout )
+	if (m.TimeTimeout && gpGlobals->time >= m.TimeTimeout)
 	{
 		logfile << "[Net] File TIMED OUT\r\n";
-		Shutdown( ); //Timed out
+		Shutdown(); //Timed out
 		return;
 	}
 
-	if( m.fRecv )
+	if (m.fRecv)
 	{
 		char Buffer[1024];
 
 		//See how much data is waiting
 		//If not initialized, only read up the size of our header
-		int iAmt = recv( m.socket, Buffer, m.Connected ? sizeof(Buffer) : NET_FILEHEADERSIZE, 0 );
-		if( iAmt == SOCKET_ERROR ) return;
+		int iAmt = recv(m.socket, Buffer, m.Connected ? sizeof(Buffer) : NET_FILEHEADERSIZE, 0);
+		if (iAmt == SOCKET_ERROR)
+			return;
 
 		byte SendByte = 1;
 
-		send( m.socket, (char *)&SendByte, 1, 0 );
+		send(m.socket, (char *)&SendByte, 1, 0);
 
-		if( !m.Connected )
+		if (!m.Connected)
 		{
-			if( iAmt < NET_FILEHEADERSIZE )
+			if (iAmt < NET_FILEHEADERSIZE)
 			{
 				logfile << "[Net] Received bad header for incoming file (header too small). Rejecting file...\r\n";
-				Shutdown( );
+				Shutdown();
 				return;
 			}
 
 			fileheader_t FileHeader;
-			memcpy( &FileHeader, Buffer, iAmt );
+			memcpy(&FileHeader, Buffer, iAmt);
 
 			//Sanity check.  If size is too large, this is a bogus file
-			if( FileHeader.DataSize >= (1<<16) )
+			if (FileHeader.DataSize >= (1 << 16))
 			{
 				logfile << "[Net] Received bad header for incoming file (DataSize too big). Rejecting file...\r\n";
-				Shutdown( );
+				Shutdown();
 				return;
 			}
 
@@ -175,10 +178,10 @@ void CNetFileTransaction::Think( )
 		}
 		else
 		{
-			memcpy( &m.Data[m.Ofs], Buffer, iAmt );
+			memcpy(&m.Data[m.Ofs], Buffer, iAmt);
 			m.Ofs += iAmt;
 
-	/*	if( iAmt > 0 )			//Print out every byte receieved
+			/*	if( iAmt > 0 )			//Print out every byte receieved
 			 for (int i = 0; i < iAmt; i++) 
 			{
 				hex( logfile );
@@ -186,96 +189,99 @@ void CNetFileTransaction::Think( )
 				dec( logfile );
 			}*/
 
-			if( m.Ofs >= m.DataSize )
+			if (m.Ofs >= m.DataSize)
 			{
 				//Done, parse file
-				if( m.TransCallback )
-					m.TransCallback( this );
-				Shutdown( );
+				if (m.TransCallback)
+					m.TransCallback(this);
+				Shutdown();
 				return;
 			}
 		}
 
-		m.TimeTimeout = gpGlobals->time + NET_TIMEOUT;	//Time out
+		m.TimeTimeout = gpGlobals->time + NET_TIMEOUT; //Time out
 	}
 	else
 	{
 
 		//See how much data is waiting
 		byte Buffer = 0;
-		int iAmt = recv( m.socket, (char *)&Buffer, 1, 0 );
-		if( iAmt != SOCKET_ERROR )
-			m.Connected = true;			//Received a packet, I'm connected now
+		int iAmt = recv(m.socket, (char *)&Buffer, 1, 0);
+		if (iAmt != SOCKET_ERROR)
+			m.Connected = true; //Received a packet, I'm connected now
 
-		if( !m.Connected )
+		if (!m.Connected)
 		{
-			if( gpGlobals->time < m.TimeRetryConnect ) return;
+			if (gpGlobals->time < m.TimeRetryConnect)
+				return;
 
-			#ifndef VALVE_DLL
-			if( m.TimeRetryConnect )
-				ConsolePrint( UTIL_VarArgs("Retrying data connect to %s...\n", m.DestAddr.c_str()) );
-			#endif
+#ifndef VALVE_DLL
+			if (m.TimeRetryConnect)
+				ConsolePrint(UTIL_VarArgs("Retrying data connect to %s...\n", m.DestAddr.c_str()));
+#endif
 
 			//Set up server addr
 			sockaddr_in m_AddrIn;
 			msstring_ref Port = "27015";
 			msstring_ref Addr = "127.0.0.1";
-			int idx = m.DestAddr.find( ":" );
-			if( idx != msstring_error )
+			int idx = m.DestAddr.find(":");
+			if (idx != msstring_error)
 			{
-				Addr = m.DestAddr.substr( 0, idx );
-				Port = m.DestAddr.substr( idx+1 );
+				Addr = m.DestAddr.substr(0, idx);
+				Port = m.DestAddr.substr(idx + 1);
 			}
 
 			logfile << "[Net] Connecting to server IP: " << Addr << ":" << Port << "....\r\n";
 
 			m_AddrIn.sin_family = AF_INET;
-			m_AddrIn.sin_port	= htons( (unsigned short)atoi(Port) );
-			ulong tmp = inet_addr( Addr );
-			memcpy( &m_AddrIn.sin_addr, &tmp, sizeof(in_addr) );
-			memset( &m_AddrIn.sin_zero, 0, 8 );
+			m_AddrIn.sin_port = htons((unsigned short)atoi(Port));
+			ulong tmp = inet_addr(Addr);
+			memcpy(&m_AddrIn.sin_addr, &tmp, sizeof(in_addr));
+			memset(&m_AddrIn.sin_zero, 0, 8);
 
-			connect( m.socket, (sockaddr *)&m_AddrIn, sizeof(sockaddr) );
+			connect(m.socket, (sockaddr *)&m_AddrIn, sizeof(sockaddr));
 
-			m.TimeRetryConnect = gpGlobals->time + NET_RETRYDELAY;						//Retry after delay
+			m.TimeRetryConnect = gpGlobals->time + NET_RETRYDELAY; //Retry after delay
 			return;
 		}
 
-		if( iAmt == SOCKET_ERROR )
+		if (iAmt == SOCKET_ERROR)
 			return;
 
 		//Received ack of last packet, I'm done
-		if( m.Ofs >= m.DataSize )
+		if (m.Ofs >= m.DataSize)
 		{
 			logfile << "Done sending char " << m.Ofs << "/" << m.DataSize << "\r\n";
-			Shutdown( );
+			Shutdown();
 			return;
 		}
 
-
-		if( !m.Ofs ) 
+		if (!m.Ofs)
 		{
 			//Send the file header first
 			CNetFileTransaction::fileheader_t FileHeader = m;
-			send( m.socket, (const char *)&FileHeader, sizeof(FileHeader), 0 );
+			send(m.socket, (const char *)&FileHeader, sizeof(FileHeader), 0);
 		}
 
 		int iSendSize = 128;
-		if( m.Ofs + iSendSize > m.DataSize )
+		if (m.Ofs + iSendSize > m.DataSize)
 			iSendSize = (m.DataSize - m.Ofs);
 
-		send( m.socket, (const char *)&m.Data[m.Ofs], iSendSize, 0 );
+		send(m.socket, (const char *)&m.Data[m.Ofs], iSendSize, 0);
 		//logfile << "Send " << iSendSize << " bytes \r\n";
 
 		m.Ofs += iSendSize;
-		m.TimeTimeout = gpGlobals->time + NET_TIMEOUT;	//Time out
+		m.TimeTimeout = gpGlobals->time + NET_TIMEOUT; //Time out
 	}
-
 }
-void CNetFileTransaction::Shutdown( )
+void CNetFileTransaction::Shutdown()
 {
-	closesocket( m.socket );
-	if( m.Data ) { delete m.Data; m.Data = NULL; }
-	g_NetCode.RemoveTransaction( this );
+	closesocket(m.socket);
+	if (m.Data)
+	{
+		delete m.Data;
+		m.Data = NULL;
+	}
+	g_NetCode.RemoveTransaction(this);
 	delete this;
 }

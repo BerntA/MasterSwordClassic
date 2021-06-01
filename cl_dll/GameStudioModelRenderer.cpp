@@ -1,6 +1,6 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright ï¿½ 1996-2001, Valve LLC, All rights reserved. ============
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -44,7 +44,7 @@ CGameStudioModelRenderer
 
 ====================
 */
-CGameStudioModelRenderer::CGameStudioModelRenderer( void )
+CGameStudioModelRenderer::CGameStudioModelRenderer(void)
 {
 }
 
@@ -52,19 +52,18 @@ CGameStudioModelRenderer::CGameStudioModelRenderer( void )
 // Hooks to class implementation
 ////////////////////////////////////
 
-
 /*
 ====================
 R_StudioDrawPlayer
 
 ====================
 */
-int R_StudioDrawPlayer( int flags, entity_state_t *pplayer )
+int R_StudioDrawPlayer(int flags, entity_state_t *pplayer)
 {
 
 	//return g_StudioRenderer.StudioDrawPlayer( flags, pplayer );
 
-	return CModelMgr::MSStudioDrawModel( flags, pplayer );
+	return CModelMgr::MSStudioDrawModel(flags, pplayer);
 }
 
 /*
@@ -73,22 +72,22 @@ R_StudioDrawModel
 
 ====================
 */
-int R_StudioDrawModel( int flags )
+int R_StudioDrawModel(int flags)
 {
 	//return g_StudioRenderer.StudioDrawModel( flags );
-	return CModelMgr::MSStudioDrawModel( flags, NULL );
+	return CModelMgr::MSStudioDrawModel(flags, NULL);
 }
 
 extern cl_entity_t *DrawEnt;
 
-int CModelMgr::MSStudioDrawModel( int flags, entity_state_t *pplayer )
+int CModelMgr::MSStudioDrawModel(int flags, entity_state_t *pplayer)
 {
 	cl_entity_t OldEntity;
 	bool Replaced = false;
 
 	//Override curent entity if specified by DrawEnt
 	cl_entity_t *CurrentEnt = IEngineStudio.GetCurrentEntity();
-	if( DrawEnt )
+	if (DrawEnt)
 	{
 		OldEntity = *CurrentEnt;
 		*CurrentEnt = *DrawEnt;
@@ -97,20 +96,17 @@ int CModelMgr::MSStudioDrawModel( int flags, entity_state_t *pplayer )
 	}
 
 	//Draw a player or regular model, as appropriate
-	int Return = CurrentEnt->player ? g_StudioRenderer.StudioDrawPlayer( flags, pplayer )
-					: g_StudioRenderer.StudioDrawModel( flags );
+	int Return = CurrentEnt->player ? g_StudioRenderer.StudioDrawPlayer(flags, pplayer)
+									: g_StudioRenderer.StudioDrawModel(flags);
 
 	//Set current entity back to normal
-	if( Replaced )
+	if (Replaced)
 	{
 		*CurrentEnt = OldEntity;
 	}
 
 	return Return;
-
 }
-
-
 
 /*
 ====================
@@ -118,17 +114,17 @@ R_StudioInit
 
 ====================
 */
-void R_StudioInit( void )
+void R_StudioInit(void)
 {
 	g_StudioRenderer.Init();
 }
 
 // The simple drawing interface we'll pass back to the engine
 r_studio_interface_t studio =
-{
-	STUDIO_INTERFACE_VERSION,
-	R_StudioDrawModel,
-	R_StudioDrawPlayer,
+	{
+		STUDIO_INTERFACE_VERSION,
+		R_StudioDrawModel,
+		R_StudioDrawPlayer,
 };
 
 /*
@@ -138,19 +134,19 @@ HUD_GetStudioModelInterface
 Export this function for the engine to use the studio renderer class to render objects.
 ====================
 */
-#define DLLEXPORT __declspec( dllexport )
-extern "C" int DLLEXPORT HUD_GetStudioModelInterface( int version, struct r_studio_interface_s **ppinterface, struct engine_studio_api_s *pstudio )
+#define DLLEXPORT __declspec(dllexport)
+extern "C" int DLLEXPORT HUD_GetStudioModelInterface(int version, struct r_studio_interface_s **ppinterface, struct engine_studio_api_s *pstudio)
 {
 	DBG_INPUT;
 
-	if ( version != STUDIO_INTERFACE_VERSION )
+	if (version != STUDIO_INTERFACE_VERSION)
 		return 0;
 
 	// Point the engine to our callbacks
 	*ppinterface = &studio;
 
 	// Copy in engine helper functions
-	memcpy( &IEngineStudio, pstudio, sizeof( IEngineStudio ) );
+	memcpy(&IEngineStudio, pstudio, sizeof(IEngineStudio));
 
 	// Initialize local variables, etc.
 	R_StudioInit();

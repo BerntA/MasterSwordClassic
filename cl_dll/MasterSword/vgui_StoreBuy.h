@@ -6,14 +6,13 @@ public:
 	static const char *Text_BuySubtitle;
 	static const char *Text_InvSubtitle;
 
+	CStoreBuyPanel(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
 
-	CStoreBuyPanel( int iTrans, int iRemoveMe, int x,int y,int wide,int tall );
-
-	void AddInventoryItems( );
+	void AddInventoryItems();
 
 	//Callbacks
-	void ItemHighlighted( void *pData );
-	bool ItemClicked( void *pData  );
+	void ItemHighlighted(void *pData);
+	bool ItemClicked(void *pData);
 };
 
-void MsgFunc_Store( );
+void MsgFunc_Store();

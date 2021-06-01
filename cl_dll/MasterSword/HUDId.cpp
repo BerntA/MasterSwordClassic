@@ -24,53 +24,55 @@
 #include "event_api.h"
 #include "r_efx.h"
 
-extern physent_t *MSUTIL_EntityByIndex( int playerindex );
-extern void HUD_PrepEntity( CBaseEntity *pEntity, CBasePlayer *pWeaponOwner );
+extern physent_t *MSUTIL_EntityByIndex(int playerindex);
+extern void HUD_PrepEntity(CBaseEntity *pEntity, CBasePlayer *pWeaponOwner);
 //----------------
 
 #include "HUDId.h"
 #include "vgui_HUD.h"
 #include "logfile.h"
 
-MS_DECLARE_MESSAGE( m_HUDId, EntInfo );
+MS_DECLARE_MESSAGE(m_HUDId, EntInfo);
 
-int CHudID::Init( void )
+int CHudID::Init(void)
 {
-	Reset( );
+	Reset();
 
-	HOOK_MESSAGE( EntInfo );
+	HOOK_MESSAGE(EntInfo);
 
-	gHUD.AddHudElem( this );
+	gHUD.AddHudElem(this);
 
 	return 1;
 }
 
-void CHudID::Reset( void )
+void CHudID::Reset(void)
 {
 	m_iFlags |= HUD_ACTIVE;
 	TimeDecAlpha = 0;
 	Alpha = 0;
 	pActiveInfo = pDrawInfo = NULL;
 }
-void CHudID :: InitHUDData( void )
+void CHudID ::InitHUDData(void)
 {
-	Reset( );
-	player.m_EntInfo.clear( );
+	Reset();
+	player.m_EntInfo.clear();
 }
 
-int CHudID::Draw( float flTime ) 
+int CHudID::Draw(float flTime)
 {
 	startdbg;
-	dbg( "Begin" );
+	dbg("Begin");
 
-	if( !FBitSet( m_iFlags, HUD_ACTIVE ) || !ShowHUD( ) ) return 1;
-	if( player.m_CharacterState == CHARSTATE_UNLOADED ) return 1;
+	if (!FBitSet(m_iFlags, HUD_ACTIVE) || !ShowHUD())
+		return 1;
+	if (player.m_CharacterState == CHARSTATE_UNLOADED)
+		return 1;
 
-	dbg( "Call SearchThink" );
-	SearchThink( );
+	dbg("Call SearchThink");
+	SearchThink();
 	//if( Alpha <= 0 || !pDrawInfo || !pDrawInfo->Name.len() ) return 1;
 
-	HUD_DrawID( pDrawInfo );
+	HUD_DrawID(pDrawInfo);
 	enddbg;
 
 	return 1;
@@ -122,18 +124,18 @@ int CHudID::Draw( float flTime )
 	return 1; */
 }
 
-void CHudID::SearchThink( )
+void CHudID::SearchThink()
 {
 	//This code uses EV_PlayerTrace( ).
 	//EV_PlayerTrace() fails when you try to call it while changing levels and
 	//Think() is called while changing levels, so this code is now called from Draw()
 	//instead of Think();
 
-	pActiveInfo = gHUD.m_HUDId->GetEntInFrontOfMe( 4096 );
-	//if( pActiveInfo ) 
+	pActiveInfo = gHUD.m_HUDId->GetEntInFrontOfMe(4096);
+	//if( pActiveInfo )
 	//{
 	//	Alpha = 255;
-		pDrawInfo = pActiveInfo;
+	pDrawInfo = pActiveInfo;
 	//}
 }
 
@@ -142,64 +144,64 @@ void CHudID::SearchThink( )
 //		short  : 0 = Engine index of entity
 //		string : Full name of entity (i.e "An Iron Shield")
 //		byte   : Relative entity alignment (Neutral, Friendly, Hostile)
-int CHudID::MsgFunc_EntInfo( const char *pszName, int iSize, void *pbuf )
+int CHudID::MsgFunc_EntInfo(const char *pszName, int iSize, void *pbuf)
 {
 	startdbg;
-	dbg( "Begin" );
-	BEGIN_READ( pbuf, iSize );
-	
+	dbg("Begin");
+	BEGIN_READ(pbuf, iSize);
+
 	entinfo_t EntData;
 
 	EntData.entindex = READ_SHORT();
 	EntData.Name = READ_STRING();
 	EntData.Type = (EntType)READ_BYTE();
-	
+
 	//Search for a current entry with this info
-	 for (int i = 0; i < player.m_EntInfo.size(); i++) 
-		if( player.m_EntInfo[i].entindex == EntData.entindex )
+	for (int i = 0; i < player.m_EntInfo.size(); i++)
+		if (player.m_EntInfo[i].entindex == EntData.entindex)
 		{
 			player.m_EntInfo[i] = EntData;
 			return 1;
 		}
 
 	//Not found, create a new one
-	player.m_EntInfo.add( EntData );
+	player.m_EntInfo.add(EntData);
 
 	enddbg;
 	return 1;
 }
 
-entinfo_t *CHudID::GetEntInFrontOfMe( float Range )
+entinfo_t *CHudID::GetEntInFrontOfMe(float Range)
 {
 	pmtrace_t tr;
 	Vector vForward;
 	Vector vViewAngle;
-	gEngfuncs.GetViewAngles( vViewAngle );
+	gEngfuncs.GetViewAngles(vViewAngle);
 	cl_entity_s *clplayer = gEngfuncs.GetLocalPlayer();
-	AngleVectors( vViewAngle, vForward, NULL, NULL );
+	AngleVectors(vViewAngle, vForward, NULL, NULL);
 	Vector vecSrc = clplayer->origin, vecEnd,
-		viewOfs;
-	gEngfuncs.pEventAPI->EV_LocalPlayerViewheight( viewOfs );
+		   viewOfs;
+	gEngfuncs.pEventAPI->EV_LocalPlayerViewheight(viewOfs);
 	vecSrc = vecSrc + viewOfs;
 	vecEnd = vecSrc + vForward * Range; //RANGE: 72
 
-	gEngfuncs.pEventAPI->EV_SetUpPlayerPrediction( false, false );
+	gEngfuncs.pEventAPI->EV_SetUpPlayerPrediction(false, false);
 
-	physent_t *pPhyplayer = gEngfuncs.pEventAPI->EV_GetPhysent( clplayer->index );
-	if( !pPhyplayer ) 
+	physent_t *pPhyplayer = gEngfuncs.pEventAPI->EV_GetPhysent(clplayer->index);
+	if (!pPhyplayer)
 		return NULL;
 
 	// Now add in all of the players.
-	gEngfuncs.pEventAPI->EV_SetSolidPlayers ( clplayer->index - 1 );	
+	gEngfuncs.pEventAPI->EV_SetSolidPlayers(clplayer->index - 1);
 
-	gEngfuncs.pEventAPI->EV_SetTraceHull( 2 );
-	gEngfuncs.pEventAPI->EV_PlayerTrace( vecSrc, vecEnd, PM_STUDIO_BOX, pPhyplayer->info, &tr );
+	gEngfuncs.pEventAPI->EV_SetTraceHull(2);
+	gEngfuncs.pEventAPI->EV_PlayerTrace(vecSrc, vecEnd, PM_STUDIO_BOX, pPhyplayer->info, &tr);
 
-	if( tr.fraction < 1.0 && tr.ent )
+	if (tr.fraction < 1.0 && tr.ent)
 	{
-		physent_t *pe = gEngfuncs.pEventAPI->EV_GetPhysent( tr.ent );
-		 for (int i = 0; i < player.m_EntInfo.size(); i++) 
-			if( player.m_EntInfo[i].entindex == pe->info )
+		physent_t *pe = gEngfuncs.pEventAPI->EV_GetPhysent(tr.ent);
+		for (int i = 0; i < player.m_EntInfo.size(); i++)
+			if (player.m_EntInfo[i].entindex == pe->info)
 				return &player.m_EntInfo[i];
 	}
 

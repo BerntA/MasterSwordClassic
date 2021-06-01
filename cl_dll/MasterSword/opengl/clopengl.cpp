@@ -13,69 +13,68 @@
 #include "../StudioModelRenderer.h"
 #include "../gamestudiomodelrenderer.h"
 #include "pm_movevars.h"
-#include "opengl/CLOpenGL.h"      // OpenGL stuff
+#include "opengl/CLOpenGL.h" // OpenGL stuff
 
 // WGL_ARB_extensions_string
 PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB = NULL;
 
 // WGL_ARB_pbuffer
-PFNWGLCREATEPBUFFERARBPROC    wglCreatePbufferARB    = NULL;
-PFNWGLGETPBUFFERDCARBPROC     wglGetPbufferDCARB     = NULL;
+PFNWGLCREATEPBUFFERARBPROC wglCreatePbufferARB = NULL;
+PFNWGLGETPBUFFERDCARBPROC wglGetPbufferDCARB = NULL;
 PFNWGLRELEASEPBUFFERDCARBPROC wglReleasePbufferDCARB = NULL;
-PFNWGLDESTROYPBUFFERARBPROC   wglDestroyPbufferARB   = NULL;
-PFNWGLQUERYPBUFFERARBPROC     wglQueryPbufferARB     = NULL;
+PFNWGLDESTROYPBUFFERARBPROC wglDestroyPbufferARB = NULL;
+PFNWGLQUERYPBUFFERARBPROC wglQueryPbufferARB = NULL;
 
 // WGL_ARB_pixel_format
 PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
 
 // WGL_ARB_render_texture
-PFNWGLBINDTEXIMAGEARBPROC     wglBindTexImageARB     = NULL;
-PFNWGLRELEASETEXIMAGEARBPROC  wglReleaseTexImageARB  = NULL;
+PFNWGLBINDTEXIMAGEARBPROC wglBindTexImageARB = NULL;
+PFNWGLRELEASETEXIMAGEARBPROC wglReleaseTexImageARB = NULL;
 PFNWGLSETPBUFFERATTRIBARBPROC wglSetPbufferAttribARB = NULL;
 
-void VectorAngles( const float *forward, float *angles );
-void GenerateInverseMatrix4f( const float inMatrix[4][4], float outInverse[4][4] );
+void VectorAngles(const float *forward, float *angles);
+void GenerateInverseMatrix4f(const float inMatrix[4][4], float outInverse[4][4]);
 
 uint id = 0;
 
 struct Vertex
 {
-    float tu, tv;
-    float x, y, z;
+	float tu, tv;
+	float x, y, z;
 };
 
 Vertex g_cubeVertices[] =
-{
-    { 0.0f,0.0f, -1.0f,-1.0f, 1.0f },
-    { 1.0f,0.0f,  1.0f,-1.0f, 1.0f },
-    { 1.0f,1.0f,  1.0f, 1.0f, 1.0f },
-    { 0.0f,1.0f, -1.0f, 1.0f, 1.0f },
-   
-    { 1.0f,0.0f, -1.0f,-1.0f,-1.0f },
-    { 1.0f,1.0f, -1.0f, 1.0f,-1.0f },
-    { 0.0f,1.0f,  1.0f, 1.0f,-1.0f },
-    { 0.0f,0.0f,  1.0f,-1.0f,-1.0f },
-   
-    { 0.0f,1.0f, -1.0f, 1.0f,-1.0f },
-    { 0.0f,0.0f, -1.0f, 1.0f, 1.0f },
-    { 1.0f,0.0f,  1.0f, 1.0f, 1.0f },
-    { 1.0f,1.0f,  1.0f, 1.0f,-1.0f },
-   
-    { 1.0f,1.0f, -1.0f,-1.0f,-1.0f },
-    { 0.0f,1.0f,  1.0f,-1.0f,-1.0f },
-    { 0.0f,0.0f,  1.0f,-1.0f, 1.0f },
-    { 1.0f,0.0f, -1.0f,-1.0f, 1.0f },
-   
-    { 1.0f,0.0f,  1.0f,-1.0f,-1.0f },
-    { 1.0f,1.0f,  1.0f, 1.0f,-1.0f },
-    { 0.0f,1.0f,  1.0f, 1.0f, 1.0f },
-    { 0.0f,0.0f,  1.0f,-1.0f, 1.0f },
-   
-    { 0.0f,0.0f, -1.0f,-1.0f,-1.0f },
-    { 1.0f,0.0f, -1.0f,-1.0f, 1.0f },
-    { 1.0f,1.0f, -1.0f, 1.0f, 1.0f },
-    { 0.0f,1.0f, -1.0f, 1.0f,-1.0f }
-};
+	{
+		{0.0f, 0.0f, -1.0f, -1.0f, 1.0f},
+		{1.0f, 0.0f, 1.0f, -1.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+		{0.0f, 1.0f, -1.0f, 1.0f, 1.0f},
+
+		{1.0f, 0.0f, -1.0f, -1.0f, -1.0f},
+		{1.0f, 1.0f, -1.0f, 1.0f, -1.0f},
+		{0.0f, 1.0f, 1.0f, 1.0f, -1.0f},
+		{0.0f, 0.0f, 1.0f, -1.0f, -1.0f},
+
+		{0.0f, 1.0f, -1.0f, 1.0f, -1.0f},
+		{0.0f, 0.0f, -1.0f, 1.0f, 1.0f},
+		{1.0f, 0.0f, 1.0f, 1.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f, 1.0f, -1.0f},
+
+		{1.0f, 1.0f, -1.0f, -1.0f, -1.0f},
+		{0.0f, 1.0f, 1.0f, -1.0f, -1.0f},
+		{0.0f, 0.0f, 1.0f, -1.0f, 1.0f},
+		{1.0f, 0.0f, -1.0f, -1.0f, 1.0f},
+
+		{1.0f, 0.0f, 1.0f, -1.0f, -1.0f},
+		{1.0f, 1.0f, 1.0f, 1.0f, -1.0f},
+		{0.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+		{0.0f, 0.0f, 1.0f, -1.0f, 1.0f},
+
+		{0.0f, 0.0f, -1.0f, -1.0f, -1.0f},
+		{1.0f, 0.0f, -1.0f, -1.0f, 1.0f},
+		{1.0f, 1.0f, -1.0f, 1.0f, 1.0f},
+		{0.0f, 1.0f, -1.0f, 1.0f, -1.0f}};
 
 //#include "r_efx.h"
 #include "entity_types.h"
@@ -84,71 +83,69 @@ Vertex g_cubeVertices[] =
 
 #include "logfile.h"
 
-typedef struct {
+typedef struct
+{
 
-    HPBUFFERARB hPBuffer;
-    HDC         hDC;
-    HGLRC       hRC;
+	HPBUFFERARB hPBuffer;
+	HDC hDC;
+	HGLRC hRC;
 } PBUFFER;
 
-HDC         OldhDC;
-HGLRC       OldhRC;
-
+HDC OldhDC;
+HGLRC OldhRC;
 
 PBUFFER g_pbuffer;
 
-void CRender::RT_GetNewFrameBufferTexture( uint &Tex )
+void CRender::RT_GetNewFrameBufferTexture(uint &Tex)
 {
 	//
 	// This is our dynamic texture, which will be loaded with new pixel data
 	// after we're finshed rendering to the p-buffer.
 	//
 
-	SetRenderTarget( true );
-	glGenTextures( 1, &Tex );
-	glBindTexture( GL_TEXTURE_2D, Tex );
+	SetRenderTarget(true);
+	glGenTextures(1, &Tex);
+	glBindTexture(GL_TEXTURE_2D, Tex);
 	//glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR );
 	//glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR );
-	SetRenderTarget( false );
+	SetRenderTarget(false);
 }
 
-void CRender::RT_BindTexture( )
+void CRender::RT_BindTexture()
 {
 
-	if( !wglBindTexImageARB( g_pbuffer.hPBuffer, WGL_FRONT_LEFT_ARB ) )
+	if (!wglBindTexImageARB(g_pbuffer.hPBuffer, WGL_FRONT_LEFT_ARB))
 	{
-		MessageBox(NULL,"Could not bind p-buffer to render texture!",
-			"ERROR",MB_OK|MB_ICONEXCLAMATION);
+		MessageBox(NULL, "Could not bind p-buffer to render texture!",
+				   "ERROR", MB_OK | MB_ICONEXCLAMATION);
 		//exit(-1);
 	}
-
 }
 
-void CRender::RT_ReleaseTexture( )
+void CRender::RT_ReleaseTexture()
 {
-	//we need to make sure that the p-buffer has been 
-    // released from the dynamic "render-to" texture.
-    //
+	//we need to make sure that the p-buffer has been
+	// released from the dynamic "render-to" texture.
+	//
 
-    if( !wglReleaseTexImageARB( g_pbuffer.hPBuffer, WGL_FRONT_LEFT_ARB ) )
-    {
-        MessageBox(NULL,"Could not release p-buffer from render texture!",
-            "ERROR",MB_OK|MB_ICONEXCLAMATION);
-        //exit(-1);
-    }
+	if (!wglReleaseTexImageARB(g_pbuffer.hPBuffer, WGL_FRONT_LEFT_ARB))
+	{
+		MessageBox(NULL, "Could not release p-buffer from render texture!",
+				   "ERROR", MB_OK | MB_ICONEXCLAMATION);
+		//exit(-1);
+	}
 }
 struct gllightinfo_t
 {
 	int Enabled;
-	float Pos[4];		//In GL, it's 4 floats.  The last one specifies a sort of attenuation
+	float Pos[4]; //In GL, it's 4 floats.  The last one specifies a sort of attenuation
 	float AmbientColor[4], DiffuseColor[4], SpecularColor[4];
 	float ConstAttn;
 };
 
-
 // Used to setup the offscreen surface before rendering to it
 // Copies the GL values used from HL's framebuffer
-void CRender::SyncOffScreenSurface( )
+void CRender::SyncOffScreenSurface()
 {
 	static bool copied = false;
 
@@ -158,15 +155,14 @@ void CRender::SyncOffScreenSurface( )
 		//wglCopyContext( OldhRC, g_pbuffer.hRC, GL_LIGHTING_BIT );
 	}
 
-	float mp[16], mmv[16]/*, mt[16]*/;
-	glGetFloatv( GL_PROJECTION_MATRIX, (GLfloat *)mp );
-	glGetFloatv( GL_MODELVIEW_MATRIX, (GLfloat *)mmv );
+	float mp[16], mmv[16] /*, mt[16]*/;
+	glGetFloatv(GL_PROJECTION_MATRIX, (GLfloat *)mp);
+	glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat *)mmv);
 	//glGetFloatv( GL_TEXTURE_MATRIX, (GLfloat *)mt );
 
-	SetRenderTarget( true, false );
+	SetRenderTarget(true, false);
 
-
-	if( !copied )
+	if (!copied)
 	{
 		/*glEnable( GL_COLOR_MATERIAL );
  		glColorMaterial( GL_FRONT, GL_AMBIENT_AND_DIFFUSE );
@@ -174,11 +170,11 @@ void CRender::SyncOffScreenSurface( )
 		glColorMaterial( GL_FRONT, GL_SPECULAR );*/
 	}
 
-	glMatrixMode( GL_PROJECTION );
-	glLoadMatrixf( mp );
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixf(mp);
 
-	glMatrixMode( GL_MODELVIEW );
-	glLoadMatrixf( mmv );
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf(mmv);
 
 	//glMatrixMode( GL_TEXTURE );
 	//glLoadMatrixf( mt );
@@ -186,30 +182,31 @@ void CRender::SyncOffScreenSurface( )
 	//glClear( GL_DEPTH_BUFFER_BIT );
 	copied = true;
 
-	SetRenderTarget( false );
-
+	SetRenderTarget(false);
 }
-void CRender::RT_ClearBuffer( bool ClearColor, bool ClearDepth, bool ClearStencil )
+void CRender::RT_ClearBuffer(bool ClearColor, bool ClearDepth, bool ClearStencil)
 {
 	//glClearColor( 0.0f, 0.0f, 1.0f, 0.0f );
-		
-	if( ClearColor ) glClear( GL_COLOR_BUFFER_BIT );
-	if( ClearDepth ) glClear( GL_DEPTH_BUFFER_BIT );
-	if( ClearStencil ) glClear( GL_STENCIL_BUFFER_BIT );
 
+	if (ClearColor)
+		glClear(GL_COLOR_BUFFER_BIT);
+	if (ClearDepth)
+		glClear(GL_DEPTH_BUFFER_BIT);
+	if (ClearStencil)
+		glClear(GL_STENCIL_BUFFER_BIT);
 }
-void CRender::SetRenderTarget( bool ToTexture, bool ClearDepth )
+void CRender::SetRenderTarget(bool ToTexture, bool ClearDepth)
 {
-	if( ToTexture )
+	if (ToTexture)
 	{
-		if( !wglMakeCurrent( g_pbuffer.hDC, g_pbuffer.hRC ) )
+		if (!wglMakeCurrent(g_pbuffer.hDC, g_pbuffer.hRC))
 		{
-			MessageBox(NULL,"Could not make the p-buffer's context current!",
-				"ERROR",MB_OK|MB_ICONEXCLAMATION);
+			MessageBox(NULL, "Could not make the p-buffer's context current!",
+					   "ERROR", MB_OK | MB_ICONEXCLAMATION);
 			//exit(-1);
 		}
-		if( ClearDepth )
-			glClear( GL_DEPTH_BUFFER_BIT );
+		if (ClearDepth)
+			glClear(GL_DEPTH_BUFFER_BIT);
 		/*
 		//TEST:  Force the view and draw a cube.  It tests current GL properties such as lighting
 		
@@ -233,42 +230,41 @@ void CRender::SetRenderTarget( bool ToTexture, bool ClearDepth )
 
 		glInterleavedArrays( GL_T2F_V3F, 0, g_cubeVertices );
 		glDrawArrays( GL_QUADS, 0, 24 );*/
-
 	}
 	else
 	{
 		//glMatrixMode( GL_PROJECTION );
 		//glPopMatrix( );
 
-		if( !wglMakeCurrent( OldhDC, OldhRC ) )
+		if (!wglMakeCurrent(OldhDC, OldhRC))
 		{
-			MessageBox(NULL,"Could not make the normal half-life context current!",
-				"ERROR",MB_OK|MB_ICONEXCLAMATION);
+			MessageBox(NULL, "Could not make the normal half-life context current!",
+					   "ERROR", MB_OK | MB_ICONEXCLAMATION);
 			//exit(-1);
 		}
 	}
 }
 
-
-bool CMirrorMgr::InitMirrors( )
+bool CMirrorMgr::InitMirrors()
 {
 	//CRender::m_RT_SizeRatio = 0.2f;
 	UseMirrors = false;
-	if( !IEngineStudio.IsHardware() )	//Not using openGL
+	if (!IEngineStudio.IsHardware()) //Not using openGL
 		return false;
 
-	const char *VenderString = (const char *)glGetString( GL_VENDOR );
-	const char *CardString = (const char *)glGetString( GL_RENDERER );
-	const char *VersionString = (const char *)glGetString( GL_VERSION );
-	const char *ExtensionsString = (const char *)glGetString( GL_EXTENSIONS );
+	const char *VenderString = (const char *)glGetString(GL_VENDOR);
+	const char *CardString = (const char *)glGetString(GL_RENDERER);
+	const char *VersionString = (const char *)glGetString(GL_VERSION);
+	const char *ExtensionsString = (const char *)glGetString(GL_EXTENSIONS);
 	logfile << "Video Card Vender: " << VenderString << endl;
 	logfile << "Video Card: " << CardString << endl;
 	logfile << "OpenGL Version: " << VersionString << endl;
 	logfile << "OpenGL Extensions: " << ExtensionsString << endl;
 
-	if( atof(VersionString) < 1.1 )	//Not high enough OpenGL version
+	if (atof(VersionString) < 1.1) //Not high enough OpenGL version
 	{
-		logfile << "" << endl << "OpenGL Version Not High Enough For Mirrors (Needs 1.1)!" << endl;
+		logfile << "" << endl
+				<< "OpenGL Version Not High Enough For Mirrors (Needs 1.1)!" << endl;
 		return false;
 	}
 
@@ -277,68 +273,65 @@ bool CMirrorMgr::InitMirrors( )
 
 	logfile << "OpenGL ActiveTexture Extention: " << (glActiveTextureARB ? "FOUND" : "NOT FOUND") << endl;
 
-	if( !glActiveTextureARB )	//Doesn't support Multitexturing
+	if (!glActiveTextureARB) //Doesn't support Multitexturing
 		return false;
 
 	//Get the WGL extensions string
 	wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
-	const char *wglExtensions = wglGetExtensionsStringARB( wglGetCurrentDC() );
+	const char *wglExtensions = wglGetExtensionsStringARB(wglGetCurrentDC());
 
 	//Set up wgl extensions
-	if(		!strstr( wglExtensions, "WGL_ARB_pbuffer" )
-		||  !strstr( wglExtensions, "WGL_ARB_pixel_format" ) 
-		||  !strstr( wglExtensions, "WGL_ARB_render_texture" )
-	
-		)
+	if (!strstr(wglExtensions, "WGL_ARB_pbuffer") || !strstr(wglExtensions, "WGL_ARB_pixel_format") || !strstr(wglExtensions, "WGL_ARB_render_texture")
+
+	)
 	{
-		logfile << "" << endl << "OpenGL Version Not High Enough For Mirrors (wglExtensions not Present)!" << endl;
+		logfile << "" << endl
+				<< "OpenGL Version Not High Enough For Mirrors (wglExtensions not Present)!" << endl;
 		return false;
 	}
 
 	OldhDC = wglGetCurrentDC();
-	OldhRC = wglGetCurrentContext( );
-
+	OldhRC = wglGetCurrentContext();
 
 	//Init the pbuffer
-	wglCreatePbufferARB    = (PFNWGLCREATEPBUFFERARBPROC)wglGetProcAddress("wglCreatePbufferARB");
-	wglGetPbufferDCARB     = (PFNWGLGETPBUFFERDCARBPROC)wglGetProcAddress("wglGetPbufferDCARB");
+	wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC)wglGetProcAddress("wglCreatePbufferARB");
+	wglGetPbufferDCARB = (PFNWGLGETPBUFFERDCARBPROC)wglGetProcAddress("wglGetPbufferDCARB");
 	wglReleasePbufferDCARB = (PFNWGLRELEASEPBUFFERDCARBPROC)wglGetProcAddress("wglReleasePbufferDCARB");
-	wglDestroyPbufferARB   = (PFNWGLDESTROYPBUFFERARBPROC)wglGetProcAddress("wglDestroyPbufferARB");
-	wglQueryPbufferARB     = (PFNWGLQUERYPBUFFERARBPROC)wglGetProcAddress("wglQueryPbufferARB");
+	wglDestroyPbufferARB = (PFNWGLDESTROYPBUFFERARBPROC)wglGetProcAddress("wglDestroyPbufferARB");
+	wglQueryPbufferARB = (PFNWGLQUERYPBUFFERARBPROC)wglGetProcAddress("wglQueryPbufferARB");
 	wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
-	wglBindTexImageARB     = (PFNWGLBINDTEXIMAGEARBPROC)wglGetProcAddress("wglBindTexImageARB");
-	wglReleaseTexImageARB  = (PFNWGLRELEASETEXIMAGEARBPROC)wglGetProcAddress("wglReleaseTexImageARB");
+	wglBindTexImageARB = (PFNWGLBINDTEXIMAGEARBPROC)wglGetProcAddress("wglBindTexImageARB");
+	wglReleaseTexImageARB = (PFNWGLRELEASETEXIMAGEARBPROC)wglGetProcAddress("wglReleaseTexImageARB");
 	wglSetPbufferAttribARB = (PFNWGLSETPBUFFERATTRIBARBPROC)wglGetProcAddress("wglSetPbufferAttribARB");
 
-
-		//
-	// Define the minimum pixel format requirements we will need for our 
-	// p-buffer. A p-buffer is just like a frame buffer, it can have a depth 
+	//
+	// Define the minimum pixel format requirements we will need for our
+	// p-buffer. A p-buffer is just like a frame buffer, it can have a depth
 	// buffer associated with it and it can be double buffered.
 	//
 
 	int pf_attr[] =
-	{
-		WGL_SUPPORT_OPENGL_ARB, TRUE,       // P-buffer will be used with OpenGL
-		WGL_DRAW_TO_PBUFFER_ARB, TRUE,      // Enable render to p-buffer
-		WGL_BIND_TO_TEXTURE_RGBA_ARB, TRUE, // P-buffer will be used as a texture
-		WGL_RED_BITS_ARB, 8,                // At least 8 bits for RED channel
-		WGL_GREEN_BITS_ARB, 8,              // At least 8 bits for GREEN channel
-		WGL_BLUE_BITS_ARB, 8,               // At least 8 bits for BLUE channel
-		WGL_ALPHA_BITS_ARB, 8,              // At least 8 bits for ALPHA channel
-		WGL_DEPTH_BITS_ARB, 16,             // At least 16 bits for depth buffer
-		WGL_DOUBLE_BUFFER_ARB, FALSE,       // We don't require double buffering
-		0                                   // Zero terminates the list
-	};
+		{
+			WGL_SUPPORT_OPENGL_ARB, TRUE,		// P-buffer will be used with OpenGL
+			WGL_DRAW_TO_PBUFFER_ARB, TRUE,		// Enable render to p-buffer
+			WGL_BIND_TO_TEXTURE_RGBA_ARB, TRUE, // P-buffer will be used as a texture
+			WGL_RED_BITS_ARB, 8,				// At least 8 bits for RED channel
+			WGL_GREEN_BITS_ARB, 8,				// At least 8 bits for GREEN channel
+			WGL_BLUE_BITS_ARB, 8,				// At least 8 bits for BLUE channel
+			WGL_ALPHA_BITS_ARB, 8,				// At least 8 bits for ALPHA channel
+			WGL_DEPTH_BITS_ARB, 16,				// At least 16 bits for depth buffer
+			WGL_DOUBLE_BUFFER_ARB, FALSE,		// We don't require double buffering
+			0									// Zero terminates the list
+		};
 
 	unsigned int count = 0;
 	int pixelFormat = 0;
-	wglChoosePixelFormatARB( OldhDC,(const int*)pf_attr, NULL, 1, &pixelFormat, &count);
+	wglChoosePixelFormatARB(OldhDC, (const int *)pf_attr, NULL, 1, &pixelFormat, &count);
 
-	if( count == 0 )
+	if (count == 0)
 	{
-		MessageBox(NULL,"Could not find an acceptable pixel format!",
-			"ERROR",MB_OK|MB_ICONEXCLAMATION);
+		MessageBox(NULL, "Could not find an acceptable pixel format!",
+				   "ERROR", MB_OK | MB_ICONEXCLAMATION);
 		//exit(-1);
 	}
 
@@ -348,34 +341,34 @@ bool CMirrorMgr::InitMirrors( )
 	//
 
 	int pb_attr[] =
-	{
-		WGL_TEXTURE_FORMAT_ARB, WGL_TEXTURE_RGBA_ARB, // Our p-buffer will have a texture format of RGBA
-		WGL_TEXTURE_TARGET_ARB, WGL_TEXTURE_2D_ARB,   // Of texture target will be GL_TEXTURE_2D
-		0                                             // Zero terminates the list
-	};
+		{
+			WGL_TEXTURE_FORMAT_ARB, WGL_TEXTURE_RGBA_ARB, // Our p-buffer will have a texture format of RGBA
+			WGL_TEXTURE_TARGET_ARB, WGL_TEXTURE_2D_ARB,	  // Of texture target will be GL_TEXTURE_2D
+			0											  // Zero terminates the list
+		};
 
 	//
 	// Create the p-buffer...
 	//
 
-	GetCompatibleTextureSize( ScreenWidth * CRender::m_RT_SizeRatio, ScreenHeight * CRender::m_RT_SizeRatio, CRender::m_RT_Width, CRender::m_RT_Height, CRender::m_RT_TexU, CRender::m_RT_TexV );
+	GetCompatibleTextureSize(ScreenWidth * CRender::m_RT_SizeRatio, ScreenHeight * CRender::m_RT_SizeRatio, CRender::m_RT_Width, CRender::m_RT_Height, CRender::m_RT_TexU, CRender::m_RT_TexV);
 
-	g_pbuffer.hPBuffer = wglCreatePbufferARB( OldhDC, pixelFormat, CRender::m_RT_Width, CRender::m_RT_Height, pb_attr );
-	g_pbuffer.hDC      = wglGetPbufferDCARB( g_pbuffer.hPBuffer );
-	g_pbuffer.hRC      = wglCreateContext( g_pbuffer.hDC );
+	g_pbuffer.hPBuffer = wglCreatePbufferARB(OldhDC, pixelFormat, CRender::m_RT_Width, CRender::m_RT_Height, pb_attr);
+	g_pbuffer.hDC = wglGetPbufferDCARB(g_pbuffer.hPBuffer);
+	g_pbuffer.hRC = wglCreateContext(g_pbuffer.hDC);
 
-	wglShareLists( OldhRC, g_pbuffer.hRC );
+	wglShareLists(OldhRC, g_pbuffer.hRC);
 
-	if( !g_pbuffer.hPBuffer )
+	if (!g_pbuffer.hPBuffer)
 	{
-		MessageBox(NULL,"Could not create Offscreen buffer", "ERROR",MB_OK|MB_ICONEXCLAMATION);
+		MessageBox(NULL, "Could not create Offscreen buffer", "ERROR", MB_OK | MB_ICONEXCLAMATION);
 		//exit(-1);
 	}
 
 	int h;
 	int w;
-	wglQueryPbufferARB( g_pbuffer.hPBuffer, WGL_PBUFFER_WIDTH_ARB, &h );
-	wglQueryPbufferARB( g_pbuffer.hPBuffer, WGL_PBUFFER_WIDTH_ARB, &w );
+	wglQueryPbufferARB(g_pbuffer.hPBuffer, WGL_PBUFFER_WIDTH_ARB, &h);
+	wglQueryPbufferARB(g_pbuffer.hPBuffer, WGL_PBUFFER_WIDTH_ARB, &w);
 
 	/*if( h != g_pbuffer.nHeight || w != g_pbuffer.nWidth )
 	{
@@ -385,8 +378,8 @@ bool CMirrorMgr::InitMirrors( )
 	}*/
 
 	//
-	// We were successful in creating a p-buffer. We can now make its context 
-	// current and set it up just like we would a regular context 
+	// We were successful in creating a p-buffer. We can now make its context
+	// current and set it up just like we would a regular context
 	// attached to a window.
 	//
 
@@ -403,81 +396,80 @@ bool CMirrorMgr::InitMirrors( )
 
 	//CRender::SetRenderTarget( true );
 
-	if( !wglMakeCurrent( g_pbuffer.hDC, g_pbuffer.hRC ) )
+	if (!wglMakeCurrent(g_pbuffer.hDC, g_pbuffer.hRC))
 	{
-		MessageBox(NULL,"Could not make the p-buffer's context current!",
-			"ERROR",MB_OK|MB_ICONEXCLAMATION);
+		MessageBox(NULL, "Could not make the p-buffer's context current!",
+				   "ERROR", MB_OK | MB_ICONEXCLAMATION);
 		//exit(-1);
 	}
 
 	//glDrawBuffer( GL_FRONT );
 	//glReadBuffer( GL_FRONT );
 
-	glViewport( 0.0, 0.0, CRender::m_RT_Width * CRender::m_RT_TexU, CRender::m_RT_Height * CRender::m_RT_TexV );
-	glClearColor( 0.0f, 0.0f, 1.0f, 0.0f );
-//	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, Color4F(1,1,1,1) );
+	glViewport(0.0, 0.0, CRender::m_RT_Width * CRender::m_RT_TexU, CRender::m_RT_Height * CRender::m_RT_TexV);
+	glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+	//	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Color4F(1, 1, 1, 1));
 
-	glEnable( GL_TEXTURE_2D );
-	glEnable( GL_LIGHTING );
-	glShadeModel( GL_FLAT );
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHTING);
+	glShadeModel(GL_FLAT);
 
-	glClearDepth( 1.0f );
-	glEnable( GL_DEPTH_TEST );
-	glDepthFunc( GL_LEQUAL );
+	glClearDepth(1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
 
- 	glColor4f( 1, 1, 1, 1 );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	glColor4f(1, 1, 1, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//hints
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	CRender::SetRenderTarget( false );
+	CRender::SetRenderTarget(false);
 	//wglCopyContext( OldhRC, g_pbuffer.hRC, GL_LIGHTING_BIT | GL_TEXTURE_BIT );
-
 
 	UseMirrors = true;
 	m_Initialized = false;
 
-	m_WorldMirrors.clearitems( );		//Reset world mirrors
-	m_WorldSurfaces.clearitems( );		//Reset world special surfaces
+	m_WorldMirrors.clearitems();  //Reset world mirrors
+	m_WorldSurfaces.clearitems(); //Reset world special surfaces
 
 	return true;
 }
 
-void CRender::CleanupWGL( )
+void CRender::CleanupWGL()
 {
-    //glDeleteTextures( 1, &g_testTextureID );
-    //glDeleteTextures( 1, &g_dynamicTextureID );
+	//glDeleteTextures( 1, &g_testTextureID );
+	//glDeleteTextures( 1, &g_dynamicTextureID );
 
 	//
 	// Don't forget to clean up after our p-buffer...
 	//
 
-	if( g_pbuffer.hRC != NULL )
+	if (g_pbuffer.hRC != NULL)
 	{
 		//wglMakeCurrent( g_pbuffer.hDC, g_pbuffer.hRC );
-		wglDeleteContext( g_pbuffer.hRC );
-		wglReleasePbufferDCARB( g_pbuffer.hPBuffer, g_pbuffer.hDC );
-		wglDestroyPbufferARB( g_pbuffer.hPBuffer );
+		wglDeleteContext(g_pbuffer.hRC);
+		wglReleasePbufferDCARB(g_pbuffer.hPBuffer, g_pbuffer.hDC);
+		wglDestroyPbufferARB(g_pbuffer.hPBuffer);
 		g_pbuffer.hRC = NULL;
 	}
 
-	if( g_pbuffer.hDC != NULL )
+	if (g_pbuffer.hDC != NULL)
 	{
 		//ReleaseDC( g_hWnd, g_pbuffer.hDC );
-		ReleaseDC( NULL, g_pbuffer.hDC );
+		ReleaseDC(NULL, g_pbuffer.hDC);
 		g_pbuffer.hDC = NULL;
 	}
 }
 
-bool CRender::CheckOpenGL( )
+bool CRender::CheckOpenGL()
 {
 	//Thothie attempting to enable D3D (failed)
-	if( !IEngineStudio.IsHardware() || EngineFunc::CVAR_GetFloat("vid_d3d") )
+	if (!IEngineStudio.IsHardware() || EngineFunc::CVAR_GetFloat("vid_d3d"))
 	{
-		MessageBox( NULL, "Master Sword uses features only available in OpenGL mode! Attempting other modes may result in instability.", "Invalid Video Mode", MB_OK ); 
-		MSErrorConsoleText( "CRender::CheckOpenGL", "User chose non-opengl video mode (semi-fatal)" );
+		MessageBox(NULL, "Master Sword uses features only available in OpenGL mode! Attempting other modes may result in instability.", "Invalid Video Mode", MB_OK);
+		MSErrorConsoleText("CRender::CheckOpenGL", "User chose non-opengl video mode (semi-fatal)");
 		//exit( 0 );
 		return false;
 	}

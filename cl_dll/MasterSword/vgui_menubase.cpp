@@ -57,67 +57,66 @@
 #include "vgui_Menu_Interact.h"
 //------------
 
-CAction_SelectMainOption::CAction_SelectMainOption( class VGUI_MenuBase *pPanel, int iValue, msvariant Data )
+CAction_SelectMainOption::CAction_SelectMainOption(class VGUI_MenuBase *pPanel, int iValue, msvariant Data)
 {
 	m_pPanel = pPanel;
 	m_Value = iValue;
 	m_Data = Data;
 }
-void CAction_SelectMainOption::actionPerformed( Panel* panel )
+void CAction_SelectMainOption::actionPerformed(Panel *panel)
 {
-	m_pPanel->Select( m_Value, m_Data );
+	m_pPanel->Select(m_Value, m_Data);
 }
-
 
 // Menu Dimensions
-#define MAINWIN_SIZE_X			XRES(120)
-#define MAINWIN_SIZE_Y			YRES(170)
-#define MAINWIN_X				XRES(320) - MAINWIN_SIZE_X/2
-#define MAINWIN_Y				YRES(240) - MAINWIN_SIZE_Y/2
+#define MAINWIN_SIZE_X XRES(120)
+#define MAINWIN_SIZE_Y YRES(170)
+#define MAINWIN_X XRES(320) - MAINWIN_SIZE_X / 2
+#define MAINWIN_Y YRES(240) - MAINWIN_SIZE_Y / 2
 
-#define BTN_SPACER_X			XRES(15)
-#define BTN_SPACER_Y			YRES(10)
-#define BTN_SIZE_X				(MAINWIN_SIZE_X - BTN_SPACER_X * 2.0f)
-#define BTN_SIZE_Y				YRES(12)
-#define BTN_X					MAINWIN_SIZE_X / 2.0f - BTN_SIZE_X / 2.0f
-#define BTN_START_Y				YRES(50)
+#define BTN_SPACER_X XRES(15)
+#define BTN_SPACER_Y YRES(10)
+#define BTN_SIZE_X (MAINWIN_SIZE_X - BTN_SPACER_X * 2.0f)
+#define BTN_SIZE_Y YRES(12)
+#define BTN_X MAINWIN_SIZE_X / 2.0f - BTN_SIZE_X / 2.0f
+#define BTN_START_Y YRES(50)
 
-#define MAINMENU_FADETIME		0.5f //Thothie DEC2012_24 - reduce menu fade time
+#define MAINMENU_FADETIME 0.5f //Thothie DEC2012_24 - reduce menu fade time
 
-#define MAINLABEL_TOP_Y				YRES(0)
-int GetCenteredItemX( int WorkSpaceSizeX, int ItemSizeX, int Items, int SpaceBewteenItems );
+#define MAINLABEL_TOP_Y YRES(0)
+int GetCenteredItemX(int WorkSpaceSizeX, int ItemSizeX, int Items, int SpaceBewteenItems);
 
 // Creation
-VGUI_MenuBase::VGUI_MenuBase( Panel* myParent ) : CMenuPanel( 255, 0, 0, 0, ScreenWidth, ScreenHeight )
+VGUI_MenuBase::VGUI_MenuBase(Panel *myParent) : CMenuPanel(255, 0, 0, 0, ScreenWidth, ScreenHeight)
 {
 	m_AllowKeys = false; // MiB NOV2014_25, block number shortcuts: NpcInteractMenus.rft
-	setParent( myParent );
+	setParent(myParent);
 }
 
-void VGUI_MenuBase::Init( )
+void VGUI_MenuBase::Init()
 {
 	startdbg;
 
-	SetBits( m_Flags, MENUFLAG_TRAPNUMINPUT );
+	SetBits(m_Flags, MENUFLAG_TRAPNUMINPUT);
 
-	m_pMainPanel = new CTransparentPanel( 128, MAINWIN_X, MAINWIN_Y, MAINWIN_SIZE_X, MAINWIN_SIZE_Y );
-	m_pMainPanel->setBorder( m_Border = new LineBorder( XRES(2), Color( Color_Border.r, Color_Border.g, Color_Border.b, Color_Border.a) ) );
-	m_pMainPanel->setParent( this );
+	m_pMainPanel = new CTransparentPanel(128, MAINWIN_X, MAINWIN_Y, MAINWIN_SIZE_X, MAINWIN_SIZE_Y);
+	m_pMainPanel->setBorder(m_Border = new LineBorder(XRES(2), Color(Color_Border.r, Color_Border.g, Color_Border.b, Color_Border.a)));
+	m_pMainPanel->setParent(this);
 
-	MSLabel *pTitle = m_Title = new MSLabel( m_pMainPanel, "", 0, YRES(10), m_pMainPanel->getWide(), YRES(14) );
-	pTitle->setFont( g_FontTitle );
-	pTitle->setContentAlignment( vgui::Label::a_center );
-	pTitle->setFgColor( 255, 255, 255, 0 );
-	pTitle->setText( Localized("#MAIN_MENU") );		//Must set the text here, not at initializion
+	MSLabel *pTitle = m_Title = new MSLabel(m_pMainPanel, "", 0, YRES(10), m_pMainPanel->getWide(), YRES(14));
+	pTitle->setFont(g_FontTitle);
+	pTitle->setContentAlignment(vgui::Label::a_center);
+	pTitle->setFgColor(255, 255, 255, 0);
+	pTitle->setText(Localized("#MAIN_MENU")); //Must set the text here, not at initializion
 	int textw, texth;
-	pTitle->getTextSize( textw, texth );
-	int titlex = GetCenteredItemX( m_pMainPanel->getWide(), textw, 1, 0 );
+	pTitle->getTextSize(textw, texth);
+	int titlex = GetCenteredItemX(m_pMainPanel->getWide(), textw, 1, 0);
 
 	// MiB NOV2014_25, center the title and separator NpcInteractMenus.rft [begin]
 	// MiB 25NOV_2014, for centering the separator
-	m_TitleSep = new CTransparentPanel( 0, titlex, YRES(30), textw, YRES(3) );
-	m_TitleSep->setBorder( m_Spacer = new LineBorder( 2, Color(0, 128, 0, 128) ) );
-	m_TitleSep->setParent( m_pMainPanel );
+	m_TitleSep = new CTransparentPanel(0, titlex, YRES(30), textw, YRES(3));
+	m_TitleSep->setBorder(m_Spacer = new LineBorder(2, Color(0, 128, 0, 128)));
+	m_TitleSep->setParent(m_pMainPanel);
 	// MiB NOV2014_25, center the title and separator NpcInteractMenus.rft [end]
 
 	//Orignal Code:
@@ -130,27 +129,26 @@ void VGUI_MenuBase::Init( )
 	enddbg;
 }
 
-MSButton *VGUI_MenuBase::AddButton( msstring_ref Name, int Width, msvariant ID )
+MSButton *VGUI_MenuBase::AddButton(msstring_ref Name, int Width, msvariant ID)
 {
 	int w, h;
-	g_FontSml->getTextSize( Name, w, h );
-	MSButton *pButton = m_Buttons.add( new MSButton( m_pMainPanel, Name, (m_pMainPanel->getWide() /2.0) - (w/2.0), m_ButtonY, w, BTN_SIZE_Y, Color_BtnArmed, Color_BtnUnarmed ) );
+	g_FontSml->getTextSize(Name, w, h);
+	MSButton *pButton = m_Buttons.add(new MSButton(m_pMainPanel, Name, (m_pMainPanel->getWide() / 2.0) - (w / 2.0), m_ButtonY, w, BTN_SIZE_Y, Color_BtnArmed, Color_BtnUnarmed));
 	pButton->m_AutoFitText = true;
-	pButton->setTextAlignment( Label::a_west );
-	pButton->setContentAlignment( Label::a_center );
-	pButton->addActionSignal( m_Actions.add( new CAction_SelectMainOption( this, m_Buttons.size()-1, ID ) ) );
-	pButton->SetDisabledColor( Color_BtnDisabled );
-	pButton->setText( Name );
+	pButton->setTextAlignment(Label::a_west);
+	pButton->setContentAlignment(Label::a_center);
+	pButton->addActionSignal(m_Actions.add(new CAction_SelectMainOption(this, m_Buttons.size() - 1, ID)));
+	pButton->SetDisabledColor(Color_BtnDisabled);
+	pButton->setText(Name);
 
 	m_ButtonY += pButton->getTall() + BTN_SPACER_Y;
 
 	return pButton;
 }
 
-
-void VGUI_MenuBase::Reset( void )
+void VGUI_MenuBase::Reset(void)
 {
-	m_pMainPanel->setVisible( true );
+	m_pMainPanel->setVisible(true);
 }
 
 // Update
@@ -159,10 +157,10 @@ void VGUI_MenuBase::Update()
 }
 
 // Key inputs for the menu
-bool VGUI_MenuBase::SlotInput( int iSlot )
+bool VGUI_MenuBase::SlotInput(int iSlot)
 {
 	// MiB NOV2014_25, disable number shortcuts: NpcInteractMenus.rft
-	if( iSlot < 0 || iSlot >= (signed)m_Buttons.size() || !m_AllowKeys || !m_Buttons[iSlot]->isEnabled() )
+	if (iSlot < 0 || iSlot >= (signed)m_Buttons.size() || !m_AllowKeys || !m_Buttons[iSlot]->isEnabled())
 		return false;
 
 	//Original Code:
@@ -171,26 +169,27 @@ bool VGUI_MenuBase::SlotInput( int iSlot )
 		return false;
 	*/
 
-	m_Buttons[iSlot]->doClick( );
+	m_Buttons[iSlot]->doClick();
 
 	return true;
 }
 
 // Update the menu before opening it
-void VGUI_MenuBase::Open( void )
+void VGUI_MenuBase::Open(void)
 {
-	for (int i = 0; i < m_Buttons.size(); i++) m_Buttons[i]->setArmed(false);
+	for (int i = 0; i < m_Buttons.size(); i++)
+		m_Buttons[i]->setArmed(false);
 
-	Reset( );
-	CMenuPanel::Open( );
+	Reset();
+	CMenuPanel::Open();
 	m_OpenTime = gpGlobals->time;
-	UpdateFade( );
+	UpdateFade();
 }
 
-void VGUI_MenuBase::UpdateFade( void )
+void VGUI_MenuBase::UpdateFade(void)
 {
 	float FadeTime = gpGlobals->time - m_OpenTime;
-	FadeTime = max(min(FadeTime,MAINMENU_FADETIME),0);
+	FadeTime = max(min(FadeTime, MAINMENU_FADETIME), 0);
 	m_FadeAmt = int(255 * FadeTime / MAINMENU_FADETIME);
 	float InveserdFade = 255 - m_FadeAmt;
 
@@ -198,20 +197,19 @@ void VGUI_MenuBase::UpdateFade( void )
 
 	m_pMainPanel->m_iTransparency = (InveserdFade / 2 + 128);
 
-	m_Title->getFgColor( color );
-	m_Title->setFgColor( color[0], color[1], color[2], InveserdFade );
+	m_Title->getFgColor(color);
+	m_Title->setFgColor(color[0], color[1], color[2], InveserdFade);
 
-	m_Border->getLineColor( color );
-	m_Border->setLineColor( color[0], color[1], color[2], InveserdFade );
+	m_Border->getLineColor(color);
+	m_Border->setLineColor(color[0], color[1], color[2], InveserdFade);
 
-	m_Spacer->getLineColor( color );
-	m_Spacer->setLineColor( color[0], color[1], color[2], InveserdFade );
+	m_Spacer->getLineColor(color);
+	m_Spacer->setLineColor(color[0], color[1], color[2], InveserdFade);
 
 	//m_pMainPanel->setBorder( NULL );
 	//m_pMainPanel->setBorder( m_Border );
 
-
-	 for (int i = 0; i < m_Buttons.size(); i++) 
+	for (int i = 0; i < m_Buttons.size(); i++)
 	{
 		m_Buttons[i]->m_ArmedColor.a = InveserdFade;
 		m_Buttons[i]->m_UnArmedColor.a = InveserdFade;
@@ -219,32 +217,30 @@ void VGUI_MenuBase::UpdateFade( void )
 	}
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: Called each time a new level is started.
 //-----------------------------------------------------------------------------
-void VGUI_MenuBase::Initialize( void )
+void VGUI_MenuBase::Initialize(void)
 {
-	setVisible( false );
+	setVisible(false);
 }
 
-void __CmdFunc_ToggleMenu( void )
+void __CmdFunc_ToggleMenu(void)
 {
-	if( gEngfuncs.Cmd_Argc( ) < 2 || !gViewPort )
+	if (gEngfuncs.Cmd_Argc() < 2 || !gViewPort)
 		return;
 
-	msstring MenuName = gEngfuncs.Cmd_Argv( 1 );
+	msstring MenuName = gEngfuncs.Cmd_Argv(1);
 
-	if( MenuName == INTERACT_MENU_NAME )
+	if (MenuName == INTERACT_MENU_NAME)
 	{
-		VGUI_MainPanel *pPanel = VGUI::FindPanel( INTERACT_MENU_NAME );
-		if( pPanel )
+		VGUI_MainPanel *pPanel = VGUI::FindPanel(INTERACT_MENU_NAME);
+		if (pPanel)
 		{
 			VGUI_MenuInteract *pInteractMenu = (VGUI_MenuInteract *)pPanel;
-			pInteractMenu->QueryNPC( );
+			pInteractMenu->QueryNPC();
 		}
 	}
 	else
-		VGUI::ToggleMenuVisible( MenuName );
-
+		VGUI::ToggleMenuVisible(MenuName);
 }

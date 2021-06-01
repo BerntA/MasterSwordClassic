@@ -90,36 +90,37 @@ msstring LastSentMap;
 class CTransaction_DLL : public CTransaction
 {
 public:
-	void Read( const char *FileName, const char *EntString ); //MiB FEB2008a - FNfile I/O
-	void Write( const char *FileName , const char *line , const char *EntString , const char *Handle ); //MiB Feb2008a
-	bool Connect( const char *Address );
-	void Think( );
-	void RetrieveInfo( );
-	void RetrieveChar( const char *AuthID, int CharNum );
-	void StoreChar( const char *AuthID, int CharNum, const char *Data, int DataLen );
-	void RemoveChar( const char *AuthID, int CharNum );
-	void Begin( );
-	void UpdateTimeOut( ) { m_TimeOut = gpGlobals->time + 5.0f; }
-	CTransaction_DLL( )
+	void Read(const char *FileName, const char *EntString);										   //MiB FEB2008a - FNfile I/O
+	void Write(const char *FileName, const char *line, const char *EntString, const char *Handle); //MiB Feb2008a
+	bool Connect(const char *Address);
+	void Think();
+	void RetrieveInfo();
+	void RetrieveChar(const char *AuthID, int CharNum);
+	void StoreChar(const char *AuthID, int CharNum, const char *Data, int DataLen);
+	void RemoveChar(const char *AuthID, int CharNum);
+	void Begin();
+	void UpdateTimeOut() { m_TimeOut = gpGlobals->time + 5.0f; }
+	CTransaction_DLL()
 	{
 		m_BufferLen = 0;
 		m_Buffer = msnew char[BUFFER_SIZE];
 		m_Disconnected = false;
 		m_TimeOut = 0;
 		m_CommandSent = m_CommandCompleted = false;
-	} 
-	~CTransaction_DLL( )
+	}
+	~CTransaction_DLL()
 	{
-		if( m_Buffer ) delete m_Buffer;
+		if (m_Buffer)
+			delete m_Buffer;
 		m_Buffer = NULL;
 	}
 
 	//Scoped
 	//virtual void HandleMsg( msg_t &Msg );
-	virtual void ReceivedChar( const char *AuthID, int CharNum, char *Data, int DataLen );
-	virtual void Error_FileNotFound( msg_e MsgID, const char *AuthID, int CharNum );
-	virtual void HandleMsg( msg_t &Msg );
-	virtual void Disconnected( );
+	virtual void ReceivedChar(const char *AuthID, int CharNum, char *Data, int DataLen);
+	virtual void Error_FileNotFound(msg_e MsgID, const char *AuthID, int CharNum);
+	virtual void HandleMsg(msg_t &Msg);
+	virtual void Disconnected();
 
 	msstringlist m_Params;
 	char *m_Buffer;
@@ -177,14 +178,14 @@ void MSCentral::Think()
 	}
 	m_TimeBeforeLevelChange = gpGlobals->time;
 
-
 	dbg("MSCentral - Updates");
 
 	for (int i = 0; i < g_PendingUpdates.size(); i++)
 	{
 		pendingupd_t &Pending = g_PendingUpdates[i];
 
-		if (Offset) Pending.TimeUpdate -= Offset;
+		if (Offset)
+			Pending.TimeUpdate -= Offset;
 
 		if (gpGlobals->time >= Pending.TimeUpdate)
 		{
@@ -196,15 +197,15 @@ void MSCentral::Think()
 	dbg("MSCentral - Transaction");
 
 #ifdef HAS_CENTRAL_ENABLED
-	for (int i = 0; i < CTransaction_DLL::m_Transactions.size(); i++) 
+	for (int i = 0; i < CTransaction_DLL::m_Transactions.size(); i++)
 	{
 		CTransaction_DLL &Trans = *CTransaction_DLL::m_Transactions[i];
-		if( !Trans.m_Disconnected )
-			Trans.Think( );
+		if (!Trans.m_Disconnected)
+			Trans.Think();
 		else
 		{
 			delete &Trans;
-			CTransaction_DLL::m_Transactions.erase( i-- );
+			CTransaction_DLL::m_Transactions.erase(i--);
 		}
 	}
 #endif // HAS_CENTRAL_ENABLED
@@ -233,9 +234,9 @@ void MSCentral::Think()
 				if (pPlayer->m_CharacterState != CHARSTATE_UNLOADED)
 					continue;
 
-				for (int c = 0; c < pPlayer->m_CharInfo.size(); c++) // Reset the char states
-					if (pPlayer->m_CharInfo[c].Status == CDS_LOADING)		//So that preloadchar will send out
-						pPlayer->m_CharInfo[c].Status = CDS_UNLOADED;		//another request
+				for (int c = 0; c < pPlayer->m_CharInfo.size(); c++)  // Reset the char states
+					if (pPlayer->m_CharInfo[c].Status == CDS_LOADING) //So that preloadchar will send out
+						pPlayer->m_CharInfo[c].Status = CDS_UNLOADED; //another request
 
 				pPlayer->PreLoadChars();
 			}
@@ -254,7 +255,7 @@ void MSCentral::Think()
 			//Thothie JUN2008a - MS Central Icon
 			//bugger this, stupid, and message 91 - better to use the cvar
 			/*
-			CBaseEntity *pGameMasterEnt = UTIL_FindEntityByString( NULL, "netname", msstring("¯") + "game_master" );
+			CBaseEntity *pGameMasterEnt = UTIL_FindEntityByString( NULL, "netname", msstring("ï¿½") + "game_master" );
 			if ( pGameMasterEnt )
 			{
 			IScripted *pGMScript = pGameMasterEnt->GetScripted();
@@ -285,7 +286,7 @@ void MSCentral::Think()
 
 			//Quicker to have the GM read the ms_central_online cvar, I suspect
 			/*
-			CBaseEntity *pGameMasterEnt = UTIL_FindEntityByString( NULL, "netname", msstring("¯") + "game_master" );
+			CBaseEntity *pGameMasterEnt = UTIL_FindEntityByString( NULL, "netname", msstring("ï¿½") + "game_master" );
 			if ( pGameMasterEnt )
 			{
 			IScripted *pGMScript = pGameMasterEnt->GetScripted();
@@ -295,7 +296,6 @@ void MSCentral::Think()
 			}*/
 		}
 
-
 		m_CachedOnline = m_Online;
 	}
 
@@ -304,7 +304,7 @@ void MSCentral::Think()
 	float test = MSCentral::m_TimeRetryConnect;
 	if (!MSCentral::m_Online && gpGlobals->time > MSCentral::m_TimeRetryConnect)
 	{
-		RetrieveInfo();	//Try to retrieve Central Network info.
+		RetrieveInfo(); //Try to retrieve Central Network info.
 		//Realy just a filler message to get the connection re-established
 
 		MSCentral::m_TimeRetryConnect = gpGlobals->time + CVAR_GET_FLOAT("ms_central_pulse");
@@ -340,11 +340,11 @@ void MSCentral::GameEnd()
 {
 #ifdef HAS_CENTRAL_ENABLED
 	//Stop all transactions
-	for (int i = 0; i < CTransaction_DLL::m_Transactions.size(); i++) 
+	for (int i = 0; i < CTransaction_DLL::m_Transactions.size(); i++)
 	{
 		CTransaction_DLL &Trans = *CTransaction_DLL::m_Transactions[i];
-		Trans.Disconnect( );
-		CTransaction_DLL::m_Transactions.erase( i-- );
+		Trans.Disconnect();
+		CTransaction_DLL::m_Transactions.erase(i--);
 	}
 #endif // HAS_CENTRAL_ENABLED
 }
@@ -382,8 +382,8 @@ void MSCentral::WriteFNFile(msstring FileName, msstring Line, msstring mode, int
 	Params.clear();
 	Params.add("write");
 
-	Params.add(""); //AuthID  -
-	Params.add("0");//CharNum - These are both "required", but not used for this function
+	Params.add("");	 //AuthID  -
+	Params.add("0"); //CharNum - These are both "required", but not used for this function
 
 	Params.add(FileName);
 	Params.add(Line);
@@ -399,8 +399,8 @@ void MSCentral::ReadFNFile(msstring FileName, msstring EntString)
 	Params.clear();
 	Params.add("read");
 
-	Params.add(""); //AuthID  -
-	Params.add("0");//CharNum - These are both required, but not used for this function
+	Params.add("");	 //AuthID  -
+	Params.add("0"); //CharNum - These are both required, but not used for this function
 
 	Params.add(FileName);
 	Params.add(EntString);
@@ -453,8 +453,8 @@ void MSCentral::DoTransaction(msstringlist &Params)
 
 void MSCentral::Print(const char *szFormat, ...)
 {
-	va_list		argptr;
-	static char	string[1024];
+	va_list argptr;
+	static char string[1024];
 
 	va_start(argptr, szFormat);
 
@@ -503,7 +503,6 @@ bool CTransaction_DLL::Connect(const char *ServerAddress)
 
 	m_Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-
 	//	int Result = SOCKET_ERROR;
 	//	foreach( i, 3 )
 	//	if( (Result = connect( m_Socket, (sockaddr *)&SockAddr, sizeof(sockaddr) )) != SOCKET_ERROR )
@@ -515,8 +514,7 @@ bool CTransaction_DLL::Connect(const char *ServerAddress)
 	//Send connect message
 	int Result = connect(m_Socket, (sockaddr *)&SockAddr, sizeof(sockaddr));
 
-	if (!Result
-		|| (Result == SOCKET_ERROR && WSAGetLastError() == WSAEWOULDBLOCK))
+	if (!Result || (Result == SOCKET_ERROR && WSAGetLastError() == WSAEWOULDBLOCK))
 	{
 		UpdateTimeOut();
 		return true;
@@ -624,7 +622,7 @@ void CTransaction_DLL::HandleMsg(msg_t &Msg)
 	if (Msg.CentralServerTime > MSCentral::m_CentralTime)
 	{
 		MSCentral::m_CentralTime = Msg.CentralServerTime; // Set the time to the one from the server
-		MSCentral::m_CentralTimeLastRecd = time(NULL); // Set the time we received it to now
+		MSCentral::m_CentralTimeLastRecd = time(NULL);	  // Set the time we received it to now
 	}
 
 	switch (Msg.Msg)
@@ -645,8 +643,8 @@ void CTransaction_DLL::HandleMsg(msg_t &Msg)
 		SendDisconnect();
 		break;
 	}
-	case MSG_CHAR_SUCCESS:	//Returned from Central Server after I send
-		//MSG_STOR or MSG_DELE
+	case MSG_CHAR_SUCCESS: //Returned from Central Server after I send
+						   //MSG_STOR or MSG_DELE
 	{
 		charsuccess_t &MsgIn = (charsuccess_t &)Msg;
 		CBasePlayer *pPlayer = GetPlayer(MsgIn.AuthID);
@@ -657,7 +655,7 @@ void CTransaction_DLL::HandleMsg(msg_t &Msg)
 		break;
 	}
 
-	case MSG_READFNFILE: 		//MiB Feb2008a
+	case MSG_READFNFILE: //MiB Feb2008a
 	{
 		fnfileread_t &ReadFile = (fnfileread_t &)Msg;
 		CBaseEntity *pEnt = StringToEnt(ReadFile.EntString);
@@ -709,7 +707,6 @@ void CTransaction_DLL::HandleMsg(msg_t &Msg)
 			MessageBox(NULL, e.error_msg, "Error from Central Server", MB_OK | MB_ICONEXCLAMATION);
 		}
 
-
 		//Always make this the last one!
 		//MIB JAN2010_21
 		if (e.flags & ERR_CRASH)
@@ -749,7 +746,7 @@ void CTransaction_DLL::Think()
 		timeval TimeVal;
 		clrmem(TimeVal);
 
-		//Wait until the connection is established before sending anything... 
+		//Wait until the connection is established before sending anything...
 		//Keep retrying until either the connection goes through or I time out
 		if (select(0, NULL, &FDSet, NULL, &TimeVal) > 0)
 		{
@@ -855,7 +852,6 @@ void CTransaction_DLL::Think()
 		}
 	}
 
-
 	//Loop and receive data
 	dbg("Receive Data");
 	int DataLen = recv(m_Socket, &m_Buffer[m_BufferLen], 4096, 0);
@@ -863,7 +859,7 @@ void CTransaction_DLL::Think()
 	dbg("DataLen");
 	if (DataLen != SOCKET_ERROR)
 	{
-		if (m_BufferLen + DataLen <= BUFFER_SIZE)	//Data too big for buffer
+		if (m_BufferLen + DataLen <= BUFFER_SIZE) //Data too big for buffer
 		{
 
 			m_BufferLen += DataLen;

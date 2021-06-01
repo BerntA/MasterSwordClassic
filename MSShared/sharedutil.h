@@ -32,7 +32,7 @@ public:
 };
 
 #define MACRO_CREATEITEM( item ) (CBaseEntity *)GET_PRIVATE(CREATE_NAMED_ENTITY(MAKE_STRING(item)))
-#define clrmem( a ) memset( &a, 0, sizeof(a) );
+//#define clrmem( a ) memset( &a, 0, sizeof(a) );
 int numofdigits( int x );
 void Print( char *szFmt, ... );
 #define FloatToString( a ) UTIL_VarArgs( "%.2f", a )
@@ -59,9 +59,9 @@ void Print( char *szFmt, ... );
 	Vector GetRelativePos( Vector &Ang, Vector &Dir );	//Uses Dir.x for right-left, Dir.y for forward-back, and Dir.z as up-down, relative to the angle
 #endif
 
-#define ENT_PREFIX "ÅPentÅP"
-msstring EntToString( class CBaseEntity *pEntity );			//Converts an entity to a string of format "ÅPentÅP(idx,addr)"
-CBaseEntity *StringToEnt( msstring_ref EntString);			//Converts an string of format "ÅPentÅP(idx,addr)" to an entity
+#define ENT_PREFIX "ÔøΩPentÔøΩP"
+msstring EntToString( class CBaseEntity *pEntity );			//Converts an entity to a string of format "ÔøΩPentÔøΩP(idx,addr)"
+CBaseEntity *StringToEnt( msstring_ref EntString);			//Converts an string of format "ÔøΩPentÔøΩP(idx,addr)" to an entity
 
 
 void WRITE_FLOAT( float Float );

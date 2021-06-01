@@ -8,10 +8,10 @@
 extern vec3_t cam_ofs;
 // Using third person camera
 //extern int cam_thirdperson;	//Master Sword - Moved to MSCLGlobals
-	
-void CAM_Init( void );
-void CAM_ClearStates( void );
+
+void CAM_Init(void);
+void CAM_ClearStates(void);
 void CAM_StartMouseMove(void);
 void CAM_EndMouseMove(void);
 
-#endif		// _CAMERA_H_
+#endif // _CAMERA_H_

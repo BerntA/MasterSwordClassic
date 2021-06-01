@@ -1,4 +1,5 @@
-enum { //Bodypart states
+enum
+{ //Bodypart states
 	BPS_OWNER = 0,
 	BPS_MODEL,
 	BPS_BODY,
@@ -15,12 +16,13 @@ enum { //Bodypart states
 
 class CGenericItem;
 
-class CBodypart : public CBaseEntity {
+class CBodypart : public CBaseEntity
+{
 public:
-	virtual void Initialize( CBaseEntity *pOwner, char *ModelName, int idx );
+	virtual void Initialize(CBaseEntity *pOwner, char *ModelName, int idx);
 	//virtual float TraceAttack( int iLastHitGroup, CBaseEntity *pInflictor, CBaseEntity *pAttacker, float flDamage, int bitsDamageType );
-	virtual CBodypart *Duplicate( CBodypart *pExistingBodypart = NULL );
-	virtual void Set( int iState, void *vData );
+	virtual CBodypart *Duplicate(CBodypart *pExistingBodypart = NULL);
+	virtual void Set(int iState, void *vData);
 	//virtual int MSProperties( ) { return ENT_BODYPART; }
 	//virtual void *MSQuery( int iRequest );
 
@@ -28,20 +30,21 @@ public:
 	int m_Idx;
 };
 
-class CBaseBody {
+class CBaseBody
+{
 public:
 	mslist<CBodypart *> Bodyparts;
 
-	virtual void Spawn( ) { }
-	virtual void Initialize( CBaseEntity *pOwner, void *pvData = NULL ) { }
-	CBodypart *Bodypart( int iBodypart ) 
+	virtual void Spawn() {}
+	virtual void Initialize(CBaseEntity *pOwner, void *pvData = NULL) {}
+	CBodypart *Bodypart(int iBodypart)
 	{
-		if( iBodypart < 0 || iBodypart >= (signed)Bodyparts.size() )
+		if (iBodypart < 0 || iBodypart >= (signed)Bodyparts.size())
 			return NULL;
 		return Bodyparts[iBodypart];
 	}
-	virtual void Set( int iState, void *vData );
-	virtual void Think( class CMSMonster *pOwner );
-	virtual CBaseBody *Duplicate( );
-	virtual void Delete( );
+	virtual void Set(int iState, void *vData);
+	virtual void Think(class CMSMonster *pOwner);
+	virtual CBaseBody *Duplicate();
+	virtual void Delete();
 };

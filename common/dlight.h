@@ -12,7 +12,7 @@
 *   without written permission from Valve LLC.
 *
 ****/
-#if !defined ( DLIGHTH )
+#if !defined(DLIGHTH)
 #define DLIGHTH
 #ifdef _WIN32
 #pragma once
@@ -20,14 +20,14 @@
 
 typedef struct dlight_s
 {
-	vec3_t	origin;
-	float	radius;
-	color24	color;
-	float	die;				// stop lighting after this time
-	float	decay;				// drop this each second
-	float	minlight;			// don't add when contributing less
-	int		key;
-	qboolean	dark;			// subtracts light instead of adding
+	vec3_t origin;
+	float radius;
+	color24 color;
+	float die;		// stop lighting after this time
+	float decay;	// drop this each second
+	float minlight; // don't add when contributing less
+	int key;
+	qboolean dark; // subtracts light instead of adding
 } dlight_t;
 
 #endif

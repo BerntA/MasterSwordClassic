@@ -5,17 +5,18 @@ class CMSMonster;
 
 typedef enum
 {
-//Master Sword Modified
+	//Master Sword Modified
 	MONSTER_ANIM_WALK,
 	MONSTER_ANIM_ONCE, //Plays an anim once then releases it
 	MONSTER_ANIM_HOLD, //Plays an anim, then holds it
-	MONSTER_ANIM_ACT, //Plays an anim once then releases it
-	MONSTER_ANIM_BREAK	//Explicitly break the current anim (which sets
-						//pAnim = gAnimWalk)
-//---------------------
+	MONSTER_ANIM_ACT,  //Plays an anim once then releases it
+	MONSTER_ANIM_BREAK //Explicitly break the current anim (which sets
+					   //pAnim = gAnimWalk)
+	//---------------------
 } MONSTER_ANIM;
 
-class CAnimation {
+class CAnimation
+{
 public:
 	CMSMonster *m_pOwner;
 	MONSTER_ANIM m_Anim;
@@ -23,23 +24,28 @@ public:
 	bool UseGait;
 	int Priority;
 
-	virtual bool CanChangeTo( MONSTER_ANIM NewAnim, void *vData = NULL ) { return true; }
-	virtual CAnimation *ChangeTo( MONSTER_ANIM NewAnim );
-	virtual void Initialize( void *vData = NULL ) { IsNewAnim = true; }
-	virtual void PostAnimate( ) { IsNewAnim = false; }
-	virtual void Animate( ) = 0;
-	virtual bool SetAnim( msstring_ref pszSequence );
-	virtual bool SetGaitAnim( msstring_ref pszSequence );
-	virtual void GaitAnimate( );
-	virtual MONSTER_ANIM GetID( ) { return m_Anim;}
+	virtual bool CanChangeTo(MONSTER_ANIM NewAnim, void *vData = NULL) { return true; }
+	virtual CAnimation *ChangeTo(MONSTER_ANIM NewAnim);
+	virtual void Initialize(void *vData = NULL) { IsNewAnim = true; }
+	virtual void PostAnimate() { IsNewAnim = false; }
+	virtual void Animate() = 0;
+	virtual bool SetAnim(msstring_ref pszSequence);
+	virtual bool SetGaitAnim(msstring_ref pszSequence);
+	virtual void GaitAnimate();
+	virtual MONSTER_ANIM GetID() { return m_Anim; }
 };
 
-class CWalkAnim : public CAnimation {
+class CWalkAnim : public CAnimation
+{
 public:
-	bool CanChangeTo( MONSTER_ANIM NewAnim, void *vData = NULL );
-	void Animate( );
+	bool CanChangeTo(MONSTER_ANIM NewAnim, void *vData = NULL);
+	void Animate();
 
-	CWalkAnim( ) { m_Anim = MONSTER_ANIM_WALK; UseGait = false; }
+	CWalkAnim()
+	{
+		m_Anim = MONSTER_ANIM_WALK;
+		UseGait = false;
+	}
 };
 
 /*class CAnimJump : public CAnimation {
@@ -55,33 +61,38 @@ public:
 //Initialized with
 //vData & (1<<0) == Hold releases to any other anim than walk when request
 //vData & (1<<1) == Hold will use gait
-class CAnimHold : public CAnimation {
+class CAnimHold : public CAnimation
+{
 	bool ReleaseAnim;
-public:
-	bool CanChangeTo( MONSTER_ANIM NewAnim, void *vData = NULL );
-	void Animate( );
-	void Initialize( void *vData = NULL );
 
-	CAnimHold( ) { m_Anim = MONSTER_ANIM_HOLD; }
+public:
+	bool CanChangeTo(MONSTER_ANIM NewAnim, void *vData = NULL);
+	void Animate();
+	void Initialize(void *vData = NULL);
+
+	CAnimHold() { m_Anim = MONSTER_ANIM_HOLD; }
 };
 
-class CAnimOnce : public CAnimation {
+class CAnimOnce : public CAnimation
+{
 public:
-	bool CanChangeTo( MONSTER_ANIM NewAnim, void *vData = NULL );
-	void Animate( );
-	void Initialize( void *vData = NULL );
+	bool CanChangeTo(MONSTER_ANIM NewAnim, void *vData = NULL);
+	void Animate();
+	void Initialize(void *vData = NULL);
 
-	CAnimOnce( ) { m_Anim = MONSTER_ANIM_ONCE; }
+	CAnimOnce() { m_Anim = MONSTER_ANIM_ONCE; }
 };
 
-class CAnimAct : public CAnimation {
+class CAnimAct : public CAnimation
+{
 	bool ReleaseAnim;
-public:
-	bool CanChangeTo( MONSTER_ANIM NewAnim, void *vData = NULL );
-	void Animate( );
-	void Initialize( void *vData = NULL );
 
-	CAnimAct( ) { m_Anim = MONSTER_ANIM_ACT; }
+public:
+	bool CanChangeTo(MONSTER_ANIM NewAnim, void *vData = NULL);
+	void Animate();
+	void Initialize(void *vData = NULL);
+
+	CAnimAct() { m_Anim = MONSTER_ANIM_ACT; }
 };
 extern CWalkAnim gAnimWalk;
 //extern CAnimJump gAnimJump;

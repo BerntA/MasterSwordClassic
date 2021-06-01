@@ -16,48 +16,48 @@
 
 	//pInflicter->CounterEffect( this, CE_HITWORLD, pSoundEnt );
 }*/
-void CBaseEntity::CounterEffect( CBaseEntity *pInflictor, int iEffect, void *pExtraData )
+void CBaseEntity::CounterEffect(CBaseEntity *pInflictor, int iEffect, void *pExtraData)
 {
-	if( iEffect == CE_HITWORLD )
+	if (iEffect == CE_HITWORLD)
 		return;
 
 	//Let the object know it hit a wall
-	pInflictor->CounterEffect( this, CE_HITWORLD, NULL );
+	pInflictor->CounterEffect(this, CE_HITWORLD, NULL);
 }
-void CBaseEntity::SetFollow( CBaseEntity *pTarget, int Flags )
+void CBaseEntity::SetFollow(CBaseEntity *pTarget, int Flags)
 {
-	if( pTarget )
+	if (pTarget)
 	{
 		//Special follow type.  Follows and rotates with the entity while offset by a certain amount
 		float Distance = (pev->origin - pTarget->pev->origin).Length();
-		Vector RelAngles = UTIL_VecToAngles( pev->origin - pTarget->pev->origin ) - pTarget->pev->angles;
+		Vector RelAngles = UTIL_VecToAngles(pev->origin - pTarget->pev->origin) - pTarget->pev->angles;
 		RelAngles.x *= -1;
-		UTIL_MakeVectorsPrivate( RelAngles, pev->vuser1, NULL, NULL );
+		UTIL_MakeVectorsPrivate(RelAngles, pev->vuser1, NULL, NULL);
 		pev->vuser1 *= Distance;
 		pev->angles -= pTarget->pev->angles;
 		pev->angles.x *= -1;
 		pev->owner = pTarget->edict();
-		SetBits( pev->playerclass, ENT_EFFECT_FOLLOW_ROTATE|Flags );
+		SetBits(pev->playerclass, ENT_EFFECT_FOLLOW_ROTATE | Flags);
 		m_AttachToEnt = pTarget;
 	}
 	else
 	{
 		CBaseEntity *pOwner = m_AttachToEnt.Entity();
-		if( pOwner && pOwner->IsAlive() )
-			pev->angles += pOwner->pev->angles;							//Update my angles
+		if (pOwner && pOwner->IsAlive())
+			pev->angles += pOwner->pev->angles; //Update my angles
 
 		pev->vuser1 = g_vecZero;
 		pev->owner = NULL;
-		ClearBits( pev->playerclass, ENT_EFFECT_FOLLOW_ROTATE );
+		ClearBits(pev->playerclass, ENT_EFFECT_FOLLOW_ROTATE);
 		m_AttachToEnt = NULL;
 	}
 }
-bool CBaseEntity::CanDamage( CBaseEntity *pOther )
+bool CBaseEntity::CanDamage(CBaseEntity *pOther)
 {
-	return	( pOther->pev->takedamage > DAMAGE_NO			)  &&	//The entity can take damage
-			( !FBitSet(pOther->pev->flags, FL_GODMODE)		);		//The entity is not invulnerable;
+	return (pOther->pev->takedamage > DAMAGE_NO) &&	   //The entity can take damage
+		   (!FBitSet(pOther->pev->flags, FL_GODMODE)); //The entity is not invulnerable;
 }
-void CBaseEntity::SUB_FadeOut( float FadeDuration )
+void CBaseEntity::SUB_FadeOut(float FadeDuration)
 {
 	m_FadeDuration = FadeDuration;
 	m_TimeFadeStart = gpGlobals->time;
@@ -65,20 +65,20 @@ void CBaseEntity::SUB_FadeOut( float FadeDuration )
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-void CBaseEntity :: Think_FadeOut ( void  )
+void CBaseEntity ::Think_FadeOut(void)
 {
 	float Duration = gpGlobals->time - m_TimeFadeStart;
-	if( Duration >= m_FadeDuration )
+	if (Duration >= m_FadeDuration)
 	{
 		pev->renderamt = 0;
-		SUB_Remove( );
+		SUB_Remove();
 		return;
 	}
 
 	float FadeRatio = Duration / m_FadeDuration;
-	
-	FadeRatio = max( FadeRatio, 0.0f );
-	FadeRatio = min( FadeRatio, 1.0f );
+
+	FadeRatio = max(FadeRatio, 0.0f);
+	FadeRatio = min(FadeRatio, 1.0f);
 
 	pev->renderamt = 255 * FadeRatio;
 	pev->nextthink = gpGlobals->time + 0.1f;

@@ -17,31 +17,23 @@
 //
 
 #ifndef DEBUG
-	#define ASSERT( x )
+#define ASSERT(x)
 #endif
 
-void BEGIN_READ( void *buf, int size );
-int READ_CHAR( void );
-int READ_BYTE( void );
-int READ_SHORT( void );
-int READ_WORD( void );
-int READ_LONG( void );
-float READ_FLOAT( void );
-char* READ_STRING( void );
-float READ_COORD( void );
-float READ_ANGLE( void );
-float READ_HIRESANGLE( void );
+void BEGIN_READ(void *buf, int size);
+int READ_CHAR(void);
+int READ_BYTE(void);
+int READ_SHORT(void);
+int READ_WORD(void);
+int READ_LONG(void);
+float READ_FLOAT(void);
+char *READ_STRING(void);
+float READ_COORD(void);
+float READ_ANGLE(void);
+float READ_HIRESANGLE(void);
 
 //Master Sword
-void READ_REWIND_LONG( void );
-void READ_REWIND_CHAR( void );
-void READ_REWIND_SHORT( void );
-void READ_REWIND_COORD( void );
-
-
-
-
-
-
-
-
+void READ_REWIND_LONG(void);
+void READ_REWIND_CHAR(void);
+void READ_REWIND_SHORT(void);
+void READ_REWIND_COORD(void);

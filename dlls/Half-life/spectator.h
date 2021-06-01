@@ -14,7 +14,7 @@
 ****/
 // Spectator.h
 
-class CBaseSpectator : public CBaseEntity 
+class CBaseSpectator : public CBaseEntity
 {
 public:
 	void Spawn();

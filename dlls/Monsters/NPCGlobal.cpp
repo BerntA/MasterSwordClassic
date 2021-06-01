@@ -2,25 +2,26 @@
 
 // DynamicPrecache - Precaches monsters specified in the ms_dynamicnpc CVAR.
 //					 Used for testing monster not on the map or dynamic quests
-void CMSMonster::DynamicPrecache( )
+void CMSMonster::DynamicPrecache()
 {
-	char *pszString = (char *)CVAR_GET_STRING( "ms_dynamicnpc" );
-	if( !pszString || !*pszString )
+	char *pszString = (char *)CVAR_GET_STRING("ms_dynamicnpc");
+	if (!pszString || !*pszString)
 		return;
 
 	msstringlist NPCs;
 
-	TokenizeString( pszString, NPCs );
+	TokenizeString(pszString, NPCs);
 
-	 for (int i = 0; i < NPCs.size(); i++) 
+	for (int i = 0; i < NPCs.size(); i++)
 	{
 		msstring_ref ScriptFile = NPCs[i];
 
-		CMSMonster *pMonster = (CMSMonster *)CREATE_ENT( "ms_npc" );
-		if( !pMonster ) continue;
+		CMSMonster *pMonster = (CMSMonster *)CREATE_ENT("ms_npc");
+		if (!pMonster)
+			continue;
 
-		ALERT( at_console, "Loading extra npc: %s\n", ScriptFile );
-		pMonster->Spawn( ScriptFile );  //Spawns in precache mode (g_fInPrecache == true), so its immediately deleted
+		ALERT(at_console, "Loading extra npc: %s\n", ScriptFile);
+		pMonster->Spawn(ScriptFile); //Spawns in precache mode (g_fInPrecache == true), so its immediately deleted
 	}
 }
 

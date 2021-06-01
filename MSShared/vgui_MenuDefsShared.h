@@ -1,4 +1,5 @@
-enum { // VGUI Menu definitions
+enum
+{ // VGUI Menu definitions
 	MENU_DEFAULT = 1,
 	MENU_INTRO,
 	MENU_SPECHELP,

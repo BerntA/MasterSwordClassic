@@ -1,7 +1,8 @@
 //Master Sword
-#define MAX_MENU_STRING	512
+#define MAX_MENU_STRING 512
 
-enum MenuType { //menutypes
+enum MenuType
+{ //menutypes
 	MENU_NORMAL,
 	MENU_LISTSPELLS,
 	MENU_ACTIONS,
@@ -14,14 +15,14 @@ enum MenuType { //menutypes
 class CHudMenu : public CHudBase
 {
 public:
-	int Init( void );
-	void InitHUDData( void );
-	int VidInit( void );
-	void Reset( void );
-	int Draw( float flTime );
-	int MsgFunc_ShowMenu( const char *pszName, int iSize, void *pbuf );
+	int Init(void);
+	void InitHUDData(void);
+	int VidInit(void);
+	void Reset(void);
+	int Draw(float flTime);
+	int MsgFunc_ShowMenu(const char *pszName, int iSize, void *pbuf);
 
-	void SelectMenuItem( int menu_item );
+	void SelectMenuItem(int menu_item);
 
 	int m_fMenuDisplayed;
 	int m_bitsValidSlots;
@@ -32,7 +33,7 @@ public:
 	//Master Sword
 	TCallbackMenu m;
 
-	int ShowMenu( int bitsValidSlots, const char *pszMenuString, MenuCallback CallBack, MenuType mtMenuType = MENU_NORMAL, float ShutOffTime = 0);
-	bool HideMyMenu( int mtMenuType );
+	int ShowMenu(int bitsValidSlots, const char *pszMenuString, MenuCallback CallBack, MenuType mtMenuType = MENU_NORMAL, float ShutOffTime = 0);
+	bool HideMyMenu(int mtMenuType);
 	//------------
 };

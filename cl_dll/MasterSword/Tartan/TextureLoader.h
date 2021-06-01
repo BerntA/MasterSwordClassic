@@ -10,20 +10,20 @@ struct loadtex_t
 {
 	uint GLTexureID;
 	uint Width, Height;
-	uint GLWidth, GLHeight;	//the width and hieght, after conversion to 2^x
-	float CoordU, CoordV;		//The texture coordinates, after conversion to 2^x
+	uint GLWidth, GLHeight; //the width and hieght, after conversion to 2^x
+	float CoordU, CoordV;	//The texture coordinates, after conversion to 2^x
 };
 
 namespace Tartan
 {
-	bool LoadTextureFile( const char *sFilePath, loadtex_t &LoadTex ); //!< Load texture file in sFilePath, returns OpenGL textureid in textureid
-	bool LoadMissingTexture( int &iTextureID ); //!< Loads missing texture texture into textureid
-   
+	bool LoadTextureFile(const char *sFilePath, loadtex_t &LoadTex); //!< Load texture file in sFilePath, returns OpenGL textureid in textureid
+	bool LoadMissingTexture(int &iTextureID);						 //!< Loads missing texture texture into textureid
+
 	//bool LoadTexturePCX( int &iReturnedTextureID, const char *sFilepath ); //!< Load pcx texture file in sFilePath, returns OpenGL textureid in textureid
-	bool LoadTextureTGA( const char *sFilepath, loadtex_t &LoadTex ); //!< Load tga texture file in sFilePath, returns OpenGL textureid in textureid
-	bool LoadTextureBMP( const char *sFilepath, loadtex_t &LoadTex );
+	bool LoadTextureTGA(const char *sFilepath, loadtex_t &LoadTex); //!< Load tga texture file in sFilePath, returns OpenGL textureid in textureid
+	bool LoadTextureBMP(const char *sFilepath, loadtex_t &LoadTex);
 }
 
-void GetCompatibleTextureSize( uint SizeW, uint SizeH, uint &outNewSizeW, uint &outNewSizeH, float &outTexCoordU, float &outTexCoordV );
-bool LoadGLTexture(  const char *FileName, uint &TextureID );
-bool LoadGLTexture(  const char *FileName, loadtex_t &LoadTga );
+void GetCompatibleTextureSize(uint SizeW, uint SizeH, uint &outNewSizeW, uint &outNewSizeH, float &outTexCoordU, float &outTexCoordV);
+bool LoadGLTexture(const char *FileName, uint &TextureID);
+bool LoadGLTexture(const char *FileName, loadtex_t &LoadTga);

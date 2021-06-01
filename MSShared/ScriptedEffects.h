@@ -1,10 +1,9 @@
 //Scripted effects
 
-
 //Flags
-#define SCRIPTEFFECT_NORMAL			(0)
-#define SCRIPTEFFECT_PLAYERACTION	(1<<0)
-#define SCRIPTEFFECT_NOSTACK		(1<<1)
+#define SCRIPTEFFECT_NORMAL (0)
+#define SCRIPTEFFECT_PLAYERACTION (1 << 0)
+#define SCRIPTEFFECT_NOSTACK (1 << 1)
 
 //Interface for monsters, items, etc.
 /*class IScriptedEffect
@@ -18,8 +17,13 @@ public:
 
 struct globalscripteffect_t
 {
-	globalscripteffect_t( ) { }
-	globalscripteffect_t( string_i Name, string_i Scriptname, int Flags ) { m_Name = Name; m_ScriptName = Scriptname; m_Flags = Flags; }
+	globalscripteffect_t() {}
+	globalscripteffect_t(string_i Name, string_i Scriptname, int Flags)
+	{
+		m_Name = Name;
+		m_ScriptName = Scriptname;
+		m_Flags = Flags;
+	}
 
 	string_i m_Name, m_ScriptName;
 	int m_Flags;
@@ -28,11 +32,9 @@ struct globalscripteffect_t
 class CGlobalScriptedEffects
 {
 public:
-	static mslist<globalscripteffect_t>	Effects;
+	static mslist<globalscripteffect_t> Effects;
 
-	static void RegisterEffect( globalscripteffect_t &Effect );
-	static CScript *ApplyEffect( msstring_ref ScriptName, IScripted *pScriptTarget, CBaseEntity *pTarget, msstringlist *Parameters = NULL );
-	static void DeleteEffects( );
+	static void RegisterEffect(globalscripteffect_t &Effect);
+	static CScript *ApplyEffect(msstring_ref ScriptName, IScripted *pScriptTarget, CBaseEntity *pTarget, msstringlist *Parameters = NULL);
+	static void DeleteEffects();
 };
-
-

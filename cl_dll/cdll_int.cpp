@@ -28,9 +28,9 @@
 //#define LOG_ALLEXPORTS //more exports in entity.cpp
 
 #ifdef LOG_ALLEXPORTS
-	#define logfileopt logfile
+#define logfileopt logfile
 #else
-	#define logfileopt NullFile
+#define logfileopt NullFile
 #endif
 
 extern "C"
@@ -44,7 +44,7 @@ extern "C"
 #include "interface.h"
 #include "voice_status.h"
 
-#define DLLEXPORT __declspec( dllexport )
+#define DLLEXPORT __declspec(dllexport)
 
 cl_enginefunc_t gEngfuncs;
 CHud gHUD;
@@ -58,7 +58,7 @@ void InitInput(void);
 void EV_HookEvents(void);
 void IN_Commands(void);
 
-static cvar_s  *g_pVarBorderless = NULL;
+static cvar_s *g_pVarBorderless = NULL;
 static int g_iBorderlessMode = 0;
 
 enum BORDERLESS_WINDOW_TYPES
@@ -75,22 +75,22 @@ enum BORDERLESS_WINDOW_TYPES
 Called when the DLL is first loaded.
 ==========================
 */
-extern "C" 
+extern "C"
 {
-int		DLLEXPORT Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion );
-int		DLLEXPORT HUD_VidInit( void );
-void	DLLEXPORT HUD_Init( void );
-int		DLLEXPORT HUD_Redraw( float flTime, int intermission );
-int		DLLEXPORT HUD_UpdateClientData( client_data_t *cdata, float flTime );
-void	DLLEXPORT HUD_Reset ( void );
-void	DLLEXPORT HUD_PlayerMove( struct playermove_s *ppmove, int server );
-void	DLLEXPORT HUD_PlayerMoveInit( struct playermove_s *ppmove );
-char	DLLEXPORT HUD_PlayerMoveTexture( char *name );
-int		DLLEXPORT HUD_ConnectionlessPacket( const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size );
-int		DLLEXPORT HUD_GetHullBounds( int hullnumber, float *mins, float *maxs );
-void	DLLEXPORT HUD_Frame( double time );
-void	DLLEXPORT HUD_VoiceStatus(int entindex, qboolean bTalking);
-void	DLLEXPORT HUD_DirectorMessage( int iSize, void *pbuf );
+	int DLLEXPORT Initialize(cl_enginefunc_t *pEnginefuncs, int iVersion);
+	int DLLEXPORT HUD_VidInit(void);
+	void DLLEXPORT HUD_Init(void);
+	int DLLEXPORT HUD_Redraw(float flTime, int intermission);
+	int DLLEXPORT HUD_UpdateClientData(client_data_t *cdata, float flTime);
+	void DLLEXPORT HUD_Reset(void);
+	void DLLEXPORT HUD_PlayerMove(struct playermove_s *ppmove, int server);
+	void DLLEXPORT HUD_PlayerMoveInit(struct playermove_s *ppmove);
+	char DLLEXPORT HUD_PlayerMoveTexture(char *name);
+	int DLLEXPORT HUD_ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size);
+	int DLLEXPORT HUD_GetHullBounds(int hullnumber, float *mins, float *maxs);
+	void DLLEXPORT HUD_Frame(double time);
+	void DLLEXPORT HUD_VoiceStatus(int entindex, qboolean bTalking);
+	void DLLEXPORT HUD_DirectorMessage(int iSize, void *pbuf);
 }
 
 /*
@@ -138,7 +138,6 @@ static void SetBorderlessWindow() // Bernt; fixing bloom by making fullscreen wi
 		::ShowWindow(handle, SW_SHOW);
 		break;
 	}
-
 	}
 
 	g_iBorderlessMode = iCurrentMode;
@@ -151,29 +150,29 @@ HUD_GetHullBounds
   Engine calls this to enumerate player collision hulls, for prediction.  Return 0 if the hullnumber doesn't exist.
 ================================
 */
-int DLLEXPORT HUD_GetHullBounds( int hullnumber, float *mins, float *maxs )
+int DLLEXPORT HUD_GetHullBounds(int hullnumber, float *mins, float *maxs)
 {
 	int iret = 0;
 	DBG_INPUT;
 
 	startdbg;
-	dbg( "Begin" );
+	dbg("Begin");
 
-	switch ( hullnumber )
+	switch (hullnumber)
 	{
-	case 0:				// Normal player
+	case 0: // Normal player
 		mins = Vector(-16, -16, -36);
 		maxs = Vector(16, 16, 36);
 		iret = 1;
 		break;
-	case 1:				// Crouched player
-		mins = Vector(-16, -16, -18 );
-		maxs = Vector(16, 16, 18 );
+	case 1: // Crouched player
+		mins = Vector(-16, -16, -18);
+		maxs = Vector(16, 16, 18);
 		iret = 1;
 		break;
-	case 2:				// Point based hull
-		mins = Vector( 0, 0, 0 );
-		maxs = Vector( 0, 0, 0 );
+	case 2: // Point based hull
+		mins = Vector(0, 0, 0);
+		maxs = Vector(0, 0, 0);
 		iret = 1;
 		break;
 	}
@@ -192,7 +191,7 @@ HUD_ConnectionlessPacket
   size of the response_buffer, so you must zero it out if you choose not to respond.
 ================================
 */
-int	DLLEXPORT HUD_ConnectionlessPacket( const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size )
+int DLLEXPORT HUD_ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size)
 {
 	DBG_INPUT;
 	startdbg;
@@ -211,37 +210,37 @@ int	DLLEXPORT HUD_ConnectionlessPacket( const struct netadr_s *net_from, const c
 	return 0;
 }
 
-void DLLEXPORT HUD_PlayerMoveInit( struct playermove_s *ppmove )
+void DLLEXPORT HUD_PlayerMoveInit(struct playermove_s *ppmove)
 {
 	DBG_INPUT;
 	startdbg;
-	dbg( "Begin" );
-	PM_Init( ppmove );
+	dbg("Begin");
+	PM_Init(ppmove);
 	enddbg;
 }
 
-char DLLEXPORT HUD_PlayerMoveTexture( char *name )
+char DLLEXPORT HUD_PlayerMoveTexture(char *name)
 {
 	DBG_INPUT;
 	char ret;
 	startdbg;
-	ret = PM_FindTextureType( name );
+	ret = PM_FindTextureType(name);
 	enddbg;
 	return ret;
 }
 
-void DLLEXPORT HUD_PlayerMove( struct playermove_s *ppmove, int server )
+void DLLEXPORT HUD_PlayerMove(struct playermove_s *ppmove, int server)
 {
 	DBG_INPUT;
 	startdbg;
 
-	dbg( "Begin" );
+	dbg("Begin");
 	//Half-life sets the dead flag if player healh is < 1.  In MS its < 0
-	PM_Move( ppmove, server );
+	PM_Move(ppmove, server);
 	enddbg;
 }
 
-int DLLEXPORT Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
+int DLLEXPORT Initialize(cl_enginefunc_t *pEnginefuncs, int iVersion)
 {
 	DBG_INPUT;
 	startdbg;
@@ -262,7 +261,6 @@ int DLLEXPORT Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 	return 1;
 }
 
-
 /*
 ==========================
 	HUD_VidInit
@@ -273,20 +271,20 @@ so the HUD can reinitialize itself.
 ==========================
 */
 
-int DLLEXPORT HUD_VidInit( void )
+int DLLEXPORT HUD_VidInit(void)
 {
 	DBG_INPUT;
 	startdbg;
 
-	dbg( "Call gHUD.VidInit" );
+	dbg("Call gHUD.VidInit");
 	gHUD.VidInit();
 
-	dbg( "Call VGui_Startup" );
+	dbg("Call VGui_Startup");
 	VGui_Startup();
 
-	dbg( "Call Glow" );
+	dbg("Call Glow");
 	// IMAGE-SPACE GLOW - Thothie TWHL JUN2010_22 - see comments in tri.cpp
-    InitScreenGlow();
+	InitScreenGlow();
 
 	logfile << "[HUD_VidInit: Complete]" << endl;
 
@@ -305,21 +303,21 @@ the hud variables.
 ==========================
 */
 
-void DLLEXPORT HUD_Init( void )
+void DLLEXPORT HUD_Init(void)
 {
 	DBG_INPUT;
 	startdbg;
 
 	logfile << "[HUD_Init: InitInput]" << endl;
-	dbg( "Call InitInput" );
+	dbg("Call InitInput");
 	InitInput();
 
 	logfile << "[HUD_Init: gHUD.Init]" << endl;
-	dbg( "Call gHUD.Init" );
+	dbg("Call gHUD.Init");
 	gHUD.Init();
 
 	logfile << "[HUD_Init: Scheme_Init]" << endl;
-	dbg( "Call Scheme_Init" );
+	dbg("Call Scheme_Init");
 	Scheme_Init();
 
 	logfile << "[HUD_Init: Complete]" << endl;
@@ -336,19 +334,19 @@ redraw the HUD.
 ===========================
 */
 
-int DLLEXPORT HUD_Redraw( float time, int intermission )
+int DLLEXPORT HUD_Redraw(float time, int intermission)
 {
 	DBG_INPUT;
 	startdbg;
 
-	dbg( "Call gHUD.Redraw" );
+	dbg("Call gHUD.Redraw");
 
 	logfileopt << "HUD_Redraw...";
 
-    // IMAGE-SPACE GLOW - Thothie TWHL JUN2010_22 - see comments in tri.cpp
-    RenderScreenGlow();
+	// IMAGE-SPACE GLOW - Thothie TWHL JUN2010_22 - see comments in tri.cpp
+	RenderScreenGlow();
 
-	gHUD.Redraw( time, intermission );
+	gHUD.Redraw(time, intermission);
 
 	//logfileopt << "END\r\n";
 	enddbg;
@@ -368,17 +366,17 @@ returns 1 if anything has been changed, 0 otherwise.
 ==========================
 */
 
-int DLLEXPORT HUD_UpdateClientData(client_data_t *pcldata, float flTime )
+int DLLEXPORT HUD_UpdateClientData(client_data_t *pcldata, float flTime)
 {
 	int ret = 0;
 	DBG_INPUT;
 	startdbg;
 
-	dbg( "Call IN_Commands" );
+	dbg("Call IN_Commands");
 	IN_Commands();
 
-	dbg( "Call gHUD.UpdateClientData" );
-	ret = gHUD.UpdateClientData(pcldata, flTime );
+	dbg("Call gHUD.UpdateClientData");
+	ret = gHUD.UpdateClientData(pcldata, flTime);
 
 	enddbg;
 	return ret;
@@ -392,11 +390,11 @@ Called at start and end of demos to restore to "non"HUD state.
 ==========================
 */
 
-void DLLEXPORT HUD_Reset( void )
+void DLLEXPORT HUD_Reset(void)
 {
 	DBG_INPUT;
 	startdbg;
-	dbg( "Call VidInit" );
+	dbg("Call VidInit");
 
 	gHUD.VidInit();
 
@@ -413,14 +411,14 @@ Called by engine every frame that client .dll is loaded
 ==========================
 */
 
-void DLLEXPORT HUD_Frame( double time )
+void DLLEXPORT HUD_Frame(double time)
 {
 	DBG_INPUT;
 	startdbg;
 
-	dbg( "Call ServersThink" );
-	ServersThink( time );
-	dbg( "Call ServersThink DONE" );
+	dbg("Call ServersThink");
+	ServersThink(time);
+	dbg("Call ServersThink DONE");
 
 	dbg("Call SetBorderlessWindow");
 	SetBorderlessWindow();
@@ -442,7 +440,7 @@ void DLLEXPORT HUD_VoiceStatus(int entindex, qboolean bTalking)
 	DBG_INPUT;
 	startdbg;
 
-	dbg( "Call GetClientVoiceMgr()->UpdateSpeakerStatus" );
+	dbg("Call GetClientVoiceMgr()->UpdateSpeakerStatus");
 	GetClientVoiceMgr()->UpdateSpeakerStatus(entindex, bTalking);
 
 	enddbg;
@@ -456,14 +454,13 @@ Called when a director event message was received
 ==========================
 */
 
-void DLLEXPORT HUD_DirectorMessage( int iSize, void *pbuf )
+void DLLEXPORT HUD_DirectorMessage(int iSize, void *pbuf)
 {
 	DBG_INPUT;
 	startdbg;
 
-	dbg( "Call gHUD.m_Spectator.DirectorMessage" );
-	gHUD.m_Spectator.DirectorMessage( iSize, pbuf );
+	dbg("Call gHUD.m_Spectator.DirectorMessage");
+	gHUD.m_Spectator.DirectorMessage(iSize, pbuf);
 
 	enddbg;
-
 }

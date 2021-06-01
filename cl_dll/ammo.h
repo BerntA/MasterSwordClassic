@@ -18,31 +18,30 @@
 
 #define MAX_WEAPON_NAME 128
 
-
-#define WEAPON_FLAGS_SELECTONEMPTY	1
+#define WEAPON_FLAGS_SELECTONEMPTY 1
 
 #define WEAPON_IS_ONTARGET 0x40
 
 struct WEAPON
 {
-	char	szName[MAX_WEAPON_NAME];
-	int		iAmmoType;
-	int		iAmmo2Type;
-	int		iMax1;
-	int		iMax2;
-	int		iSlot;
-	int		iSlotPos;
-	int		iFlags;
-	int		iId;
-	int		iClip;
+	char szName[MAX_WEAPON_NAME];
+	int iAmmoType;
+	int iAmmo2Type;
+	int iMax1;
+	int iMax2;
+	int iSlot;
+	int iSlotPos;
+	int iFlags;
+	int iId;
+	int iClip;
 
-	int		iCount;		// # of itesm in plist
+	int iCount; // # of itesm in plist
 
 	HLSPRITE hActive;
 	wrect_t rcActive;
 	HLSPRITE hInactive;
 	wrect_t rcInactive;
-	HLSPRITE	hAmmo;
+	HLSPRITE hAmmo;
 	wrect_t rcAmmo;
 	HLSPRITE hAmmo2;
 	wrect_t rcAmmo2;
@@ -57,6 +56,5 @@ struct WEAPON
 };
 
 typedef int AMMO;
-
 
 #endif

@@ -18,24 +18,21 @@ class CGroupFile
 {
 
 protected:
-
 	char m_FileName[MAX_PATH];
 	//unsigned long FindHeader( const char *pszName, groupheader_t &GroupHeader );
-	bool DeleteEntry( const char *pszName );
+	bool DeleteEntry(const char *pszName);
 	bool m_IsOpen;
 
 public:
+	void Open(char *pszFileName);
+	~CGroupFile() { Close(); }
+	void Close();
+	bool IsOpen() { return m_IsOpen; }
+	bool WriteEntry(const char *pszName, byte *pData, unsigned long DataSize);
 
-	void Open( char *pszFileName );
-	~CGroupFile( ) { Close( ); }
-	void Close( );
-	bool IsOpen( ) { return m_IsOpen; }
-	bool WriteEntry( const char *pszName, byte *pData, unsigned long DataSize );
-	
 	//Call Read() with pBuffer == NULL to just get the size
-	bool ReadEntry( const char *pszName, byte *pBuffer, unsigned long &DataSize );
-	void Flush( );
-
+	bool ReadEntry(const char *pszName, byte *pBuffer, unsigned long &DataSize);
+	void Flush();
 
 	mslist<cachedentry_t> m_EntryList;
 };

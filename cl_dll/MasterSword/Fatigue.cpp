@@ -26,68 +26,69 @@
 
 float LastGainStaminaTime = 0;
 
-MS_DECLARE_MESSAGE( m_Fatigue, Fatigue );
+MS_DECLARE_MESSAGE(m_Fatigue, Fatigue);
 //MS_DECLARE_COMMAND( m_Fatigue, ToggleFatigue );
 
-int CHudFatigue::Init( void )
+int CHudFatigue::Init(void)
 {
 	m_DrawFatigue = FALSE;
 
-	HOOK_MESSAGE( Fatigue );
+	HOOK_MESSAGE(Fatigue);
 	//HOOK_COMMAND("fatigue", ToggleFatigue);
 
 	Reset();
 
-	gHUD.AddHudElem( this );
+	gHUD.AddHudElem(this);
 
 	return 1;
 }
 
-int CHudFatigue::Draw( float flTime ) {
-	if( m_DrawFatigue ) {
-		gHUD.DrawHudNumberSML( ScreenWidth-40, ScreenHeight-40, NULL, player.Stamina, 255, 255, 255);
-		gHUD.DrawHudNumberSML( ScreenWidth-20, ScreenHeight-40, NULL, player.MaxStamina( ), 255, 255, 255);
+int CHudFatigue::Draw(float flTime)
+{
+	if (m_DrawFatigue)
+	{
+		gHUD.DrawHudNumberSML(ScreenWidth - 40, ScreenHeight - 40, NULL, player.Stamina, 255, 255, 255);
+		gHUD.DrawHudNumberSML(ScreenWidth - 20, ScreenHeight - 40, NULL, player.MaxStamina(), 255, 255, 255);
 	}
-	return 1; 
+	return 1;
 }
 
-int CHudFatigue::VidInit( void ) { return 1; }
+int CHudFatigue::VidInit(void) { return 1; }
 
-void CHudFatigue::Reset( void )
+void CHudFatigue::Reset(void)
 {
-//	m_iFlags &= ~HUD_ACTIVE;
+	//	m_iFlags &= ~HUD_ACTIVE;
 	m_iFlags |= HUD_ACTIVE;
 }
-void CHudFatigue::InitHUDData( void ) 
-{ 
+void CHudFatigue::InitHUDData(void)
+{
 	fBreatheTime = 0;
 	LastGainStaminaTime = 0;
 }
 
 // Think about your fatigue
-void CHudFatigue::DoThink( )
+void CHudFatigue::DoThink()
 {
-	float MaxStamina = player.MaxStamina( );
+	float MaxStamina = player.MaxStamina();
 
-	if( player.Stamina > MaxStamina ) player.Stamina = MaxStamina;
+	if (player.Stamina > MaxStamina)
+		player.Stamina = MaxStamina;
 
-	else if( player.Stamina < player.MaxStamina( ) &&
-		!FBitSet(player.m_StatusFlags,PLAYER_MOVE_RUNNING) && 
-		!(player.IsActing( ))
-		) 
+	else if (player.Stamina < player.MaxStamina() &&
+			 !FBitSet(player.m_StatusFlags, PLAYER_MOVE_RUNNING) &&
+			 !(player.IsActing()))
 	{
 		float flFrameIncrement, flExtraFatigue = 0;
-		flFrameIncrement = gpGlobals->time-LastGainStaminaTime; // Standard stamina gain...
-		
+		flFrameIncrement = gpGlobals->time - LastGainStaminaTime; // Standard stamina gain...
+
 		//Stamina gain bonus +1 for every 10 str
-		flExtraFatigue = 0.6;//3
-		flExtraFatigue += (1/10.0) * player.GetNatStat(NATURAL_STR); // 30.0
+		flExtraFatigue = 0.6;										   //3
+		flExtraFatigue += (1 / 10.0) * player.GetNatStat(NATURAL_STR); // 30.0
 
 		player.Stamina += flFrameIncrement * flExtraFatigue;
-		player.Stamina = max(min(player.Stamina,MaxStamina),0);
-
+		player.Stamina = max(min(player.Stamina, MaxStamina), 0);
 	}
-	
+
 	LastGainStaminaTime = gpGlobals->time;
 	//Breathe( );
 }
@@ -96,19 +97,22 @@ void CHudFatigue::DoThink( )
 // accepts five values:
 //		byte   : 0 = Next byte specifies iFatigue | 1 = Next byte specifies iMaxFatigue
 //		byte   : iFatigue = Current amount of Fatigue
-int CHudFatigue::MsgFunc_Fatigue( const char *pszName, int iSize, void *pbuf )
+int CHudFatigue::MsgFunc_Fatigue(const char *pszName, int iSize, void *pbuf)
 {
-	BEGIN_READ( pbuf, iSize );
+	BEGIN_READ(pbuf, iSize);
 
-	if( !READ_BYTE() ) player.Stamina = READ_BYTE();
+	if (!READ_BYTE())
+		player.Stamina = READ_BYTE();
 
 	//Lose a percentage of total stamina
-	else if( READ_BYTE() == 1 ) player.Stamina *= (1-(READ_BYTE()/100.0));
+	else if (READ_BYTE() == 1)
+		player.Stamina *= (1 - (READ_BYTE() / 100.0));
 
-	player.Stamina = max(min(player.Stamina,player.MaxStamina()),0);
+	player.Stamina = max(min(player.Stamina, player.MaxStamina()), 0);
 	return 1;
 }
-void CHudFatigue::UserCmd_ToggleFatigue( void ) {
+void CHudFatigue::UserCmd_ToggleFatigue(void)
+{
 	m_DrawFatigue = !m_DrawFatigue;
 }
 /*void CHudFatigue :: Breathe( )
@@ -141,4 +145,3 @@ void CHudFatigue::UserCmd_ToggleFatigue( void ) {
 		
 	}
 }*/
-

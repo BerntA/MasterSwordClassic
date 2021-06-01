@@ -57,25 +57,25 @@
 // ****************************************************************************
 // The following will be the only types used in exported functions:
 // uint8   FAR*
-//  int32  
+//  int32
 //  int32  FAR*
 // uint32
 // uint32  FAR*
 // float64           Note that float64 will *not* be used as a return value.
-// float64 FAR*   
+// float64 FAR*
 // void    FAR*
 // ****************************************************************************
 
-typedef unsigned char   uint8;
-typedef signed   long   int32;
-typedef unsigned long  uint32;
-typedef double        float64;
+typedef unsigned char uint8;
+typedef signed long int32;
+typedef unsigned long uint32;
+typedef double float64;
 
 // Generic void function pointer.
-typedef void (* VoidFunction)(void);
+typedef void (*VoidFunction)(void);
 
 // Common derived types that can be used in exported functions:
-typedef int32      bool32;   // 0 = FALSE, non zero is TRUE (typically 1)
+typedef int32 bool32; // 0 = FALSE, non zero is TRUE (typically 1)
 
 // size_t is ususually defined in the i/o header files...
 #ifndef _SIZE_T_DEFINED
@@ -84,4 +84,3 @@ typedef unsigned int size_t;
 #endif
 
 #endif // ETYPES_H
-
