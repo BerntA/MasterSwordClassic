@@ -51,7 +51,6 @@ bool CGenericItem::CheckKeys( attackdata_t *pAttData )
 
 	bool fReturn = false;
 	int iLen = 0, iCmds = pAttData->ComboKeys.size();
-	char CmdType = 0;
 	int iThisCmd = 0;
 
 	//Count the number of keys required
@@ -277,8 +276,7 @@ bool CGenericItem::StartAttack( int ForceAttackNum )
 						continue; // Haven't charged enough for this charge attack
 					}
 
-					//Got here - Attempting to start this charged attack
-					int stop = 0;
+					// Got here - Attempting to start this charged attack
 				}
 				else if( AttData.flChargeAmt ) continue;  //Don't do 'charge' when not charging
 

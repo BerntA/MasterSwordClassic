@@ -313,21 +313,18 @@ void CMSMonster::KeyValue( KeyValueData *pkvd )
 		m_Lives = atoi( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "spawnchance")) 
+	else if (FStrEq(pkvd->szKeyName, "spawnchance"))
 	{
 		//m_SpawnChance = min( 100, max( 0, atof( pkvd->szValue ) ) );
-		if (0 > atof( pkvd->szValue) )
-			if (100<0)
-				m_SpawnChance = 100;
-			else
-				m_SpawnChance = 0;
+		if (0 > atof(pkvd->szValue))
+			m_SpawnChance = 0;
 		else
-			if (100 < atof( pkvd->szValue) )
+			if (100 < atof(pkvd->szValue))
 				m_SpawnChance = 100;
 			else
-				m_SpawnChance = atof ( pkvd->szValue);
+				m_SpawnChance = atof(pkvd->szValue);
 
-		if( !m_SpawnChance ) m_SpawnChance = -1;
+		if (!m_SpawnChance) m_SpawnChance = -1;
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "spawnstart")) 
@@ -476,8 +473,7 @@ void CMSMonster :: Think( )
 	pev->nextthink = gpGlobals->time + 0.1;
 
 
-	if( pev->framerate > 1 )
- 		int stop = 0;
+	//if( pev->framerate > 1 )
 
 	float flInterval = 0;
 	//dbg( "StudioFrameAdvance" );
@@ -2299,8 +2295,8 @@ void CMSMonster::Killed( entvars_t *pevAttacker, int iGib )
 	BOOL DeleteMe = TRUE;
 
 	//NOV2014_21 Thothie - script side XP management option [begin]
-	bool xp_dump = (GetFirstScriptVar("NPC_DUMP_XP")=="1") ? true : false; //dump hits to array
-	bool xp_custom = (GetFirstScriptVar("NPC_CUSTOM_XP")=="1") ? true : false; //don't add XP code side
+	bool xp_dump = (strcmp(GetFirstScriptVar("NPC_DUMP_XP"), "1") == 0); //dump hits to array
+	bool xp_custom = (strcmp(GetFirstScriptVar("NPC_CUSTOM_XP"), "1") == 0); //don't add XP code side
 	msstring skillname;
 
 	if ( xp_dump )

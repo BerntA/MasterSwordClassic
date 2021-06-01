@@ -728,7 +728,7 @@ void ClientCommand2( edict_t *pEntity )
 					{
 						//Determine a unique ID for the item in storage
 						genericitem_full_t Item( pItem );
-						 for (int ID = 0; ID < SHRT_MAX; ID++) 
+						 for (unsigned int ID = 0; ID < SHRT_MAX; ID++) 
 						{
 							bool Duplicate = false;
 							for (int i = 0; i < pStorage->Items.size(); i++)
@@ -751,7 +751,7 @@ void ClientCommand2( edict_t *pEntity )
 					int ItemID = atoi(CMD_ARGV(2));
 					genericitem_t *pStorageItem = NULL;
 					int StorageItemIdx = 0;
-					 for (int i = 0; i < pStorage->Items.size(); i++) 
+					 for (unsigned int i = 0; i < pStorage->Items.size(); i++) 
 						if( pStorage->Items[i].ID == ItemID )
 							{ pStorageItem = &pStorage->Items[i]; StorageItemIdx = i; break; }
 
@@ -1511,7 +1511,6 @@ void ClientCommand2( edict_t *pEntity )
 	// ------ END CHEATS -----------
 	else
 	{
-		int do_nadda = 0;
 		// tell the user they entered an unknown command
 		//Thothie - buggy, counts MS commands as unknown, thus supressing
 		//ClientPrint( &pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs( "Unknown command: %s\n", pcmd ) );
@@ -2066,8 +2065,7 @@ int AddToFullPack( struct entity_state_s *state, int e, edict_t *ent, edict_t *h
 
 	int					i;
 
-	if( FBitSet( ent->v.playerclass, ENT_EFFECT_FOLLOW_ROTATE ) )
-		int stop = 0;
+	//if( FBitSet( ent->v.playerclass, ENT_EFFECT_FOLLOW_ROTATE ) )
 
 	// don't send if flagged for NODRAW and it's not the host getting the message
 	if ( ( ent->v.effects == EF_NODRAW ) &&

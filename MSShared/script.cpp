@@ -312,10 +312,10 @@ msstring_ref CScript::GetConst( msstring_ref Text )
 		{
 			msstring StackReturn = ParserName;		//This string must be on the stack, so recursive parsing doesn't screw up
 			StackReturn += "(";
-			 for (int i = 0; i < Params.size(); i++) 
+			 for (unsigned int i = 0; i < Params.size(); i++) 
 			{
 				StackReturn += GetConst(Params[i]);
-				if( i != Params.size()-1 ) StackReturn += ",";
+				if (i != (Params.size() - 1)) StackReturn += ",";
 				else StackReturn += ")";
 			}
 
@@ -3907,11 +3907,8 @@ bool CScript::ParseScriptFile( const char *pszScriptData )
 		LineNum++;
 	}
 
-	if( MSGlobals::IsServer && m.ScriptFile == "items/smallarms_rknife" )
-		int stop = 0;
-
-	if( MSGlobals::IsServer && m.ScriptFile == "items/bows_longbow" )
-		int stop = 0;
+	//if( MSGlobals::IsServer && m.ScriptFile == "items/smallarms_rknife" )
+	//if( MSGlobals::IsServer && m.ScriptFile == "items/bows_longbow" )
 
 	enddbg( "CSript::ParseScriptFile()" );
 //  Uncomment to print out all this function gathered from the script file
@@ -4440,7 +4437,6 @@ int CScript::ParseLine( const char *pszCommandLine /*in*/, int LineNum /*in*/, S
 				pszGlobalPointer = (Precaches[PrecachesTotal++] = Fullpath).c_str();
 
 			//if( Fullpath.contains( "human" ) )
-			//	int stop = 0;
 
 			switch( Precachetype )
 			{

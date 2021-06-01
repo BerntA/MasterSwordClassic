@@ -99,7 +99,7 @@ public:
 		if( !m_ItemsAllocated ) m_ItemsAllocated++;
 		else m_ItemsAllocated *= 2;
 		itemtype_y *pNewItems = ::msnew itemtype_y[m_ItemsAllocated];
-		 for (int i = 0; i < m_Items; i++)  
+		 for (unsigned int i = 0; i < m_Items; i++)  
 			pNewItems[i] = m_First[i];
 		unalloc( );
 		m_First = pNewItems;
@@ -126,11 +126,11 @@ public:
 		if( size() != OtherList.size( ) )
 		{
 			clear( );
-			 for (int i = 0; i < OtherList.size(); i++) 
+			for (unsigned int i = 0; i < OtherList.size(); i++)
 				add( OtherList[i] );
 		}
 		else									//Don't re-allocate if I don't have to
-			 for (int i = 0; i < OtherList.size(); i++) 
+			for (unsigned int i = 0; i < OtherList.size(); i++)
 				m_First[i] = OtherList[i];
 
 		return *this;
@@ -196,7 +196,7 @@ public:
 	int hashCode( )
 	{
 		int h = PRIME_INIT;
-		 for (int i = 0; i < len(); i++) 
+		 for (unsigned int i = 0; i < len(); i++) 
 		{
 			h = (h*PRIME_A) ^ (data[i] * PRIME_B);
 		}

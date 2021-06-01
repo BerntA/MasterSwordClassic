@@ -3784,7 +3784,8 @@ void CBasePlayer :: UpdateClientData( void )
 			pItem->Container_SendContents( );
 
 			//Update the cache with this item
-			clientitem_t &CachedItem = m_ClientItems.add( ClientItem );
+			// clientitem_t &CachedItem = 
+			m_ClientItems.add( ClientItem );
 		}
 	}
 
@@ -3895,7 +3896,7 @@ void CBasePlayer :: UpdateClientData( void )
 		gDisplayTitle = 0;
 	}*/
 
-	int Msg, Amt, *pLastAmt, Type;
+	int Msg = 0, Amt = 0, *pLastAmt = NULL, Type = 0;
 	 for (int i = 0; i < 4; i++) 
 	{
 		switch( i )
@@ -6249,7 +6250,6 @@ void CBasePlayer::Think_SendCharData( )
 
 	msstringlist VisitedMaps;
 
-	byte CharsActive = 0;
 	 for (int i = 0; i < m_CharInfo.size(); i++) 
 	{
 		charinfo_t &CharInfo = m_CharInfo[i];
@@ -6368,8 +6368,6 @@ void CBasePlayer::Music_Play( mslist<song_t> &Songs, CBaseEntity *pMusicArea )
 {
 	//NOV2014_12 - Dont think this is used by msarea_music anymore
 	//likely still used by mstrig_music, which maybe should be undone
-
-	bool CanPlay = false;
 
 	if( m_MusicArea && m_MusicArea.Entity()->Intersects( this ) )
 		return;	//I'm already standing within a music area

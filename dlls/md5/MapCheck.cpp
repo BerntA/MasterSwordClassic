@@ -17,7 +17,7 @@ bool FileCheckSumMatch( const char *FileName, unsigned char *CheckSum )
 	if( !file.is_open( ) ) return false;
 
 	file.seekg( 0, ios::end );
-	long FileSize = file.tellg( );
+	std::streamoff FileSize = file.tellg();
 	
 	byte *pFileData = new byte[FileSize];
 	file.seekg( 0, ios::beg );

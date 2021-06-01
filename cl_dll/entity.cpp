@@ -1186,7 +1186,7 @@ void CScript::CLScriptedEffect( msstringlist &Params )
 
 			//BEAM *pBeam = gEngfuncs.pEfxAPI->R_BeamLightning( StartPos, EndPos, ModelIdx, Life, Width, Amplitude, Brightness, Speed );
 			BEAM *pBeam = gEngfuncs.pEfxAPI->R_BeamPoints( StartPos, EndPos, ModelIdx, Life, Width, Amplitude, Brightness, Speed, 0, Framerate, Color.x, Color.y, Color.z );
-			int stop = 0;
+
 			//[begin] DEC2014_09 Thothie - beam_update - clear dead beams, add new
 			m_Beams.add(pBeam);
 			m_gLastLightID = (int)m_Beams.size()-1;
@@ -1220,7 +1220,6 @@ void CScript::CLScriptedEffect( msstringlist &Params )
 
 			//BEAM *pBeam = gEngfuncs.pEfxAPI->R_BeamLightning( StartPos, EndPos, ModelIdx, Life, Width, Amplitude, Brightness, Speed );
 			BEAM *pBeam = gEngfuncs.pEfxAPI->R_BeamEnts( startIdx, endIdx, ModelIdx, Life, Width, Amplitude, Brightness, Speed, 0, Framerate, Color.x, Color.y, Color.z );
-			int stop = 0;
 			//[begin] DEC2014_09 Thothie - beam_update - clear dead beams, add new
 			m_Beams.add(pBeam);
 			m_gLastLightID = (int)m_Beams.size()-1;
@@ -1252,7 +1251,6 @@ void CScript::CLScriptedEffect( msstringlist &Params )
 
 			//BEAM *pBeam = gEngfuncs.pEfxAPI->R_BeamLightning( StartPos, EndPos, ModelIdx, Life, Width, Amplitude, Brightness, Speed );
 			BEAM *pBeam = gEngfuncs.pEfxAPI->R_BeamEntPoint( startIdx, EndPos, ModelIdx, Life, Width, Amplitude, Brightness, Speed, 0, Framerate, Color.x, Color.y, Color.z );
-			int stop = 0;
 			//[begin] DEC2014_09 Thothie - beam_update - clear dead beams, add new
 			m_Beams.add(pBeam);
 			m_gLastLightID = (int)m_Beams.size()-1;
@@ -1291,7 +1289,6 @@ void CScript::CLScriptedEffect( msstringlist &Params )
 			pBeam->amplitude = 5;
 			float gtime = (float)gEngfuncs.GetClientTime();
 			pBeam->die = gtime + Life;
-			int stop = 0;
 			//[begin] DEC2014_09 Thothie - beam_update - clear dead beams, add new
 			/*
 			//this was viable with pBeam->id, but not anymore
@@ -2124,7 +2121,6 @@ void DLLEXPORT HUD_TempEntUpdate (
 		}
 		catch( ... )
 		{
-			int stop = 0;
 		}
 
 		pTemp = pnext;

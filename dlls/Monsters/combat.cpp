@@ -593,7 +593,6 @@ Killed
 */
 void CBaseMonster :: Killed( entvars_t *pevAttacker, int iGib )
 {
-	unsigned int	cCount = 0;
 	BOOL			fDone = FALSE;
 
 	if ( HasMemory( bits_MEMORY_KILLED ) )

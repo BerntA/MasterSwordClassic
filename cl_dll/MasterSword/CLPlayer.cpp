@@ -341,7 +341,7 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 		for( int i = (MAX_KEYHISTORY-2); i >= 0; i-- )
 			KeyHistory[i+1] = KeyHistory[i];
 
-		int buttons = cmd->buttons;
+		//int buttons = cmd->buttons;
 
 		KeyHistory[0].Buttons = player.pbs.ButtonsDown;
 		KeyHistory[0].Time = gpGlobals->time;

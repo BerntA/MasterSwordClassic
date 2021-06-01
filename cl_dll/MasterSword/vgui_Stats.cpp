@@ -335,7 +335,7 @@ void CStatPanel::Update()
 
 			//Thothie only display is slot is not marked unused
 			double ExpToLevel = (SubStat.Value > 25 ? ExpNeeded - TestExpArray[m_ActiveStat][i] : ExpNeeded - SubStat.Exp);
-			if ( Name != "unused" )
+			if (strcmp(Name, "unused") != 0)
 			{
 					if ( EngineFunc::CVAR_GetFloat( "ms_xpdisplay" ) == 0 ) sprintf( cDisplayText, "%s: %i (%.2f%%%%) [%i left]\n", Name, (int)SubStat.Value, Percent, (int)ceil(ExpToLevel) );
 					else if ( EngineFunc::CVAR_GetFloat( "ms_xpdisplay" ) == 1 ) sprintf( cDisplayText, "%s: %i, %i/%i (%.2f%%%%)\n", Name, (int)SubStat.Value,(SubStat.Value > 25 ? TestExpArray[m_ActiveStat][i] : SubStat.Exp),(int)ceil(ExpNeeded),Percent);
@@ -349,19 +349,17 @@ void CStatPanel::Update()
 						if ( (int)SubStat.Value > 20 ) sprintf( cDisplayText, "%s: %i (%.5f%%%% trained)\n", Name, (int)SubStat.Value, Percent );
 					}
 					else if ( EngineFunc::CVAR_GetFloat( "ms_xpdisplay" ) >= 4 ) sprintf( cDisplayText, "%s: %i (%.0f%%%% trained)\n", Name, (int)SubStat.Value, Percent );
+			
+					Label *pLabel = m_StatTypeLabel[i - UnusedSlots];
+					pLabel->setVisible(true);
+					pLabel->setText(cDisplayText);
+					Height += MAINBUTTON_SIZE_Y;
 			}
 			else
 			{
 				++UnusedSlots;
 				sprintf( cDisplayText, "");
-			}
-
-			Label *pLabel = m_StatTypeLabel[i-UnusedSlots];
-
-			if ( Name != "unused" ) pLabel->setVisible( true );
-			if ( Name != "unused" ) pLabel->setText( cDisplayText );
-
-			if ( Name != "unused" ) Height += MAINBUTTON_SIZE_Y;
+			}			
 		}
 
 		m_InfoPanel->setSize( SKILLINFOPANEL_SIZE_X, Height );

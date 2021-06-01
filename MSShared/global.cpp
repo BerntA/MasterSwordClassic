@@ -771,7 +771,6 @@ void MemMgr::NewAllocation( void *pAddr, size_t size )
 	{
 		if( m_TotalAllocations > m_HighestAllocations )
 		{
-			int stop = 0;
 			g_MemWarningActive = false;
 		}
 	}

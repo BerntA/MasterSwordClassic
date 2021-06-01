@@ -191,8 +191,8 @@ bool CheckSurface( TraverseInfo_t &Info, msurface_t *pSurface )
 	{
 		mstexture_t &MSTexture = MSCLGlobals::Textures[t];
 
-		if( Surface.texinfo->texture->name[0] == '!' )
-			int stop = 0;
+		// if( Surface.texinfo->texture->name[0] == '!' )
+		
 		if( !stricmp(MSTexture.Name, Surface.texinfo->texture->name) )	//Case in-sensitive compare for the texture name
 		{
 			pCustomTexture = &MSCLGlobals::Textures[t];
@@ -471,7 +471,7 @@ void CMirrorMgr::Render_SetupViewReflection( )
 		//Do vis checks on mirrors
 		if( Enabled( ) && m_Mirrors.size() )
 		{
-			cl_entity_t &WorldEntity = *gEngfuncs.GetEntityByIndex( 0 );
+			// cl_entity_t &WorldEntity = *gEngfuncs.GetEntityByIndex( 0 );
 
 			 for (int i = 0; i < m_Mirrors.size(); i++) 
 			{

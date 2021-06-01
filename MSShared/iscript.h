@@ -15,7 +15,6 @@ struct scriptvar_t
 	msstring Value;
 	~scriptvar_t( )
 	{
-		int stop = 0;
 	}
 };
 
@@ -28,8 +27,7 @@ public:
 	msstring_ref GetVar( msstring_ref Name );
 	scriptvar_t *SetVar( msstring_ref Name, msstring_ref Value );
 	~IVariables( )
-	{
-		int stop = 0;
+	{		
 	}
 };
 
@@ -67,14 +65,12 @@ struct scriptcmd_t
 		mslist<scriptcmd_t>	m_Cmds;			//The commands of this command list
 		~cmdlist_t( ) 
 		{
-			int stop = 0;
 		}
 	};
 	cmdlist_t m_IfCmds;						//If this is a conditional command, here is the group of comamnds to be executed if true
 	mslist< cmdlist_t > m_ElseCmds;			//If this is a conditional command, here is the group of comamnds to be executed if false
 	~scriptcmd_t( )
 	{
-		int stop = 0;
 	}
 };
 typedef scriptcmd_t::cmdlist_t scriptcmd_list;
@@ -102,7 +98,6 @@ struct SCRIPT_EVENT : public IVariables
 	msstring_ref GetLocal( msstring_ref Name );
 	~SCRIPT_EVENT( )
 	{
-		int stop = 0;
 	}
 };
 

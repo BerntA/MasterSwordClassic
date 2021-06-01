@@ -1150,7 +1150,7 @@ void CStudioModelRenderer::StudioMergeBones ( model_t *m_pSubModel )
 			for (j = 0; j < m_nCachedBones; j++)
 			{
 				//if( strstr(pbones[i].name,"rhand") )
-				//	int stop = 0;
+
 				if (stricmp(pbones[i].name, m_nCachedBoneNames[j]) == 0)
 				{
 					MatrixCopy( m_rgCachedBoneTransform[j], (*m_pbonetransform)[i] );
@@ -2242,8 +2242,6 @@ void CStudioModelRenderer::StudioRenderModel( void )
 			StudioRenderFinal( );
 		}
 	}
-	else
-		int stop = 0;
 
 	//Done rendering, reset stuff
 	//if( FBitSet(m_pCurrentEntity->curstate.playerclass,ENT_EFFECT_FOLLOW_ROTATE) && m_pCurrentEntity->curstate.owner > 0 )

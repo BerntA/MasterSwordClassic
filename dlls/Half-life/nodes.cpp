@@ -1635,9 +1635,6 @@ void CTestHull :: BuildNodeGraph( void )
 
 	int		iBadNode;// this is the node that caused graph generation to fail
 
-	int		cMaxInitialLinks = 0;
-	int		cMaxValidLinks	= 0;
-
 	int		iPoolIndex = 0;
 	int		cPoolLinks;// number of links in the pool.
 

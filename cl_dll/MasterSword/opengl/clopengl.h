@@ -4,4 +4,4 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <gl/glaux.h>
-#include "wglext.h"      // Sample's header file
+#include "gl/wglext.h"      // Sample's header file

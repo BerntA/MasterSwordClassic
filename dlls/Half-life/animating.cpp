@@ -76,11 +76,9 @@ float CBaseAnimating :: StudioFrameAdvance ( float flInterval )
 //=========================================================
 int CBaseAnimating :: LookupActivity ( int activity )
 {
-	if( !activity )
-		int stop = 0;
+	//if( !activity )
 	ASSERT( activity != 0 );
 	void *pmodel = GET_MODEL_PTR( ENT(pev) );
-
 	return ::LookupActivity( pmodel, pev, activity );
 }
 

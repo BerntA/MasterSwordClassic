@@ -54,9 +54,7 @@ CLocalizedPanel::CLocalizedPanel( Panel *pParent )
 	m_ServerEntString = "";
 	
 	m_iButtonTotal = 0;
-	m_iParagraphTotal = 0;
-
-	int x = 0, y = 0, w = 0, h = 0;
+	m_iParagraphTotal = 0;	
 
 	int xMainPanel = GetCenteredItem( ScreenWidth, LOCAL_MAINPANEL_WIDTH, 1, 0 );
 	int yMainPanel = GetCenteredItem( ScreenHeight, LOCAL_MAINPANEL_HEIGHT, 1, 0 );

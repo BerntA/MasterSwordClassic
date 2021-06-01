@@ -740,7 +740,7 @@ bool CBasePlayer::UseItem( int iHand, bool bVerbose )
 void CBasePlayer::RemoveAllItems( bool fDead, bool fDeleteItems )
 {
 	int i = 0;
-	for (i = 0; i < (signed)MAX_NPC_HANDS; i++)
+	for (i = 0; i < MAX_NPC_HANDS; i++)
 	{
 		CGenericItem *pItem = Hand(i);
 		if( !pItem ) continue;
@@ -762,10 +762,10 @@ void CBasePlayer::RemoveAllItems( bool fDead, bool fDeleteItems )
 	if( count )
 	{
 		CGenericItem **Gearlist = msnew(CGenericItem *[count]);
-		 for (int i = 0; i < count; i++) 
+		 for (i = 0; i < count; i++) 
 			Gearlist[i] = Gear[i];
 
-		 for (i = 0; i < (signed)count; i++)
+		 for (i = 0; i < count; i++)
 		{
 			if( !Gearlist[i] ) continue;
 

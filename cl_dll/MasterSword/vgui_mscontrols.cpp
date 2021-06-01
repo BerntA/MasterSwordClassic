@@ -504,8 +504,7 @@ void VGUI_ItemButton::Highlight( bool fSelect )
 {
 	m_Highlighted = fSelect;
 	if( m_CallbackPanel ) m_CallbackPanel->ItemHighlighted( this );
-	if( !m_Highlighted )
-		int stop = 0;
+	//if( !m_Highlighted )
 }
 
 void VGUI_ItemButton::paint( )

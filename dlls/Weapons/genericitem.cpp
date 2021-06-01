@@ -935,7 +935,6 @@ bool CGenericItem::CanWearItem( )
 			wearpos_t &PlayerPos = *pPlayerPos;
 			CGenericItem *pItemConflict = NULL;
 
-			bool Worn = false;
 			int iSlots = 0;
 			 for (int i = 0; i < m_pOwner->Gear.size(); i++) 
 			{

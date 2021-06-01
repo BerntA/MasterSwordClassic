@@ -708,14 +708,14 @@ public:
 
 		static msstringlist Params;
 		Params.clearitems( );
-		if ( mt_global.c_str() == "1" ) Params.add( EntToString(pOther) );
+		if (strcmp(mt_global.c_str(), "1") == 0) Params.add(EntToString(pOther));
 		Params.add( mt_idle.c_str() );
 		Params.add( atof(mt_idle_length)>0 ? FloatToString( atof(mt_idle_length)/60 ) : "0" );
 		Params.add( mt_combat.c_str() );
 		Params.add( atof(mt_combat_length)>0 ? FloatToString( atof(mt_combat_length)/60 ) : "0" );
 		Params.add( mt_playnow.c_str() );
 
-		if ( mt_global.c_str() == "1" )
+		if (strcmp(mt_global.c_str(), "1") == 0)
 		{
 			CBaseEntity *pGameMasterEnt = UTIL_FindEntityByString( NULL, "netname", msstring("¯") + "game_master" );
 			IScripted *pGMScript = pGameMasterEnt->GetScripted();
@@ -922,7 +922,7 @@ public:
 
 	void Spawn( ) 
 	{
-		bool didfirstspawn = false; //NOV2014_20 Thothie - adding resetwhen options
+		//bool didfirstspawn = false; //NOV2014_20 Thothie - adding resetwhen options
 		if( !m_fSpawnOnTrigger )
 		{
 			m_fActive = true;
@@ -1422,7 +1422,7 @@ public:
 	{
 		if (FStrEq(pkvd->szKeyName, "rallplayers"))
 		{
-			mtl_req_all_players = (pkvd->szValue == "1") ? true : false;
+			mtl_req_all_players = (strcmp(pkvd->szValue, "1") == 0);
 			pkvd->fHandled = TRUE;
 		}
 		else if (FStrEq(pkvd->szKeyName, "title"))
@@ -1479,10 +1479,8 @@ public:
 
 		CBaseEntity *pGameMasterEnt = UTIL_FindEntityByString( NULL, "netname", msstring("¯") + "game_master" );
 		IScripted *pGMScript = pGameMasterEnt->GetScripted();
-		if ( pGMScript )
-		{
-			if ( pGMScript->GetFirstScriptVar("GM_DISABLE_TRANSITIONS") == "1" ) return;
-		}
+		if (pGMScript && (strcmp(pGMScript->GetFirstScriptVar("GM_DISABLE_TRANSITIONS"), "1") == 0))
+			return;
 
 		CBasePlayer *pPlayer = (CBasePlayer *)pOther;
 		IScripted *iScripted = pOther->GetScripted();
@@ -1695,10 +1693,8 @@ public:
 
 		CBaseEntity *pGameMasterEnt = UTIL_FindEntityByString( NULL, "netname", msstring("¯") + "game_master" );
 		IScripted *pGMScript = pGameMasterEnt->GetScripted();
-		if ( pGMScript )
-		{
-			if ( pGMScript->GetFirstScriptVar("GM_DISABLE_TRANSITIONS") == "1" ) return FALSE;
-		}
+		if (pGMScript && (strcmp(pGMScript->GetFirstScriptVar("GM_DISABLE_TRANSITIONS"), "1") == 0))
+			return FALSE;
 
 		if( !CBaseEntity::Instance(pev)->IsPlayer( ) ) return FALSE;
 		
@@ -1784,10 +1780,8 @@ public:
 
 		CBaseEntity *pGameMasterEnt = UTIL_FindEntityByString( NULL, "netname", msstring("¯") + "game_master" );
 		IScripted *pGMScript = pGameMasterEnt->GetScripted();
-		if ( pGMScript )
-		{
-			if ( pGMScript->GetFirstScriptVar("GM_DISABLE_TRANSITIONS") == "1" ) return;
-		}
+		if (pGMScript && (strcmp(pGMScript->GetFirstScriptVar("GM_DISABLE_TRANSITIONS"), "1") == 0))
+			return;
 
 		MESSAGE_BEGIN( MSG_ONE, g_netmsg[NETMSG_CLDLLFUNC], NULL, pPlayer->pev );
 			WRITE_BYTE( 3 );
@@ -1811,10 +1805,8 @@ public:
 	{
 		CBaseEntity *pGameMasterEnt = UTIL_FindEntityByString( NULL, "netname", msstring("¯") + "game_master" );
 		IScripted *pGMScript = pGameMasterEnt->GetScripted();
-		if ( pGMScript )
-		{
-			if ( pGMScript->GetFirstScriptVar("GM_DISABLE_TRANSITIONS") == "1" ) return NULL;
-		}
+		if (pGMScript && (strcmp(pGMScript->GetFirstScriptVar("GM_DISABLE_TRANSITIONS"), "1") == 0))
+			return NULL;
 
 		if ( !thoth_didvote )
 		{

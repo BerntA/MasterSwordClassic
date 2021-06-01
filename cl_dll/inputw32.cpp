@@ -472,7 +472,7 @@ void IN_MouseMove ( float frametime, usercmd_t *cmd)
 	//      move the camera, or if the mouse cursor is visible or if we're in intermission
 	if ( !iMouseInUse && !gHUD.m_iIntermission && !g_iVisibleMouse )
 	{
-		int deltaX, deltaY;
+		int deltaX = 0, deltaY = 0;
 #ifdef _WIN32
 		if ( !m_bRawInput )
 		{

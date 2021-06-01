@@ -68,6 +68,36 @@ enum BORDERLESS_WINDOW_TYPES
 	BORDERLESS_RESIZABLE,
 };
 
+/*
+========================== 
+    Initialize
+
+Called when the DLL is first loaded.
+==========================
+*/
+extern "C" 
+{
+int		DLLEXPORT Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion );
+int		DLLEXPORT HUD_VidInit( void );
+void	DLLEXPORT HUD_Init( void );
+int		DLLEXPORT HUD_Redraw( float flTime, int intermission );
+int		DLLEXPORT HUD_UpdateClientData( client_data_t *cdata, float flTime );
+void	DLLEXPORT HUD_Reset ( void );
+void	DLLEXPORT HUD_PlayerMove( struct playermove_s *ppmove, int server );
+void	DLLEXPORT HUD_PlayerMoveInit( struct playermove_s *ppmove );
+char	DLLEXPORT HUD_PlayerMoveTexture( char *name );
+int		DLLEXPORT HUD_ConnectionlessPacket( const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size );
+int		DLLEXPORT HUD_GetHullBounds( int hullnumber, float *mins, float *maxs );
+void	DLLEXPORT HUD_Frame( double time );
+void	DLLEXPORT HUD_VoiceStatus(int entindex, qboolean bTalking);
+void	DLLEXPORT HUD_DirectorMessage( int iSize, void *pbuf );
+}
+
+/*
+==========================
+Set Borderless Modes
+==========================
+*/
 static void SetBorderlessWindow() // Bernt; fixing bloom by making fullscreen windowed a thing *shrugs*!
 {
 	int iCurrentMode = (g_pVarBorderless ? ((int)g_pVarBorderless->value) : 0);
@@ -112,31 +142,6 @@ static void SetBorderlessWindow() // Bernt; fixing bloom by making fullscreen wi
 	}
 
 	g_iBorderlessMode = iCurrentMode;
-}
-
-/*
-========================== 
-    Initialize
-
-Called when the DLL is first loaded.
-==========================
-*/
-extern "C" 
-{
-int		DLLEXPORT Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion );
-int		DLLEXPORT HUD_VidInit( void );
-void	DLLEXPORT HUD_Init( void );
-int		DLLEXPORT HUD_Redraw( float flTime, int intermission );
-int		DLLEXPORT HUD_UpdateClientData( client_data_t *cdata, float flTime );
-void	DLLEXPORT HUD_Reset ( void );
-void	DLLEXPORT HUD_PlayerMove( struct playermove_s *ppmove, int server );
-void	DLLEXPORT HUD_PlayerMoveInit( struct playermove_s *ppmove );
-char	DLLEXPORT HUD_PlayerMoveTexture( char *name );
-int		DLLEXPORT HUD_ConnectionlessPacket( const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size );
-int		DLLEXPORT HUD_GetHullBounds( int hullnumber, float *mins, float *maxs );
-void	DLLEXPORT HUD_Frame( double time );
-void	DLLEXPORT HUD_VoiceStatus(int entindex, qboolean bTalking);
-void	DLLEXPORT HUD_DirectorMessage( int iSize, void *pbuf );
 }
 
 /*
@@ -279,9 +284,6 @@ int DLLEXPORT HUD_VidInit( void )
 	dbg( "Call VGui_Startup" );
 	VGui_Startup();
 
-	dbg("Try Set Borderless");
-	SetBorderlessWindow();
-
 	dbg( "Call Glow" );
 	// IMAGE-SPACE GLOW - Thothie TWHL JUN2010_22 - see comments in tri.cpp
     InitScreenGlow();
@@ -319,10 +321,6 @@ void DLLEXPORT HUD_Init( void )
 	logfile << "[HUD_Init: Scheme_Init]" << endl;
 	dbg( "Call Scheme_Init" );
 	Scheme_Init();
-
-	logfile << "[HUD_Init: SetBorderlessWindow]" << endl;
-	dbg("Call SetBorderlessWindow");
-	SetBorderlessWindow();
 
 	logfile << "[HUD_Init: Complete]" << endl;
 
@@ -424,7 +422,9 @@ void DLLEXPORT HUD_Frame( double time )
 	ServersThink( time );
 	dbg( "Call ServersThink DONE" );
 
+	dbg("Call SetBorderlessWindow");
 	SetBorderlessWindow();
+	dbg("Call SetBorderlessWindow DONE");
 
 	enddbg;
 }

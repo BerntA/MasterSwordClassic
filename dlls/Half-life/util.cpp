@@ -721,14 +721,13 @@ char* Util_ScriptArrayGetProps( CBaseEntity *pEntity, const char *array_operatio
 
 	if ( idx == -1 )
 	{
-		if ( array_operation == "exists" ) return "0";
-		if ( array_operation == "size" ) return "noarray";
-		if ( array_operation == "getidx" ) return "noarray";
+		if (strcmp(array_operation, "exists") == 0) return "0";
+		else if ((strcmp(array_operation, "size") == 0) || (strcmp(array_operation, "getidx") == 0)) return "noarray";
 	}
 	else
 	{
-		if ( array_operation == "exists" ) return "1";
-		if ( array_operation == "size" ) return UTIL_VarArgs( "%i",ArrayList[idx].size() );
+		if (strcmp(array_operation, "exists") == 0) return "1";
+		else if (strcmp(array_operation, "size") == 0) return  UTIL_VarArgs("%i", ArrayList[idx].size());
 		return (*ArrayList)[idx].Vals[subIdx].c_str();
 	}
 
@@ -759,13 +758,13 @@ void Util_ScriptArray( CBaseEntity *pEntity, const char *array_operation, const 
 		}
 	}
 
-	if ( idx == -1 && array_operation != "create" )
+	 if (idx == -1 && (strcmp(array_operation, "create") != 0))
 	{
 		Print("Error: Util_ScriptArray %s - array %s not found\n",array_operation,ArrName.c_str());
 		return;
 	}
 
-	if ( array_operation == "create" ) //trying to create an existing array clears it instead
+	 if (strcmp(array_operation, "create") == 0) //trying to create an existing array clears it instead
 	{
 		if ( idx == -1 )
 		{
@@ -780,7 +779,7 @@ void Util_ScriptArray( CBaseEntity *pEntity, const char *array_operation, const 
 		}
 	}
 
-	if( array_operation == "clear" )
+	 if (strcmp(array_operation, "clear") == 0)
 	{
 		if ( (*ArrayList)[idx].Vals.size() > 0 )
 		{
@@ -796,7 +795,7 @@ void Util_ScriptArray( CBaseEntity *pEntity, const char *array_operation, const 
 		return;
 	}
 
-	if( array_operation == "add" )
+	 if (strcmp(array_operation, "add") == 0)
 	{
 		(*ArrayList)[idx].Vals.add( array_value );
 		return;
@@ -804,7 +803,7 @@ void Util_ScriptArray( CBaseEntity *pEntity, const char *array_operation, const 
 
 	int array_size = (*ArrayList)[idx].Vals.size() - 1;
 
-	if( array_operation == "set" )
+	if (strcmp(array_operation, "set") == 0)
 	{
 		if ( subIdx < 0 || subIdx > array_size )
 		{
@@ -817,7 +816,7 @@ void Util_ScriptArray( CBaseEntity *pEntity, const char *array_operation, const 
 		return;
 	}
 
-	if( array_operation == "del" )
+	if (strcmp(array_operation, "del") == 0)
 	{
 		if ( subIdx < 0 || subIdx > array_size )
 		{

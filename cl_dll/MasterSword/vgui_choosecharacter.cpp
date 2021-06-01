@@ -122,7 +122,6 @@ public:
 	}
 	~CAction_SelectOption( )
 	{
-		int stop = 0;
 		m_pPanel = NULL;
 	}
 
@@ -1565,7 +1564,6 @@ CRenderSpawnbox::~CRenderSpawnbox( )
 {
 	if( !m_Done )
 	{
-		int stop = 0;
 		//This is bad - the ent gets deallocated before it gets unregistered
 		MSErrorConsoleText( "~CRenderChar()", "Deallocated improperly" );
 	}
