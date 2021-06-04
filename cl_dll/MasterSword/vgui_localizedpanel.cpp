@@ -302,7 +302,7 @@ void CLocalizedPanel::ReadParagraphsFromFile(msstring fname)
 	if (!fname.ends_with(".txt"))
 		fname += ".txt";
 	char cFileName[256];
-	sprintf(cFileName, "%s/%s", EngineFunc::GetGameDir(), fname.c_str());
+	 _snprintf(cFileName, sizeof(cFileName),  "%s/%s",  EngineFunc::GetGameDir(),  fname.c_str() );
 
 	ifstream file;
 	file.open(cFileName);

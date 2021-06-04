@@ -25,9 +25,9 @@ void CBasePlayer::CreateChar(createchar_t &CharData)
 	savedata_t Data;
 	memset(&Data, 0, sizeof(savedata_t));
 
-	strcpy(Data.Name, CharData.Name);
-	strcpy(Data.Race, CharData.Race); // MIB FEB2015_21 [RACE_MENU] - Create with given race
-	strcpy(Data.MapName, MSGlobals::MapName);
+	strncpy(Data.Name, CharData.Name, sizeof(Data.Name));
+	strncpy(Data.Race, CharData.Race, sizeof(Data.Race)); // MIB FEB2015_21 [RACE_MENU] - Create with given race
+	strncpy(Data.MapName, MSGlobals::MapName, sizeof(Data.MapName));
 	Data.Gender = CharData.Gender;
 	Data.Gold = MSGlobals::DefaultGold;
 
@@ -81,7 +81,7 @@ void CBasePlayer::CreateChar(createchar_t &CharData)
 	CGenericItem *pStartingItem = NewGenericItem(CharData.Weapon);
 
 	if (FBitSet(pStartingItem->MSProperties(), ITEM_SPELL))
-	//It's a spell
+		//It's a spell
 	{
 		LearnSpell(pStartingItem->ItemName, false);
 		pStartingItem->SUB_Remove();
@@ -447,7 +447,7 @@ bool chardata_t::ReadItem1(byte DataID, CPlayer_DataBuffer &Data, genericitem_fu
 
 			/*if( pItem )
 				pPackItem->PutInPack( pItem );
-			else
+				else
 				//If I couldn't spawn this pack, drop the item that's supposed to be inside it
 				pPackItem->Drop( 3, (Vector &)g_vecZero, (Vector &)g_vecZero, (Vector &)g_vecZero );*/
 		}
@@ -516,12 +516,12 @@ void MSChar_Interface::SaveChar(CBasePlayer *pPlayer, savedata_t *pData)
 
 	if (!pData)
 	{
-		strcpy(Data.Name, pPlayer->m_DisplayName); //Store actual character name (DisplayName() is servername, and will have a (#) at the end if there are duplicates on the server)
-		strcpy(Data.Race, pPlayer->m_Race);
-		strcpy(Data.Party, pPlayer->GetPartyName());
+		strncpy(Data.Name, pPlayer->m_DisplayName, sizeof(Data.Name)); // Store actual character name (DisplayName() is servername, and will have a (#) at the end if there are duplicates on the server)
+		strncpy(Data.Race, pPlayer->m_Race, sizeof(Data.Race));
+		strncpy(Data.Party, pPlayer->GetPartyName(), sizeof(Data.Party));
 		Data.PartyID = pPlayer->GetPartyID();
 
-		strcpy(Data.MapName, MSGlobals::MapName);
+		strncpy(Data.MapName, MSGlobals::MapName, sizeof(Data.MapName));
 
 		strncpy(Data.OldTrans, pPlayer->m_OldTransition, 32);
 		strncpy(Data.NextMap, pPlayer->m_NextMap, 32);

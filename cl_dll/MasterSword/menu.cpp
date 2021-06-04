@@ -178,12 +178,12 @@ int CHudMenu ::MsgFunc_ShowMenu(const char *pszName, int iSize, void *pbuf)
 
 		if (!NeedMore)
 		{ // we have the whole string, so we can localise it now
-			strcpy(m.cMenuText, gHUD.m_TextMessage.BufferedLocaliseTextString(g_szPrelocalisedMenuString));
+			 strncpy(m.cMenuText,  gHUD.m_TextMessage.BufferedLocaliseTextString(g_szPrelocalisedMenuString), sizeof(m.cMenuText) );
 
 			// Swap in characters
 			if (KB_ConvertString(m.cMenuText, &temp))
 			{
-				strcpy(m.cMenuText, temp);
+				 strncpy(m.cMenuText,  temp, sizeof(m.cMenuText) );
 				free(temp);
 			}
 			m.m_MenuType = MENU_NORMAL;
@@ -208,7 +208,7 @@ int CHudMenu ::ShowMenu(int bitsValidSlots, const char *pcMenuText, MenuCallback
 	//	if( !pcMenuText ) return FALSE;
 	m_fOfferedNextMenu = true;
 	m_bitsValidSlots = bitsValidSlots;
-	strcpy(m.cMenuText, pcMenuText);
+	 strncpy(m.cMenuText,  pcMenuText, sizeof(m.cMenuText) );
 	m.m_MenuCallback = CallBack;
 	m.m_MenuType = mtMenuType;
 	m_flShutoffTime = ShutOffTime;

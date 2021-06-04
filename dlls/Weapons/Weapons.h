@@ -20,8 +20,8 @@
 extern int gmsgWeapPickup;
 
 //Master Sword
-#define MakeAnim(ref) strcpy(m_pOwner->m_szAnimExtention, ref)
-#define MakeAnimLR(ref) strcpy(m_pOwner->m_szAnimExtention, UTIL_VarArgs("%s_%s", ref, (m_pOwner->iCurrentHand == 0) ? "L" : "R"))
+#define MakeAnim(ref) strncpy(m_pOwner->m_szAnimExtention, ref, 32)
+#define MakeAnimLR(ref) strncpy(m_pOwner->m_szAnimExtention, UTIL_VarArgs("%s_%s", ref, (m_pOwner->iCurrentHand == 0) ? "L" : "R"), 32)
 
 #ifdef VALVE_DLL
 void G_SolidifyEnts(bool fEnable, bool fSolidShields, bool fEnableCorpses, bool fEnlargeboxes);

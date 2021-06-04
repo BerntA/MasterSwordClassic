@@ -132,7 +132,7 @@ CGenericItem *CGenericItemMgr::NewGenericItem(CGenericItem *pGlobalItem)
 	//pItem->iWeaponType = pGlobalItem->iWeaponType;
 	pItem->ItemName = pGlobalItem->ItemName;
 	pItem->m_iId = (int)pItem; //RANDOM_LONG(0,32765);
-	strcpy(pItem->m_Name, pGlobalItem->m_Name);
+	 strncpy(pItem->m_Name,  pGlobalItem->m_Name, sizeof(pItem->m_Name) );
 	if (pGlobalItem->m_Scripts[0]) //This should ALWAYS be true!
 	{
 		dbg("Copy script data from global item");
@@ -348,7 +348,6 @@ void CGenericItemMgr::GenericItemPrecache(void)
 		MessageBox(NULL, "Missing items.txt inside sc.dll! This is a fatal error in the public build", "FIX THIS QUICK!", MB_OK);
 #endif
 #endif
-			goto end;
 		}
 
 #ifndef SCRIPT_LOCKDOWN
@@ -376,7 +375,7 @@ void CGenericItemMgr::GenericItemPrecache(void)
 		if (!cString[0] || cString[0] == '\r' || cString[0] == '\n')
 			continue;
 
-		sprintf(cItemFileName, "items/%s", cString);
+		 _snprintf(cItemFileName, sizeof(cItemFileName),  "items/%s",  cString );
 
 		logfileopt << "  (Precache) Creating item " << cString << "...";
 		//Create a new Global Item
@@ -392,7 +391,7 @@ void CGenericItemMgr::GenericItemPrecache(void)
 		CGenericItemMgr::AddGlobalItem(NewGlobalItem);
 
 		//NewItem.iWeaponType = 99 + CGenericItemMgr::ItemCount( ); //First must be 100
-		strcpy(NewItem.m_Name, cString);
+		 strncpy(NewItem.m_Name,  cString, sizeof(NewItem.m_Name) );
 		NewItem.ItemName = cString;
 
 		dbg(msstring("Load script: ") + cItemFileName);
@@ -571,7 +570,7 @@ bool CGenericItem::Deploy()
 			if (m_AnimExtLegs)
 				strncpy(m_pPlayer->m_szAnimLegs, m_AnimExtLegs, 32);
 			else
-				strcpy(m_pPlayer->m_szAnimLegs, "");
+				 strncpy(m_pPlayer->m_szAnimLegs,  "", sizeof(m_pPlayer->m_szAnimLegs) );
 		}
 #endif
 
@@ -719,7 +718,7 @@ void CGenericItem ::CounterEffect(CBaseEntity *pInflictor, int iEffect, void *pE
 		CallScriptEvent("game_hitworld");
 
 		/*char cSound[128];
-				sprintf( cSound, "weapons/cbar_hit%i.wav", RANDOM_LONG(1,2) );
+				 _snprintf(cSound, sizeof(cSound),  "weapons/cbar_hit%i.wav",  RANDOM_LONG(1, 2) );
 				EMIT_SOUND_DYN(pSoundEnt->edict(), CHAN_AUTO, cSound, 1, ATTN_NORM, 0, 80 + RANDOM_LONG(-10,25)); */
 		break;
 	}

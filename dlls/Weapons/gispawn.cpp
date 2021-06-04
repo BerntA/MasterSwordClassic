@@ -92,7 +92,7 @@ void CBaseGISpawn::KeyValue(KeyValueData *pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "container"))
 	{
-		strcpy(cContainer, pkvd->szValue);
+		 strncpy(cContainer,  pkvd->szValue, sizeof(cContainer) );
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "spawnstart"))

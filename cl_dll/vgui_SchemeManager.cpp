@@ -126,7 +126,7 @@ static byte *LoadFileByResolution(const char *filePrefix, int xRes, const char *
 
 		// try load
 		char fname[256];
-		sprintf(fname, "%s%d%s", filePrefix, g_ResArray[resNum], filePostfix);
+		 _snprintf(fname, sizeof(fname),  "%s%d%s",  filePrefix,  g_ResArray[resNum],  filePostfix );
 		pFile = gEngfuncs.COM_LoadFile(fname, 5, NULL);
 
 		if (pFile)
@@ -268,7 +268,7 @@ CSchemeManager::CSchemeManager(int xRes, int yRes)
 				}
 				if (!pScheme->fontName[0])
 				{
-					strcpy(pScheme->fontName, "Courier");
+					 strncpy(pScheme->fontName,  "Courier", sizeof(pScheme->fontName) );
 				}
 			}
 
@@ -350,8 +350,8 @@ buildDefaultFont:
 	if (currentScheme < 0)
 	{
 		currentScheme = 0;
-		strcpy(tmpSchemes[0].schemeName, "Default Scheme");
-		strcpy(tmpSchemes[0].fontName, "Courier");
+		 strncpy(tmpSchemes[0].schemeName,  "Default Scheme", sizeof(tmpSchemes[0].schemeName) );
+		 strncpy(tmpSchemes[0].fontName,  "Courier", sizeof(tmpSchemes[0].fontName) );
 		tmpSchemes[0].fontSize = 0;
 		tmpSchemes[0].fgColor[0] = tmpSchemes[0].fgColor[1] = tmpSchemes[0].fgColor[2] = tmpSchemes[0].fgColor[3] = 255;
 		tmpSchemes[0].armedFgColor[0] = tmpSchemes[0].armedFgColor[1] = tmpSchemes[0].armedFgColor[2] = tmpSchemes[0].armedFgColor[3] = 255;
@@ -391,7 +391,7 @@ buildDefaultFont:
 
 			if (g_CV_BitmapFonts && g_CV_BitmapFonts->value)
 			{
-				sprintf(fontFilename, "gfx\\vgui\\fonts\\%d_%s.tga", m_xRes, m_pSchemeList[i].schemeName);
+				 _snprintf(fontFilename, sizeof(fontFilename),  "gfx\\vgui\\fonts\\%d_%s.tga",  m_xRes,  m_pSchemeList[i].schemeName );
 				pFontData = gEngfuncs.COM_LoadFile(fontFilename, 5, &fontFileLength);
 				if (!pFontData)
 					gEngfuncs.Con_Printf("Missing bitmap font: %s\n", fontFilename);

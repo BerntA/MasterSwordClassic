@@ -80,7 +80,7 @@ void Print(char *szFmt, ...);
 //Groupfile... its just like a pakfile
 void CGroupFile::Open(char *pszFileName)
 {
-	strcpy(m_FileName, pszFileName);
+	 strncpy(m_FileName,  pszFileName, sizeof(m_FileName) );
 	m_EntryList.clear();
 
 	CMemFile GroupFile;
@@ -206,7 +206,7 @@ bool CGroupFile::ReadEntry(const char *pszName, byte *pBuffer, unsigned long &Da
 	{
 		if( !ReadFile( hFile, &groupHeader, sizeof(groupheader_t), &dwBytesRead, NULL ) )
 			{ CloseHandle( hFile );  return dwFailReturn; }
-		strcpy( pszMyString, pszName );
+		 strncpy(pszMyString,  pszName, sizeof(pszMyString) );
 		ReplaceChar( pszMyString, '/', '\\' );
 		if( !stricmp(groupHeader.FileName,pszMyString) )
 		{

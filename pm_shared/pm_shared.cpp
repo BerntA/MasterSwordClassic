@@ -659,7 +659,7 @@ void PM_CatagorizeTextureType(void)
 		pTextureName++;
 	// '}}'
 
-	strcpy(pmove->sztexturename, pTextureName);
+	 strncpy(pmove->sztexturename,  pTextureName, sizeof(pmove->sztexturename) );
 	pmove->sztexturename[CBTEXTURENAMEMAX - 1] = 0;
 
 	// get texture type

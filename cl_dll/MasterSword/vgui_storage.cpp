@@ -227,7 +227,7 @@ void CStoragePanel::ItemHighlighted(void *pData)
 		if (Value)
 		{
 			char cTemp[256];
-			sprintf(cTemp, Localized("#STORAGE_ITEM_COST"), Value);
+			 _snprintf(cTemp, sizeof(cTemp),  Localized("#STORAGE_ITEM_COST"),  Value );
 			m_InfoPanel->m_SaleText->setText(cTemp);
 		}
 		else

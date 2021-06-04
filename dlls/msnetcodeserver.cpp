@@ -154,7 +154,7 @@ msstring_ref CNetCodeServer::GetServerIPForPlayer(CBasePlayer *pPlayer)
 	//Finds the server address that this particular client should use.
 	//This is different for lan clients than internet clients (unless for some reason your lan uses your internet IP)
 	char cPlayerIP[32];
-	strcpy(cPlayerIP, pPlayer->m_ClientAddress);
+	 strncpy(cPlayerIP,  pPlayer->m_ClientAddress, sizeof(cPlayerIP) );
 	*strstr(cPlayerIP, ":") = 0;
 	ULONG plyrAddr = inet_addr(cPlayerIP);
 
@@ -285,7 +285,7 @@ bool CBasePlayer::RestoreAllServer(void *pData, ulong Size)
 
 	m_MapStatus = INVALID_MAP;
 	char cCurrentMap[32];
-	strcpy(cCurrentMap, STRING(gpGlobals->mapname));
+	 strncpy(cCurrentMap,  STRING(gpGlobals->mapname), sizeof(cCurrentMap) );
 	strncpy(m_NextMap, cCurrentMap, 32);
 
 	//Determine whether a transition took place and set the spawn transition accordingly
@@ -349,7 +349,7 @@ bool CBasePlayer::RestoreAllServer(void *pData, ulong Size)
 	else
 		pev->deadflag = DEAD_DEAD;
 
-	strcpy(m_cEnterMap, Data.MapName);
+	 strncpy(m_cEnterMap,  Data.MapName, sizeof(m_cEnterMap) );
 
 	SetTeam(CTeam::CreateTeam(Data.Party, Data.PartyID));
 	m_Gender = Data.Gender;

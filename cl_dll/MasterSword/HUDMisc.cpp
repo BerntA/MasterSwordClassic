@@ -148,7 +148,7 @@ void CHudMisc ::UserCmd_RemovePack(void)
 	int test = *(int *)&m_RemoveList;
 	int test2 = m_RemoveList.size();
 
-	strcpy(MenuText, "Remove item:\n\n");
+	 strncpy(MenuText,  "Remove item:\n\n", sizeof(MenuText) );
 
 	m_RemoveList.clear();
 	for (int i = 0; i < player.Gear.size(); i++)
@@ -187,7 +187,7 @@ void CHudMisc::SelectMenuItem(int idx, TCallbackMenu *pcbMenu)
 	switch (pcbMenu->m_MenuType)
 	{
 	case MENU_REMOVEPACK:
-		sprintf(szString, "remove %u\n", m_RemoveList[SelectedItem]);
+		 _snprintf(szString, sizeof(szString),  "remove %u\n",  m_RemoveList[SelectedItem] );
 		ServerCmd(szString);
 		break;
 	case MENU_OFFER:
@@ -203,7 +203,7 @@ void CHudMisc::SelectMenuItem(int idx, TCallbackMenu *pcbMenu)
 					break;
 
 				player.SendInfoMsg("You offer %s %s\n", m_OfferTarget.Name.c_str(), SPEECH::ItemName(pItem));
-				sprintf(szString, "offer %i %i\n", m_OfferTarget.entindex, iHand);
+				 _snprintf(szString, sizeof(szString),  "offer %i %i\n",  m_OfferTarget.entindex,  iHand );
 				ServerCmd(szString);
 				break;
 			}
@@ -228,7 +228,7 @@ void CHudMisc::SelectMenuItem(int idx, TCallbackMenu *pcbMenu)
 		break;
 	}
 		/*	case MENU_LISTSKILLS:
-		sprintf( szString, "useskill %i\n", SelectedItem );
+		 _snprintf(szString, sizeof(szString),  "useskill %i\n",  SelectedItem );
 		ServerCmd( szString );
 		break;*/
 	}
@@ -260,7 +260,7 @@ void CHudMisc ::UserCmd_Offer(void)
 	clrmem(m_OfferInfo);
 	//bool fOfferedSomething = false;
 
-	sprintf(MenuText, "Offer to %s:\n", pEntInfo->Name.c_str());
+	 _snprintf(MenuText, sizeof(MenuText),  "Offer to %s:\n",  pEntInfo->Name.c_str() );
 
 	//if( player.m_Gold )
 	{
@@ -310,7 +310,7 @@ void CHudMisc ::UserCmd_Accept(void)
 			return;
 		}
 		player.SendInfoMsg("You offer %s %i gold coins\n", m_OfferTarget.Name.c_str(), m_OfferInfo.GoldAmt);
-		sprintf(sz, "offer %i gold %i\n", m_OfferTarget.entindex, m_OfferInfo.GoldAmt);
+		 _snprintf(sz, sizeof(sz),  "offer %i gold %i\n",  m_OfferTarget.entindex,  m_OfferInfo.GoldAmt );
 		ServerCmd(sz);
 		return;
 	}

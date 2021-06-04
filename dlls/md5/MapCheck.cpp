@@ -37,7 +37,7 @@ bool FileCheckSumMatch(const char *FileName, unsigned char *CheckSum)
 			char tmpBuf[32];
 			for (int i = 0; i < MD5_DIGEST_LENGTH; i++)
 			{
-				sprintf(tmpBuf, "\\x%x", digest[i]);
+				 _snprintf(tmpBuf, sizeof(tmpBuf),  "\\x%x",  digest[i] );
 				CRCText += tmpBuf;
 			}
 

@@ -742,25 +742,25 @@ void CNewCharacterPanel::Update( )
 	m_WeaponPanel->setVisible( false );
 
 	char cTemp[128], cTemp2[512];
-	strcpy( cTemp2, MSGlobals::MapName );
+	 strncpy(cTemp2,  MSGlobals::MapName, sizeof(cTemp2) );
 	cTemp2[0] = toupper(cTemp2[0]);
 
-	sprintf( cTemp, Localized("#CHOOSECHAR_ENTERING"), cTemp2 );		//Entering: <mapname>
+	_snprintf(cTemp, sizeof(cTemp), Localized("#CHOOSECHAR_ENTERING"), cTemp2);		//Entering: <mapname>
 	Choose_MainLabel->setText( cTemp );
 
 	if( MSGlobals::ServerSideChar )
 	{
 		cTemp2[0] = 0;
-		if( MSGlobals::IsLanGame ) sprintf( cTemp2, "\n%s", Localized("#CHOOSECHAR_LAN") );
+		if (MSGlobals::IsLanGame) _snprintf(cTemp2, sizeof(cTemp2), "\n%s", Localized("#CHOOSECHAR_LAN"));
 		if( ChooseChar_Interface::CentralServer )
 		{
 			if( ChooseChar_Interface::CentralOnline )
-				sprintf( cTemp2, "\n%s\n%s", Localized("#CHOOSECHAR_CENTRALNETWORK"), ChooseChar_Interface::CentralNetworkName.c_str() );
+				 _snprintf(cTemp2, sizeof(cTemp2),  "\n%s\n%s",  Localized("#CHOOSECHAR_CENTRALNETWORK"),  ChooseChar_Interface::CentralNetworkName.c_str() );
 			else
-				sprintf( cTemp2, "\n%s", Localized("#CHOOSECHAR_CENTRALNETWORK_DOWN") );
+				 _snprintf(cTemp2, sizeof(cTemp2),  "\n%s",  Localized("#CHOOSECHAR_CENTRALNETWORK_DOWN") );
 		}
 
-		sprintf( cTemp, "%s%s", Localized("#CHOOSECHAR_SERVER"), cTemp2 );
+		 _snprintf(cTemp, sizeof(cTemp),  "%s%s",  Localized("#CHOOSECHAR_SERVER"),  cTemp2 );
 		Choose_CharHandlingLabel->setText( cTemp );								//Character are stored on the server
 	}
 	else
@@ -823,9 +823,9 @@ void CNewCharacterPanel::Update( )
 				CharSlot.MapName[0] = toupper(CharSlot.MapName[0]);
 				CharSlot.NextMap[0] = toupper(CharSlot.NextMap[0]);
 				if( CharSlot.NextMap[0] )
-					sprintf( cMapInfo, "%s -> %s", CharSlot.MapName.c_str(), CharSlot.NextMap.c_str() );
+					 _snprintf(cMapInfo, sizeof(cMapInfo),  "%s -> %s",  CharSlot.MapName.c_str(),  CharSlot.NextMap.c_str() );
 				else
-					sprintf( cMapInfo, "At %s", CharSlot.MapName.c_str() );
+					 _snprintf(cMapInfo, sizeof(cMapInfo),  "At %s",  CharSlot.MapName.c_str() );
 				Choose_CharLabel[i][1]->setText( cMapInfo );
 				Choose_DeleteChar[i]->setVisible( true );
 

@@ -1467,8 +1467,8 @@ void CBasePlayer::UpdateStatusBar()
 	char sbuf1[SBAR_STRING_SIZE];
 
 	memset(newSBarState, 0, sizeof(newSBarState));
-	strcpy(sbuf0, m_SbarString0);
-	strcpy(sbuf1, m_SbarString1);
+	 strncpy(sbuf0,  m_SbarString0, sizeof(sbuf0) );
+	 strncpy(sbuf1,  m_SbarString1, sizeof(sbuf1) );
 
 	// Find an ID Target
 	TraceResult tr;
@@ -1486,7 +1486,7 @@ void CBasePlayer::UpdateStatusBar()
 			if (pEntity->Classify() == CLASS_PLAYER)
 			{
 				newSBarState[SBAR_ID_TARGETNAME] = ENTINDEX(pEntity->edict());
-				strcpy(sbuf1, "1 %p1\n2 Health: %i2%%\n3 Armor: %i3%%");
+				 strncpy(sbuf1,  "1 %p1\n2 Health: %i2%%\n3 Armor: %i3%%", sizeof(sbuf1) );
 
 				// allies and medics get to see the targets health
 				if (g_pGameRules->PlayerRelationship(this, pEntity) == GR_TEAMMATE)
@@ -1516,7 +1516,7 @@ void CBasePlayer::UpdateStatusBar()
 		WRITE_STRING(sbuf0);
 		MESSAGE_END();
 
-		strcpy(m_SbarString0, sbuf0);
+		 strncpy(m_SbarString0,  sbuf0, sizeof(m_SbarString0) );
 
 		// make sure everything's resent
 		bForceResend = TRUE;
@@ -1529,7 +1529,7 @@ void CBasePlayer::UpdateStatusBar()
 		WRITE_STRING(sbuf1);
 		MESSAGE_END();
 
-		strcpy(m_SbarString1, sbuf1);
+		 strncpy(m_SbarString1,  sbuf1, sizeof(m_SbarString1) );
 
 		// make sure everything's resent
 		bForceResend = TRUE;
@@ -2573,8 +2573,8 @@ CBaseEntity *CBasePlayer::FindSpawnSpot()
 			msstring PlayerName = DisplayName();
 			ALERT(at_logged, "Kicking %s:  %s's char is on map: %s Trans: %s\n", PlayerName.c_str(), PlayerName.c_str(), m_cEnterMap, TransitionText.c_str());
 			char cKickString[256];
-			sprintf(cKickString,
-					"Disconnected.\n*** Your character is not on this map. ***\n*** Your character is on the map: %s ***\n", m_cEnterMap);
+			_snprintf(cKickString, sizeof(cKickString),
+				"Disconnected.\n*** Your character is not on this map. ***\n*** Your character is on the map: %s ***\n", m_cEnterMap);
 			KickPlayer(cKickString);
 			return NULL;
 		}
@@ -5114,7 +5114,7 @@ void CBasePlayer::GetAnyItems()
 	itemtrans_t itItemTransaction;
 	memset(&itItemTransaction, 0, sizeof(itemtrans_t));
 
-	strcpy(cItemList, "Gather items:\n\n");
+	 strncpy(cItemList,  "Gather items:\n\n", sizeof(cItemList) );
 
 	while (pObject = UTIL_FindEntityInSphere(pObject, EyePosition(), SEARCH_DISTANCE))
 	{
@@ -5264,8 +5264,8 @@ void CBasePlayer::GetAnyItems()
 		if (pEnt->IsMSMonster())
 		{
 			char cTemp2[64];
-			sprintf(cTemp2, "%s%s%s", pEnt->DisplayPrefix.c_str(), pEnt->DisplayPrefix.len() ? " " : "", pEnt->DisplayName());
-			sprintf(cTemp, "%i. %i gold coins from %s\n", ++MenuCount, (int)((CMSMonster *)pEnt)->m_Gold, cTemp2);
+			 _snprintf(cTemp2, sizeof(cTemp2),  "%s%s%s",  pEnt->DisplayPrefix.c_str(),  pEnt->DisplayPrefix.len() ? " " : "",  pEnt->DisplayName() );
+			 _snprintf(cTemp, sizeof(cTemp),  "%i. %i gold coins from %s\n",  ++MenuCount,  (int)((CMSMonster *)pEnt)->m_Gold,  cTemp2 );
 			strcat(cItemList, cTemp);
 		}
 		else
@@ -5274,13 +5274,13 @@ void CBasePlayer::GetAnyItems()
 			itItemTransaction.ItemList[i].iGroupedItemTotal += pItem->iQuantity;
 			int iSave = pItem->iQuantity;
 			pItem->iQuantity = itItemTransaction.ItemList[i].iGroupedItemTotal;
-			sprintf(cTemp, "%i. %s\n", ++MenuCount, SPEECH_GetItemName(pItem, true));
+			 _snprintf(cTemp, sizeof(cTemp),  "%i. %s\n",  ++MenuCount,  SPEECH_GetItemName(pItem,  true) );
 			pItem->iQuantity = iSave;
 			strcat(cItemList, cTemp);
 		}
 	}
 
-	sprintf(cTemp, "\n%i. Nothing\n", ++MenuCount);
+	 _snprintf(cTemp, sizeof(cTemp),  "\n%i. Nothing\n",  ++MenuCount );
 	strcat(cItemList, cTemp);
 
 	//Now create the menu showing available items
@@ -5288,7 +5288,7 @@ void CBasePlayer::GetAnyItems()
 	cbMenu->m_MenuCallback = (MenuCallback)&CBasePlayer::TransactionCallback;
 	cbMenu->pevOwner = pev;
 	cbMenu->vData = msnew(itemtrans_t);
-	strcpy(cbMenu->cMenuText, cItemList);
+	 strncpy(cbMenu->cMenuText,  cItemList, sizeof(cbMenu->cMenuText) );
 	cbMenu->iValidslots = pow(2, (ItemCount + 1)) - 1;
 	itItemTransaction.TransType = TRANS_GETGROUND;
 	memcpy(cbMenu->vData, &itItemTransaction, sizeof(itemtrans_t));
@@ -5338,7 +5338,7 @@ void CBasePlayer ::StealAnyItems(CBaseEntity *pVictim)
 			
 			if( !fAddToList ) continue;
 
-			sprintf( cTemp, "%i. %s\n", MenuCount+1, pMonster->DisplayName() );
+			 _snprintf(cTemp, sizeof(cTemp),  "%i. %s\n",  MenuCount+1,  pMonster->DisplayName() );
 			strcat( cItemList, cTemp );
 			itItemTransaction.ItemList[itItemTransaction.ItemTotal].iEntIndex = pMonster->entindex();
 			itItemTransaction.ItemList[itItemTransaction.ItemTotal].pItem = (CBasePlayerItem *)pMonster;
@@ -5379,7 +5379,7 @@ void CBasePlayer ::StealAnyItems(CBaseEntity *pVictim)
 			pItemDesc->iEntIndex = pItem->entindex();
 			pItemDesc->pItem = pItem;
 			pItemDesc->ItemType = ITEM_NORMAL;
-			sprintf( cTemp, "%i. %s\n", MenuCount+1, SPEECH_GetItemName(pItem) );
+			 _snprintf(cTemp, sizeof(cTemp),  "%i. %s\n",  MenuCount+1,  SPEECH_GetItemName(pItem) );
 			strcat( cItemList, cTemp );
 			itItemTransaction.ItemTotal++;
 			if( itItemTransaction.ItemTotal >= MAX_GET_ITEMS ) break; //max of 10 items
@@ -5391,7 +5391,7 @@ void CBasePlayer ::StealAnyItems(CBaseEntity *pVictim)
 			pItemDesc->iEntIndex = pMonster->Gold;
 			pItemDesc->pItem = NULL;
 			pItemDesc->ItemType = ITEM_GOLD;
-			sprintf( cTemp, "%i. %i gold\n", MenuCount+1, pMonster->Gold );
+			 _snprintf(cTemp, sizeof(cTemp),  "%i. %i gold\n",  MenuCount+1,  pMonster->Gold );
 			strcat( cItemList, cTemp );
 			itItemTransaction.ItemTotal++;
 			MenuCount++;
@@ -5413,7 +5413,7 @@ void CBasePlayer ::StealAnyItems(CBaseEntity *pVictim)
 				pItemDesc->iEntIndex = pItem->entindex();
 				pItemDesc->pItem = pItem;
 				pItemDesc->ItemType = ITEM_NORMAL;
-				sprintf( cTemp, "%i. %s\n", MenuCount+1, SPEECH_GetItemName(pItem) );
+				 _snprintf(cTemp, sizeof(cTemp),  "%i. %s\n",  MenuCount+1,  SPEECH_GetItemName(pItem) );
 				strcat( cItemList, cTemp );
 				itItemTransaction.ItemTotal++;
 				if( itItemTransaction.ItemTotal >= MAX_GET_ITEMS ) break; //max of 10 items
@@ -5433,7 +5433,7 @@ void CBasePlayer ::StealAnyItems(CBaseEntity *pVictim)
 	TCallbackMenu *cbMenu = msnew(TCallbackMenu);
 	cbMenu->m_MenuCallback = (MenuCallback)TransactionCallback;
 	cbMenu->pevOwner = pev;
-	strcpy( cbMenu->cMenuText, cItemList );
+	 strncpy(cbMenu->cMenuText,  cItemList, sizeof(cbMenu->cMenuText) );
 	cbMenu->iValidslots = pow(2,MenuCount) - 1;
 	cbMenu->vData = msnew(itemtrans_t);
 	memcpy( cbMenu->vData, &itItemTransaction, sizeof(itemtrans_t) );
@@ -5746,7 +5746,7 @@ void CBasePlayer ::ShowMenu(char *pszText, int bitsValidSlots,
 		}
 		else
 		{
-			strcpy(cTemp, &pszText[n]);
+			strncpy(cTemp, &pszText[n], 128);
 			n += strlen(cTemp);
 		}
 
@@ -5809,7 +5809,7 @@ void CBasePlayer ::PainSound()
 void CBasePlayer::StruckSound(CBaseEntity *pInflicter, CBaseEntity *pAttacker, float flDamage, TraceResult *ptr, int bitsDamageType)
 {
 	char cSound[128];
-	sprintf(cSound, "weapons/cbar_hitbod%i.wav", RANDOM_LONG(1, 3));
+	 _snprintf(cSound, sizeof(cSound),  "weapons/cbar_hitbod%i.wav",  RANDOM_LONG(1,  3) );
 	EMIT_SOUND_DYN(edict(), CHAN_BODY, cSound, 1, ATTN_NORM, 0, 80 + RANDOM_LONG(-10, 25));
 }
 //
@@ -5899,7 +5899,7 @@ tradeinfo_t *CBasePlayer::TradeItem(tradeinfo_t *ptiTradeInfo)
 					//REALLY didn't want to do this.. Really ugly, but needs to be done :/
 					//Turn   Axe Handling to axehandling, Blunt Arms to bluntarms, etc
 					char stat_name[256];
-					strcpy(stat_name, StatName.c_str());
+					 strncpy(stat_name,  StatName.c_str(), sizeof(stat_name) );
 					_strlwr(stat_name);
 					for (int i = 0; i < sizeof(stat_name); i++)
 					{

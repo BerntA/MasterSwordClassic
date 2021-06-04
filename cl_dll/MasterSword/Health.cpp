@@ -79,7 +79,7 @@ int CHudHealth::Init(void)
 
 	/*	if( !CVAR_GET_FLOAT("gl_polyoffset") ) {
 		char a[64];
-		sprintf( a, "Software mode detected!  Disabling Health/Mana Flasks!.\n", CVAR_GET_FLOAT("gl_polyoffset") ); 
+		 _snprintf(a, sizeof(a),  "Software mode detected!  Disabling Health/Mana Flasks!.\n",  CVAR_GET_FLOAT("gl_polyoffset") ); 
 		ConsolePrint( a );
 		m_iFlags = 0;
 	}*/

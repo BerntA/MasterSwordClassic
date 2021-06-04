@@ -104,7 +104,7 @@ float EV_HLDM_PlayTextureSound(int idx, pmtrace_t *ptr, float *vecSrc, float *ve
 
 		if (pTextureName)
 		{
-			strcpy(texname, pTextureName);
+			 strncpy(texname,  pTextureName, sizeof(texname) );
 			pTextureName = texname;
 
 			// strip leading '-0' or '+0~' or '{' or '!'
@@ -119,7 +119,7 @@ float EV_HLDM_PlayTextureSound(int idx, pmtrace_t *ptr, float *vecSrc, float *ve
 			}
 
 			// '}}'
-			strcpy(szbuffer, pTextureName);
+			 strncpy(szbuffer,  pTextureName, sizeof(szbuffer) );
 			szbuffer[CBTEXTURENAMEMAX - 1] = 0;
 
 			// get texture type
@@ -226,16 +226,16 @@ char *EV_HLDM_DamageDecal(physent_t *pe)
 	if (pe->classnumber == 1)
 	{
 		idx = gEngfuncs.pfnRandomLong(0, 2);
-		sprintf(decalname, "{break%i", idx + 1);
+		 _snprintf(decalname, sizeof(decalname),  "{break%i",  idx + 1 );
 	}
 	else if (pe->rendermode != kRenderNormal)
 	{
-		sprintf(decalname, "{bproof1");
+		 strncpy(decalname,  "{bproof1", sizeof(decalname) );
 	}
 	else
 	{
 		idx = gEngfuncs.pfnRandomLong(0, 4);
-		sprintf(decalname, "{shot%i", idx + 1);
+		 _snprintf(decalname, sizeof(decalname),  "{shot%i",  idx + 1 );
 	}
 	return decalname;
 }

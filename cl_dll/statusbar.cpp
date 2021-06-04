@@ -137,11 +137,11 @@ void CHudStatusBar ::ParseStatusString(int line_num)
 							}
 							else
 							{
-								strcpy(szRepString, "******");
+								 strncpy(szRepString,  "******", sizeof(szRepString) );
 							}
 							break;
 						case 'i': // number
-							sprintf(szRepString, "%d", indexval);
+							 _snprintf(szRepString, sizeof(szRepString),  "%d",  indexval );
 							break;
 						default:
 							szRepString[0] = 0;

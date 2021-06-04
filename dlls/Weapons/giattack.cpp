@@ -1382,22 +1382,20 @@ void CGenericItem::OwnerTakeDamage(damage_t &Damage)
 			if( fReportHit )
 			{
 				char szStats[32], szDamage[32], szHitMiss[32];
-				strcpy( szDamage, Damage.AttackHit ? UTIL_VarArgs( " %.1f damage.", flDamage ) : "" );
-				strcpy( szHitMiss, Damage.AttackHit ? "HIT!" : (fDodged ? "PARRIED!" : "MISS!") );
-				sprintf( szStats, "(%i/%i)", (100-iAccuracyRoll), int(100-flHitPercentage) );
+				 strncpy(szDamage,  Damage.AttackHit ? UTIL_VarArgs( " %.1f damage.",  flDamage ) : "", sizeof(szDamage) );
+				 strncpy(szHitMiss,  Damage.AttackHit ? "HIT!" : (fDodged ? "PARRIED!" : "MISS!"), sizeof(szHitMiss) );
+				 _snprintf(szStats, sizeof(szStats),  "(%i/%i)",  (100-iAccuracyRoll),  int(100-flHitPercentage) );
 				
 				if( pPlayerAttacker )
 				{
-					sprintf( sz, "You attack %s. %s %s%s",
-						pEntity->DisplayName(),
+					 _snprintf(sz, sizeof(sz),  "You attack %s. %s %s%s",  						pEntity->DisplayName(),
 						szStats, szHitMiss, szDamage );
 					pPlayerAttacker->SendEventMsg( HUDEVENT_ATTACK, sz );
 				}
 				if( pVictim && pVictim->IsPlayer() && pEntityAttacker && pVictim != pEntityAttacker )
 				{
 					CBasePlayer *pPlayer = (CBasePlayer *)pEntity;
-					sprintf( sz, "%s attacks you. %s %s%s",
-						pEntityAttacker->DisplayName(),
+					 _snprintf(sz, sizeof(sz),  "%s attacks you. %s %s%s",  						pEntityAttacker->DisplayName(),
 						szStats, szHitMiss, szDamage );
 					pPlayer->SendEventMsg( HUDEVENT_ATTACKED, sz );
 				}
@@ -1857,40 +1855,39 @@ CBaseEntity *DoDamage(damage_t &Damage, CBaseEntity *pTarget)
 				msstring dtype_code = Damage.sDamageType.c_str();
 				char element_code[11] = "";
 				if (dtype_code.starts_with("fire"))
-					strcpy(element_code, " fire");
+					 strncpy(element_code,  " fire", sizeof(element_code) );
 				else if (dtype_code.starts_with("cold"))
-					strcpy(element_code, " cold");
+					 strncpy(element_code,  " cold", sizeof(element_code) );
 				else if (dtype_code.starts_with("lightning"))
-					strcpy(element_code, " lightning");
+					 strncpy(element_code,  " lightning", sizeof(element_code) );
 				else if (dtype_code.starts_with("poison"))
-					strcpy(element_code, " poison");
+					 strncpy(element_code,  " poison", sizeof(element_code) );
 				else if (dtype_code.starts_with("acid"))
-					strcpy(element_code, " acid");
+					 strncpy(element_code,  " acid", sizeof(element_code) );
 				else if (dtype_code.starts_with("slash"))
-					strcpy(element_code, " slash");
+					 strncpy(element_code,  " slash", sizeof(element_code) );
 				else if (dtype_code.starts_with("blunt"))
-					strcpy(element_code, " blunt");
+					 strncpy(element_code,  " blunt", sizeof(element_code) );
 				else if (dtype_code.starts_with("pierce"))
-					strcpy(element_code, " pierce");
+					 strncpy(element_code,  " pierce", sizeof(element_code) );
 				else if (dtype_code.starts_with("magic"))
-					strcpy(element_code, " magic");
+					 strncpy(element_code,  " magic", sizeof(element_code) );
 				else if (dtype_code.starts_with("holy"))
-					strcpy(element_code, " holy");
+					 strncpy(element_code,  " holy", sizeof(element_code) );
 				else if (dtype_code.starts_with("dark"))
-					strcpy(element_code, " dark");
+					 strncpy(element_code,  " dark", sizeof(element_code) );
 				else if (dtype_code.starts_with("apostle"))
-					strcpy(element_code, " apostle");
+					 strncpy(element_code,  " apostle", sizeof(element_code) );
 				else if (dtype_code.starts_with("earth"))
-					strcpy(element_code, " earth");
+					 strncpy(element_code,  " earth", sizeof(element_code) );
 
-				strcpy(szDamage, Damage.AttackHit ? UTIL_VarArgs(" %.1f%s damage.", Damage.flDamage, element_code) : "");
-				strcpy(szHitMiss, Damage.AttackHit ? "HIT!" : (fDodged ? "PARRIED!" : "MISS!"));
-				sprintf(szStats, "(%i/%i)", (100 - iAccuracyRoll), int(100 - Damage.flHitPercentage));
+				 strncpy(szDamage,  Damage.AttackHit ? UTIL_VarArgs(" %.1f%s damage.",  Damage.flDamage,  element_code) : "", sizeof(szDamage) );
+				 strncpy(szHitMiss,  Damage.AttackHit ? "HIT!" : (fDodged ? "PARRIED!" : "MISS!"), sizeof(szHitMiss) );
+				 _snprintf(szStats, sizeof(szStats),  "(%i/%i)",  (100 - iAccuracyRoll),  int(100 - Damage.flHitPercentage) );
 
 				if (pPlayerAttacker)
 				{
-					sprintf(sz, "You attack %s %s. %s %s%s",
-							pTarget->DisplayPrefix.c_str(), //Thothie AUG2007b - display name prefix when attacking - thought it already did?
+					 _snprintf(sz, sizeof(sz),  "You attack %s %s. %s %s%s",  							pTarget->DisplayPrefix.c_str(), //Thothie AUG2007b - display name prefix when attacking - thought it already did?
 							pTarget->DisplayName(),
 							szStats, szHitMiss, szDamage);
 					pPlayerAttacker->SendEventMsg(HUDEVENT_ATTACK, sz);
@@ -1900,8 +1897,7 @@ CBaseEntity *DoDamage(damage_t &Damage, CBaseEntity *pTarget)
 					CMSMonster *pMonster = (CMSMonster *)pEntityAttacker;
 					CBasePlayer *pPlayer = (CBasePlayer *)pTarget;
 
-					sprintf(sz, "%s attacks you. %s %s%s",
-							SPEECH::NPCName(pMonster, true),
+					 _snprintf(sz, sizeof(sz),  "%s attacks you. %s %s%s",  							SPEECH::NPCName(pMonster, true),
 							//pEntityAttacker->DisplayName(),
 							szStats, szHitMiss, szDamage);
 					pPlayer->SendEventMsg(HUDEVENT_ATTACKED, sz);
@@ -1944,7 +1940,7 @@ EndDamage:
 		Parameters.add(VecToString(EndPos));
 		Parameters.add(Damage.sDamageType.c_str());
 		char szDamage[32];
-		strcpy(szDamage, Damage.AttackHit ? UTIL_VarArgs(" %.1f damage.", Damage.flDamage) : "0");
+		 strncpy(szDamage,  Damage.AttackHit ? UTIL_VarArgs(" %.1f damage.",  Damage.flDamage) : "0", sizeof(szDamage) );
 		Parameters.add(szDamage);
 		pAttMonster->CallScriptEvent("game_dodamage", &Parameters);
 		if (Damage.dodamage_event.len() > 0)

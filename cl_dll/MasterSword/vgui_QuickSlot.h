@@ -297,14 +297,14 @@ public:
 		char cTemp[64] = "";
 		if (QuickSlot.Type == QS_ITEM)
 		{
-			sprintf(cTemp, "inv transfer %u 0\n", QuickSlot.ID);
+			 _snprintf(cTemp, sizeof(cTemp),  "inv transfer %u 0\n",  QuickSlot.ID );
 			ClientCmd(cTemp);
 		}
 		else if (QuickSlot.Type == QS_SPELL)
 		{
 			if (QuickSlot.ID >= 0 && QuickSlot.ID < player.m_SpellList.size()) //Validate here, just in case
 			{
-				sprintf(cTemp, "prep %s\n", player.m_SpellList[QuickSlot.ID].c_str());
+				 _snprintf(cTemp, sizeof(cTemp),  "prep %s\n",  player.m_SpellList[QuickSlot.ID].c_str() );
 				ClientCmd(cTemp);
 			}
 		}
@@ -314,12 +314,12 @@ public:
 				(m_Cycle == 2 && ProjType == PROJ_ANY))
 			{
 				msstring GEN = m_Cycle == 1 ? (ProjType == PROJ_BOLT ? "BOLT" : "ARROW") : "BOLT";
-				sprintf(cTemp, "selectarrow GENERIC_%s", GEN.c_str());
+				 _snprintf(cTemp, sizeof(cTemp),  "selectarrow GENERIC_%s",  GEN.c_str() );
 				player.m_ChosenArrow = NewGenericItem(QuickSlot.ID == pGenericArrow->m_iId ? "proj_arrow_generic" : "proj_bolt_generic");
 			}
 			else
 			{
-				sprintf(cTemp, "selectarrow %u", QuickSlot.ID);
+				 _snprintf(cTemp, sizeof(cTemp),  "selectarrow %u",  QuickSlot.ID );
 				player.m_ChosenArrow = MSUtil_GetItemByID(QuickSlot.ID);
 			}
 

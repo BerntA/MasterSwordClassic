@@ -45,7 +45,7 @@ namespace Tartan
 		}
 
 		char filetypestring[MAX_PATH];
-		sprintf(filetypestring, "%s", sFilePath + strlen(sFilePath) - 4);
+		 _snprintf(filetypestring, sizeof(filetypestring),  "%s",  sFilePath + strlen(sFilePath) - 4 );
 
 		DbgLog("LoadTextureFile - Filetype: %s", filetypestring);
 

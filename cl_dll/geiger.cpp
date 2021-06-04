@@ -175,7 +175,7 @@ int CHudGeiger::Draw (float flTime)
 			if (i > 2)
 				j += rand() & 1;
 
-			sprintf(sz, "player/geiger%d.wav", j + 1);
+			 _snprintf(sz, sizeof(sz),  "player/geiger%d.wav",  j + 1 );
 			PlaySound(sz, flvol);
 			
 		}

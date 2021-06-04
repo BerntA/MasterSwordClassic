@@ -559,13 +559,13 @@ void CAction_OptionBegin::actionPerformed(Panel *panel)
 	switch (m_OptionType)
 	{
 	case opt_vote:
-		sprintf(cSendStr, "startvote %s %i\n", m_Panel->m_VoteType.c_str(), m_Panel->m_Target);
+		 _snprintf(cSendStr, sizeof(cSendStr),  "startvote %s %i\n",  m_Panel->m_VoteType.c_str(),  m_Panel->m_Target );
 		break;
 	case opt_joinparty:
-		sprintf(cSendStr, "joinparty \"%s\"\n", m_Panel->m_pListButton[m_Panel->m_Target]->m_PartyName.c_str());
+		 _snprintf(cSendStr, sizeof(cSendStr),  "joinparty \"%s\"\n",  m_Panel->m_pListButton[m_Panel->m_Target]->m_PartyName.c_str() );
 		break;
 	case opt_createparty:
-		sprintf(cSendStr, "joinparty ???\n");
+		 strncpy(cSendStr,  "joinparty ???\n", sizeof(cSendStr) );
 		break;
 	}
 
@@ -603,17 +603,17 @@ int __MsgFunc_Vote(const char *pszName, int iSize, void *pbuf)
 		MSGlobals::CurrentVote.Title = Localized(msstring("#VOTE_") + MSGlobals::CurrentVote.Type + "_INPROGRESS_TITLE");
 		char cTargetPlayerName[64], cSourcePlayerName[64];
 		if (g_PlayerInfoList[MSGlobals::CurrentVote.SourcePlayer].name)
-			strcpy(cSourcePlayerName, g_PlayerInfoList[MSGlobals::CurrentVote.SourcePlayer].name);
+			 strncpy(cSourcePlayerName,  g_PlayerInfoList[MSGlobals::CurrentVote.SourcePlayer].name, sizeof(cSourcePlayerName) );
 		else
-			strcpy(cSourcePlayerName, "<unknown>");
+			 strncpy(cSourcePlayerName,  "<unknown>", sizeof(cSourcePlayerName) );
 
 		if (MSGlobals::CurrentVote.Type == "kick" && Params.size() >= 3)
 		{
 			MSGlobals::CurrentVote.TargetPlayer = atoi(Params[2]);
 			if (g_PlayerInfoList[MSGlobals::CurrentVote.TargetPlayer].name)
-				strcpy(cTargetPlayerName, g_PlayerInfoList[MSGlobals::CurrentVote.TargetPlayer].name);
+				 strncpy(cTargetPlayerName,  g_PlayerInfoList[MSGlobals::CurrentVote.TargetPlayer].name, sizeof(cTargetPlayerName) );
 			else
-				strcpy(cTargetPlayerName, "<unknown>");
+				 strncpy(cTargetPlayerName,  "<unknown>", sizeof(cTargetPlayerName) );
 
 			_snprintf(MSGlobals::CurrentVote.Desc, MSSTRING_SIZE, Localized(msstring("#VOTE_") + MSGlobals::CurrentVote.Type + "_INPROGRESS_DESC"), cSourcePlayerName, cTargetPlayerName);
 		}

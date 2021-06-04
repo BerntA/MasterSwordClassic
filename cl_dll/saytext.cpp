@@ -295,21 +295,21 @@ void CHudSayText :: EnsureTextFitsInOneLineAndWrapIfHaveTo( int line )
 				}
 				while ( j == MAX_LINES );
 
+				int linelen = strlen(g_szLineBuffer[j]);
+				int remaininglen = strlen(last_break);
+
 				// copy remaining string into next buffer,  making sure it starts with a space character
 				if ( (char)*last_break == (char)' ' )
 				{
-					int linelen = strlen(g_szLineBuffer[j]);
-					int remaininglen = strlen(last_break);
-
 					if ( (linelen - remaininglen) <= MAX_CHARS_PER_LINE )
-						strcat( g_szLineBuffer[j], last_break );
+						strncat(g_szLineBuffer[j], last_break, (256 - linelen));
 				}
 				else
 				{
-					if ( (strlen(g_szLineBuffer[j]) - strlen(last_break) - 2) < MAX_CHARS_PER_LINE )
+					if ((linelen - remaininglen - 2) < MAX_CHARS_PER_LINE)
 					{
-						strcat( g_szLineBuffer[j], " " );
-						strcat( g_szLineBuffer[j], last_break );
+						strncat(g_szLineBuffer[j], " ", (256 - linelen));
+						strncat(g_szLineBuffer[j], last_break, (256 - linelen));
 					}
 				}
 

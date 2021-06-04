@@ -306,7 +306,7 @@ string_t MSCLGlobals::AllocString(const char *pszString)
 	//Create new string
 	uint len = strlen(pszString) + 1;
 	char *pszNewString = msnew(char[len]);
-	strcpy(pszNewString, pszString);
+	 strncpy(pszNewString,  pszString, sizeof(pszNewString) );
 
 	m_Strings.push_back((char *)pszNewString);
 
@@ -411,7 +411,7 @@ BOOL WINAPI DllMain(
 			#endif
 			
 			//MessageBox( NULL, gEngfuncs.pfnGetGameDirectory(), "", MB_OK );
-			sprintf( cLogfile, "%s/log_cldll.txt", pGameDir );
+			 _snprintf(cLogfile, sizeof(cLogfile),  "%s/log_cldll.txt",  pGameDir );
 			logfile.open( cLogfile );
 			g_log_initialized = true;
 		#endif*/

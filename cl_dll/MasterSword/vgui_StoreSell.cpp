@@ -112,7 +112,7 @@ void CStoreSellPanel::ItemHighlighted(void *pData)
 
 			int Value = int(StoreItem.iCost * StoreItem.flSellRatio);
 			char cTemp[256];
-			sprintf(cTemp, Localized("#SELL_ITEM_VALUE"), Value);
+			 _snprintf(cTemp, sizeof(cTemp),  Localized("#SELL_ITEM_VALUE"),  Value );
 			m_InfoPanel->m_SaleText->setText(cTemp);
 			break;
 		}

@@ -4610,7 +4610,7 @@ int CScript::ParseLine(const char *pszCommandLine /*in*/, int LineNum /*in*/, SC
 	{
 		//precache another script file
 		sscanf( CmdLineTmp, "%[^\t \r\n]", cBuffer );
-		strcpy( cBuffer, SCRIPTCONST(cBuffer) );
+		 strncpy(cBuffer,  SCRIPTCONST(cBuffer), sizeof(cBuffer) );
 		strcat( cBuffer, SCRIPT_EXT );
 		string_t CurrentScriptFile = m.ScriptFile;
 		CScript TempScript;

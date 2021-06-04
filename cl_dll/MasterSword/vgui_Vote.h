@@ -57,13 +57,13 @@ public:
 			m_pVoteDesc->setText(MSGlobals::CurrentVote.Desc);
 
 			char cVotes[128];
-			strcpy(cVotes, "Those in favor:\n\n");
+			 strncpy(cVotes,  "Those in favor:\n\n", sizeof(cVotes) );
 			for (int i = 1; i <= 32; i++)
 			{
 				if (g_PlayerInfoList[i].name && PlayerVotedYes(i))
 				{
-					strcat(cVotes, "   ");
-					strcat(cVotes, g_PlayerInfoList[i].name);
+					strncat(cVotes, "   ", 3);
+					strncat(cVotes, g_PlayerInfoList[i].name, MAX_PLAYER_NAME_LENGTH);
 					strcat(cVotes, "\n");
 				}
 			}

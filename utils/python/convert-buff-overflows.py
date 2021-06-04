@@ -29,7 +29,7 @@ def checkAndConvFile(f):
                     line = extractFuncParams('sprintf', line, lambda x: getSnprintf(x))
             content.append(line)
        
-    should_update = False
+    #should_update = False
     if should_update:
         print("Writing:", f)
         with open(f, 'w') as c:

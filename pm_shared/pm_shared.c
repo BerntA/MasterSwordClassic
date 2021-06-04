@@ -166,13 +166,13 @@ void PM_SwapTextures(int i, int j)
 	char chTemp;
 	char szTemp[CBTEXTURENAMEMAX];
 
-	strcpy(szTemp, grgszTextureName[i]);
+	 strncpy(szTemp,  grgszTextureName[i], sizeof(szTemp) );
 	chTemp = grgchTextureType[i];
 
-	strcpy(grgszTextureName[i], grgszTextureName[j]);
+	 strncpy(grgszTextureName[i],  grgszTextureName[j], sizeof(grgszTextureName[i]) );
 	grgchTextureType[i] = grgchTextureType[j];
 
-	strcpy(grgszTextureName[j], szTemp);
+	 strncpy(grgszTextureName[j],  szTemp, sizeof(grgszTextureName[j]) );
 	grgchTextureType[j] = chTemp;
 }
 
@@ -576,7 +576,7 @@ void PM_CatagorizeTextureType(void)
 		pTextureName++;
 	// '}}'
 
-	strcpy(pmove->sztexturename, pTextureName);
+	 strncpy(pmove->sztexturename,  pTextureName, sizeof(pmove->sztexturename) );
 	pmove->sztexturename[CBTEXTURENAMEMAX - 1] = 0;
 
 	// get texture type

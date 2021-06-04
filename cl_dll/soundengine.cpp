@@ -138,7 +138,7 @@ void CSoundEngine::GetDllPointers(void)
 {
 	char szPath[256];
 
-	strcpy(szPath, gEngfuncs.pfnGetGameDirectory());
+	 strncpy(szPath,  gEngfuncs.pfnGetGameDirectory(), sizeof(szPath) );
 	strcat(szPath, "/dlls/fmodex.dll");
 
 	m_hFmodDll = LoadLibrary(szPath);
@@ -925,7 +925,7 @@ void CSoundEngine::PlaySound(const char *szFile, vec3_t vOrigin, int iFlags, int
 		int iID = atoi(&szFile[1]);
 		pSentence = &m_sSentences[iID];
 
-		strcpy(szPath, "sound/");
+		 strncpy(szPath,  "sound/", sizeof(szPath) );
 		strcat(szPath, pSentence->szParentDir);
 
 		if (pSentence->pOptions[0].szFile[strlen(pSentence->pOptions[0].szFile) - 1] == '.')
@@ -936,12 +936,12 @@ void CSoundEngine::PlaySound(const char *szFile, vec3_t vOrigin, int iFlags, int
 	}
 	else if (szFile[0] == '*')
 	{
-		strcpy(szPath, "sound/");
+		 strncpy(szPath,  "sound/", sizeof(szPath) );
 		strcat(szPath, &szFile[1]);
 	}
 	else
 	{
-		strcpy(szPath, "sound/");
+		 strncpy(szPath,  "sound/", sizeof(szPath) );
 		strcat(szPath, szFile);
 	}
 
@@ -1181,7 +1181,7 @@ void CSoundEngine::PlaySentenceChunk(sound_t *pSound, sentence_t *pSentence, sop
 	char szPath[256];
 	FMOD_CREATESOUNDEXINFO sSoundInfo;
 
-	strcpy(szPath, "sound/");
+	 strncpy(szPath,  "sound/", sizeof(szPath) );
 	strcat(szPath, pSentence->szParentDir);
 
 	if (pChunk->szFile[strlen(pChunk->szFile) - 1] == '.')
@@ -1254,7 +1254,7 @@ void CSoundEngine::PlayMusic(char *pszFile)
 	}
 
 	char szPath[256];
-	sprintf(szPath, "%s/media/%s", gEngfuncs.pfnGetGameDirectory(), pszFile);
+	 _snprintf(szPath, sizeof(szPath),  "%s/media/%s",  gEngfuncs.pfnGetGameDirectory(),  pszFile );
 
 	_FMOD_System_CreateStream(m_pSystem, szPath, (FMOD_SOFTWARE | FMOD_2D), NULL, &m_pMusicSound);
 	_FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, m_pMusicSound, true, &m_pMusicChannel);
@@ -1361,7 +1361,7 @@ scache_t *CSoundEngine::PrecacheSound(char *szFile)
 	memcpy(pCache->pFile, pData, sizeof(byte) * iSize);
 	pCache->iSize = iSize;
 
-	strcpy(pCache->szFile, szFile);
+	 strncpy(pCache->szFile,  szFile, sizeof(pCache->szFile) );
 	gEngfuncs.COM_FreeFile(pData);
 
 	pCache->iLoopStart = -1;
@@ -1647,7 +1647,7 @@ void CSoundEngine::LoadSentences(void)
 			if (pFile[j] == '\n' || pFile[j] == '\r')
 			{
 				// Seems Valve takes a default as "vox/"
-				strcpy(pSentence->szParentDir, "vox/");
+				 strncpy(pSentence->szParentDir,  "vox/", sizeof(pSentence->szParentDir) );
 				break;
 			}
 
@@ -2104,7 +2104,7 @@ extern "C" __declspec(dllexport) void CL_SoundPrecache(void *pPath)
 {
 	char szPath[256];
 
-	strcpy(szPath, "sound/");
+	 strncpy(szPath,  "sound/", sizeof(szPath) );
 	strcat(szPath, (char *)pPath);
 	gSoundEngine.PrecacheSound(szPath);
 }

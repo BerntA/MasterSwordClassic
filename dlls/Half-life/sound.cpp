@@ -1117,7 +1117,7 @@ int USENTENCEG_PickSequential(int isentenceg, char *szfound, int ipick, int fres
 	if (ipick >= count)
 		ipick = count - 1;
 
-	strcpy(szfound, "!");
+	 strncpy(szfound,  "!", sizeof(szfound) );
 	strcat(szfound, szgroupname);
 	itoa(ipick, sznum, 10);
 	strcat(szfound, sznum);
@@ -1177,7 +1177,7 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 			USENTENCEG_InitLRU(plru, count);
 		else
 		{
-			strcpy(szfound, "!");
+			 strncpy(szfound,  "!", sizeof(szfound) );
 			strcat(szfound, szgroupname);
 			itoa(ipick, sznum, 10);
 			strcat(szfound, sznum);
@@ -1300,7 +1300,7 @@ void SENTENCEG_Stop(edict_t *entity, int isentenceg, int ipick)
 	if (isentenceg < 0 || ipick < 0)
 		return;
 
-	strcpy(buffer, "!");
+	 strncpy(buffer,  "!", sizeof(buffer) );
 	strcat(buffer, rgsentenceg[isentenceg].szgroupname);
 	itoa(ipick, sznum, 10);
 	strcat(buffer, sznum);
@@ -1401,10 +1401,9 @@ void SENTENCEG_Init()
 				break;
 			}
 
-			strcpy(rgsentenceg[isentencegs].szgroupname, &(buffer[i]));
+			strncpy(rgsentenceg[isentencegs].szgroupname, &(buffer[i]), CBSENTENCENAME_MAX);
 			rgsentenceg[isentencegs].count = 1;
-
-			strcpy(szgroup, &(buffer[i]));
+			strncpy(szgroup, &(buffer[i]), 64);
 
 			continue;
 		}
@@ -1449,7 +1448,7 @@ int SENTENCEG_Lookup(const char *sample, char *sentencenum)
 		{
 			if (sentencenum)
 			{
-				strcpy(sentencenum, "!");
+				 strncpy(sentencenum,  "!", sizeof(sentencenum) );
 				itoa(i, sznum, 10);
 				strcat(sentencenum, sznum);
 			}
@@ -1724,7 +1723,7 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 			if (*pTextureName == '{' || *pTextureName == '!' || *pTextureName == '~' || *pTextureName == ' ')
 				pTextureName++;
 			// '}}'
-			strcpy(szbuffer, pTextureName);
+			 strncpy(szbuffer,  pTextureName, sizeof(szbuffer) );
 			szbuffer[CBTEXTURENAMEMAX - 1] = 0;
 
 			// ALERT ( at_console, "texture hit: %s\n", szbuffer);

@@ -462,14 +462,14 @@ protected:
 public:
 	CMenuHandler_StringCommand(char *pszCommand)
 	{
-		strcpy(m_pszCommand, pszCommand);
+		 strncpy(m_pszCommand,  pszCommand, sizeof(m_pszCommand) );
 		m_pszCommand[MAX_COMMAND_SIZE - 1] = '\0';
 		m_iCloseVGUIMenu = false;
 	}
 
 	CMenuHandler_StringCommand(char *pszCommand, int iClose)
 	{
-		strcpy(m_pszCommand, pszCommand);
+		 strncpy(m_pszCommand,  pszCommand, sizeof(m_pszCommand) );
 		m_pszCommand[MAX_COMMAND_SIZE - 1] = '\0';
 		m_iCloseVGUIMenu = iClose;
 	}
@@ -971,7 +971,7 @@ private:
 public:
 	MapButton(const char *pMapName, const char *text, int x, int y, int wide, int tall) : CommandButton(text, x, y, wide, tall)
 	{
-		sprintf(m_szMapName, "maps/%s.bsp", pMapName);
+		 _snprintf(m_szMapName, sizeof(m_szMapName),  "maps/%s.bsp",  pMapName );
 	}
 
 	virtual int IsNotValid()

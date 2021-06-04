@@ -120,7 +120,7 @@ CHalfLifeMultiplay :: CHalfLifeMultiplay()
 			char szCommand[256];
 			
 			ALERT( at_console, "Executing dedicated server config file\n" );
-			sprintf( szCommand, "exec %s\n", servercfgfile );
+			 _snprintf(szCommand, sizeof(szCommand),  "exec %s\n",  servercfgfile );
 			SERVER_COMMAND( szCommand );
 		}
 	}
@@ -134,7 +134,7 @@ CHalfLifeMultiplay :: CHalfLifeMultiplay()
 			char szCommand[256];
 			
 			ALERT( at_console, "Executing listen server config file\n" );
-			sprintf( szCommand, "exec %s\n", lservercfgfile );
+			 _snprintf(szCommand, sizeof(szCommand),  "exec %s\n",  lservercfgfile );
 			SERVER_COMMAND( szCommand );
 		}
 	}
@@ -443,7 +443,7 @@ BOOL CHalfLifeMultiplay :: ClientConnected( edict_t *pEntity, const char *pszNam
 	g_VoiceGameMgr.ClientConnected( pEntity );
 /*	if( !g_fServerValidated )
 	{
-		strcpy( szRejectReason, "Server is not validated.\n" );
+		 strncpy(szRejectReason,  "Server is not validated.\n", sizeof(szRejectReason) );
 		return FALSE;
 	}*/
 
@@ -452,7 +452,7 @@ BOOL CHalfLifeMultiplay :: ClientConnected( edict_t *pEntity, const char *pszNam
 	//Check if the player has been banned by vote
 	if( CheckBanned( AuthID ) )
 	{
-		strcpy( szRejectReason, "You are BANNED\n" );
+		 strncpy(szRejectReason,  "You are BANNED\n", sizeof(szRejectReason) );
 		return FALSE;
 	}
 
@@ -835,19 +835,19 @@ void CHalfLifeMultiplay::DeathNotice( CBasePlayer *pVictim, entvars_t *pKiller, 
 	if ( pKiller->flags & FL_MONSTER )
 	{
 		// killed by a monster
-		strcpy ( szText, STRING( pVictim->pev->netname ) );
+		 strncpy(strcpy(szText,  STRING( pVictim->pev->netname ), sizeof(strcpy(szText) );
 		strcat ( szText, " was killed by a monster.\n" );
 		return;
 	}
 
 	if ( pKiller == pVictim->pev )
 	{
-		strcpy ( szText, STRING( pVictim->pev->netname ) );
+		 strncpy(strcpy(szText,  STRING( pVictim->pev->netname ), sizeof(strcpy(szText) );
 		strcat ( szText, " commited suicide.\n" );
 	}
 	else if ( pKiller->flags & FL_CLIENT )
 	{
-		strcpy ( szText, STRING( pKiller->netname ) );
+		 strncpy(strcpy(szText,  STRING( pKiller->netname ), sizeof(strcpy(szText) );
 
 		strcat( szText, " : " );
 		strcat( szText, killer_weapon_name );
@@ -858,17 +858,17 @@ void CHalfLifeMultiplay::DeathNotice( CBasePlayer *pVictim, entvars_t *pKiller, 
 	}
 	else if ( FClassnameIs ( pKiller, "worldspawn" ) )
 	{
-		strcpy ( szText, STRING( pVictim->pev->netname ) );
+		 strncpy(strcpy(szText,  STRING( pVictim->pev->netname ), sizeof(strcpy(szText) );
 		strcat ( szText, " fell or drowned or something.\n" );
 	}
 	else if ( pKiller->solid == SOLID_BSP )
 	{
-		strcpy ( szText, STRING( pVictim->pev->netname ) );
+		 strncpy(strcpy(szText,  STRING( pVictim->pev->netname ), sizeof(strcpy(szText) );
 		strcat ( szText, " was mooshed.\n" );
 	}
 	else
 	{
-		strcpy ( szText, STRING( pVictim->pev->netname ) );
+		 strncpy(strcpy(szText,  STRING( pVictim->pev->netname ), sizeof(strcpy(szText) );
 		strcat ( szText, " died mysteriously.\n" );
 	}
 
@@ -1321,7 +1321,7 @@ int ReloadMapCycleFile( char *filename, mapcycle_t *cycle )
 			if ( strlen( com_token ) <= 0 )
 				break;
 
-			strcpy( szMap, com_token );
+			 strncpy(szMap,  com_token, sizeof(szMap) );
 
 			// Any more tokens on this line?
 			if ( COM_TokenWaiting( pFileList ) )
@@ -1330,7 +1330,7 @@ int ReloadMapCycleFile( char *filename, mapcycle_t *cycle )
 				if ( strlen( com_token ) > 0 )
 				{
 					hasbuffer = 1;
-					strcpy( szBuffer, com_token );
+					 strncpy(szBuffer,  com_token, sizeof(szBuffer) );
 				}
 			}
 
@@ -1342,7 +1342,7 @@ int ReloadMapCycleFile( char *filename, mapcycle_t *cycle )
 
 				item = new mapcycle_item_s;
 
-				strcpy( item->mapname, szMap );
+				 strncpy(item->mapname,  szMap, sizeof(item->mapname) );
 
 				item->minplayers = 0;
 				item->maxplayers = 0;
@@ -1371,7 +1371,7 @@ int ReloadMapCycleFile( char *filename, mapcycle_t *cycle )
 					g_engfuncs.pfnInfo_RemoveKey( szBuffer, "minplayers" );
 					g_engfuncs.pfnInfo_RemoveKey( szBuffer, "maxplayers" );
 
-					strcpy( item->rulebuffer, szBuffer );
+					 strncpy(item->rulebuffer,  szBuffer, sizeof(item->rulebuffer) );
 				}
 
 				item->next = cycle->items;
@@ -1567,7 +1567,7 @@ void CHalfLifeMultiplay :: ChangeLevel( void )
 	char szCommands[ 1500 ];
 	char szRules[ 1500 ];
 	int minplayers = 0, maxplayers = 0;
-	strcpy( szFirstMapInList, "edana" );  // the absolute default level is edana
+	strncpy(szFirstMapInList, "edana", sizeof(szFirstMapInList));  // the absolute default level is edana
 
 	int	curplayers;
 	BOOL do_cycle = TRUE;
@@ -1584,7 +1584,7 @@ void CHalfLifeMultiplay :: ChangeLevel( void )
 	// Has the map cycle filename changed?
 	if ( stricmp( mapcfile, szPreviousMapCycleFile ) )
 	{
-		strcpy( szPreviousMapCycleFile, mapcfile );
+		 strncpy(szPreviousMapCycleFile,  mapcfile, sizeof(szPreviousMapCycleFile) );
 
 		DestroyMapCycle( &mapcycle );
 
@@ -1602,8 +1602,8 @@ void CHalfLifeMultiplay :: ChangeLevel( void )
 		mapcycle_item_s *item;
 
 		// Assume current map
-		strcpy( szNextMap, STRING(gpGlobals->mapname) );
-		strcpy( szFirstMapInList, STRING(gpGlobals->mapname) );
+		 strncpy(szNextMap,  STRING(gpGlobals->mapname), sizeof(szNextMap) );
+		 strncpy(szFirstMapInList,  STRING(gpGlobals->mapname), sizeof(szFirstMapInList) );
 
 		// Traverse list
 		for ( item = mapcycle.next_item; item->next != mapcycle.next_item; item = item->next )
@@ -1654,15 +1654,15 @@ void CHalfLifeMultiplay :: ChangeLevel( void )
 		mapcycle.next_item = item->next;
 
 		// Perform logic on current item
-		strcpy( szNextMap, item->mapname );
+		 strncpy(szNextMap,  item->mapname, sizeof(szNextMap) );
 
 		ExtractCommandString( item->rulebuffer, szCommands );
-		strcpy( szRules, item->rulebuffer );
+		 strncpy(szRules,  item->rulebuffer, sizeof(szRules) );
 	}
 
 	if ( !IS_MAP_VALID(szNextMap) )
 	{
-		strcpy( szNextMap, szFirstMapInList );
+		 strncpy(szNextMap,  szFirstMapInList, sizeof(szNextMap) );
 	}
 
 	g_fGameOver = TRUE;
@@ -1708,7 +1708,7 @@ void CHalfLifeMultiplay :: SendMOTDToClient( edict_t *client )
 		
 		if ( strlen( pFileList ) < MAX_MOTD_CHUNK )
 		{
-			strcpy( chunk, pFileList );
+			 strncpy(chunk,  pFileList, sizeof(chunk) );
 		}
 		else
 		{
@@ -1804,9 +1804,9 @@ BOOL CHalfLifeMultiplay :: ClientCommand( CBasePlayer *pPlayer, const char *pcmd
 				#define PTYNAME_EXT_SML 4
 				int iNameLen = pPlayer->DisplayName();
 				if( iNameLen + PTYNAME_EXT_MAX <= MAX_TEAMNAME_LEN )
-					sprintf( Name, "%s's party", pPlayer->DisplayName() );
+					 _snprintf(Name, sizeof(Name),  "%s's party",  pPlayer->DisplayName() );
 				else if( iNameLen + PTYNAME_EXT_SML <= MAX_TEAMNAME_LEN )
-					sprintf( Name, "%s pty", pPlayer->DisplayName() );
+					 _snprintf(Name, sizeof(Name),  "%s pty",  pPlayer->DisplayName() );
 				else
 					sprintf( Name, "pty %s", pPlayer->DisplayName() );*/
 				msstring PartyName = msstring(pPlayer->DisplayName()) + "'s party";

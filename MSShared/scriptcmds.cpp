@@ -260,7 +260,7 @@ msstring_ref CBaseEntity::GetProp(CBaseEntity *pTarget, msstring &FullParams, ms
 	else if( Prop == "lastmap" )
 	{
 		char last_map[32];
-		strcpy( last_map, pPlayer->m_cEnterMap );
+		 strncpy(last_map,  pPlayer->m_cEnterMap, sizeof(last_map) );
 		ALERT( at_aiconsole, "String1(%s) String2(%s) String3(%s) \n", pPlayer->m_cEnterMap, pPlayer->m_OldTransition, last_map );
 		return last_map; //even this returns 0 //pPlayer->m_cEnterMap; //returned 0
 	}*/
@@ -2583,10 +2583,10 @@ bool CScript::ScriptCmd_EraseFile(SCRIPT_EVENT &Event, scriptcmd_t &Cmd, msstrin
 #ifdef VALVE_DLL
 	if (Params.size() > 0)
 	{
-		char cFileName[256];
+		char cFileName[MAX_PATH];
 		msstring fname = Params[0];
 		bool clearFromHere = Params.size() >= 2 ? Params[1] != "no_clear" : true;
-		sprintf(cFileName, "%s/%s", EngineFunc::GetGameDir(), fname.c_str());
+		_snprintf(cFileName, MAX_PATH, "%s/%s", EngineFunc::GetGameDir(), fname.c_str());
 
 		if (clearFromHere) //Remove from the filesOpen list unless specified otherwise.
 			for (int i = 0; i < m.pScriptedEnt->filesOpen.size(); i++)
@@ -5780,9 +5780,9 @@ bool CScript::ScriptCmd_SetTrans(SCRIPT_EVENT &Event, scriptcmd_t &Cmd, msstring
 	//- tie a player to a spawn area
 #ifdef VALVE_DLL
 	/* notes from msarea_transition:
-	strcpy( pPlayer->m_OldTransition, STRING(sName) );
-	strcpy( pPlayer->m_NextMap, STRING(sDestMap) );
-	strcpy( pPlayer->m_NextTransition, STRING(sDestTrans) );
+	 strncpy(pPlayer->m_OldTransition,  STRING(sName), sizeof(pPlayer->m_OldTransition) );
+	 strncpy(pPlayer->m_NextMap,  STRING(sDestMap), sizeof(pPlayer->m_NextMap) );
+	 strncpy(pPlayer->m_NextTransition,  STRING(sDestTrans), sizeof(pPlayer->m_NextTransition) );
 	pPlayer->CurrentTransArea = this;
 	strcpy( pPlayer->m_SpawnTransition, STRING(sName) );*/
 	if (Params.size() >= 2)
@@ -5791,7 +5791,7 @@ bool CScript::ScriptCmd_SetTrans(SCRIPT_EVENT &Event, scriptcmd_t &Cmd, msstring
 		CBasePlayer *pPlayer = pEntity->IsPlayer() ? (CBasePlayer *)pEntity : NULL;
 		if (pPlayer)
 		{
-			strcpy(pPlayer->m_SpawnTransition, Params[1]);
+			 strncpy(pPlayer->m_SpawnTransition,  Params[1], sizeof(pPlayer->m_SpawnTransition) );
 		}
 		else
 		{
@@ -6301,7 +6301,7 @@ bool CScript::ScriptCmd_ToSpawn(SCRIPT_EVENT &Event, scriptcmd_t &Cmd, msstringl
 		if (pPlayer)
 		{
 			if (Params.size() >= 2)
-				strcpy(pPlayer->m_SpawnTransition, Params[1]);
+				 strncpy(pPlayer->m_SpawnTransition,  Params[1], sizeof(pPlayer->m_SpawnTransition) );
 			pPlayer->m_JoinType = 2;
 			CBaseEntity *pSpawnSpot = pPlayer->FindSpawnSpot();
 			UTIL_SetOrigin(pPlayer->pev, pSpawnSpot->pev->origin);
@@ -6937,7 +6937,7 @@ void scriptfile_t::ScriptFile_WriteLine(msstring line)
 	AddLine(line, -1, false);
 
 	char cFileName[512];
-	sprintf(cFileName, "%s/%s", EngineFunc::GetGameDir(), fileName.c_str());
+	 _snprintf(cFileName, sizeof(cFileName),  "%s/%s",  EngineFunc::GetGameDir(),  fileName.c_str() );
 	CMSStream mibfile;
 	mibfile.open(cFileName, 1);
 	mibfile << line << endl;
@@ -6948,7 +6948,7 @@ void scriptfile_t::ScriptFile_WriteLine(msstring line)
 void scriptfile_t::ScriptFile_WriteLine(msstring line, int lineNum, bool overwrite)
 {
 	char cFileName[512];
-	sprintf(cFileName, "%s/%s", EngineFunc::GetGameDir(), fileName.c_str());
+	 _snprintf(cFileName, sizeof(cFileName),  "%s/%s",  EngineFunc::GetGameDir(),  fileName.c_str() );
 	CMSStream mibfile;
 	mibfile.open(cFileName, 0);
 
@@ -6982,9 +6982,9 @@ scriptfile_t &scriptfile_t::operator=(const msstring_ref a)
 //Open a specified file and input its lines for later "reading"
 void scriptfile_t::Open(msstring_ref a)
 {
-	char cFileName[256];
+	char cFileName[MAX_PATH];
 	msstring fname = a;
-	sprintf(cFileName, "%s/%s", EngineFunc::GetGameDir(), fname.c_str()); //Put the filename into the correct directory path
+	_snprintf(cFileName, MAX_PATH, "%s/%s", EngineFunc::GetGameDir(), fname.c_str()); //Put the filename into the correct directory path
 	fileName = fname;
 	InFile file;
 	file.Open(cFileName);

@@ -371,9 +371,9 @@ void CTargetMP3Audio::Use(CBaseEntity *pActivator, CBaseEntity *pCaller,
 	//Thothie AUG2007a - removing music/ dependancy, so you can play MP3's in valve/media/ folder
 	msstring th_test_string = STRING(pev->message);
 	if (th_test_string.contains("/"))
-		sprintf(command, "mp3 %s %s\n", FBitSet(pev->spawnflags, SF_LOOP) ? "loop" : "play", STRING(pev->message));
+		 _snprintf(command, sizeof(command),  "mp3 %s %s\n",  FBitSet(pev->spawnflags,  SF_LOOP) ? "loop" : "play",  STRING(pev->message) );
 	else
-		sprintf(command, "mp3 %s music/%s\n", FBitSet(pev->spawnflags, SF_LOOP) ? "loop" : "play", STRING(pev->message));
+		 _snprintf(command, sizeof(command),  "mp3 %s music/%s\n",  FBitSet(pev->spawnflags,  SF_LOOP) ? "loop" : "play",  STRING(pev->message) );
 
 	CLIENT_COMMAND(pActivator->edict(), command); //thothie - not sure how this works, might be useful to know
 
@@ -1753,9 +1753,9 @@ public:
 #define TRANS_AUTOSHOWBROWSER (1 << 0)
 #define TRANS_PLAYSOUND (1 << 1)
 
-		strcpy(pPlayer->m_OldTransition, STRING(sName));
-		strcpy(pPlayer->m_NextMap, STRING(sDestMap));
-		strcpy(pPlayer->m_NextTransition, STRING(sDestTrans));
+		 strncpy(pPlayer->m_OldTransition,  STRING(sName), sizeof(pPlayer->m_OldTransition) );
+		 strncpy(pPlayer->m_NextMap,  STRING(sDestMap), sizeof(pPlayer->m_NextMap) );
+		 strncpy(pPlayer->m_NextTransition,  STRING(sDestTrans), sizeof(pPlayer->m_NextTransition) );
 		pPlayer->m_SpawnTransition = pPlayer->m_OldTransition;
 
 		//Save character
@@ -1843,7 +1843,7 @@ public:
 		if (!thoth_didvote)
 		{
 			/*char thoth_trans_string[64];
-			strcpy(thoth_trans_string,"touch_trans_");
+			 strncpy(thoth_trans_string, "touch_trans_", sizeof(thoth_trans_string) );
 			strcat(thoth_trans_string,STRING(sDestMap));
 			FireTargets( thoth_trans_string, this, this, USE_TOGGLE, 0 );*/
 			//Thothie JAN2008a moving vote system from amx to scripts
@@ -1907,9 +1907,9 @@ public:
 
 				//Thothie JUN2007 make sure all trans stats are set right
 				/*
-				strcpy( pOtherPlayer->m_OldTransition, STRING(sName) );
-				strcpy( pOtherPlayer->m_NextMap, STRING(sDestMap) );
-				strcpy( pOtherPlayer->m_NextTransition, STRING(sDestTrans) );
+				 strncpy(pOtherPlayer->m_OldTransition,  STRING(sName), sizeof(pOtherPlayer->m_OldTransition) );
+				 strncpy(pOtherPlayer->m_NextMap,  STRING(sDestMap), sizeof(pOtherPlayer->m_NextMap) );
+				 strncpy(pOtherPlayer->m_NextTransition,  STRING(sDestTrans), sizeof(pOtherPlayer->m_NextTransition) );
 				pOtherPlayer->CurrentTransArea = this;
 				pOtherPlayer->m_SpawnTransition = pOtherPlayer->m_OldTransition;
 				*/

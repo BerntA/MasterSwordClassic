@@ -213,7 +213,7 @@ int CHud ::Redraw(float flTime, int intermission)
 		if (m_hsprCursor == 0)
 		{
 			char sz[256];
-			sprintf( sz, "sprites/cursor.spr" );
+			 strncpy(sz,  "sprites/cursor.spr", sizeof(sz) );
 			m_hsprCursor = SPR_Load( sz );
 		}
 
@@ -254,7 +254,7 @@ int CHud ::DrawHudString(int xpos, int ypos, int iMaxX, char *szIt, int r, int g
 int CHud ::DrawHudNumberString(int xpos, int ypos, int iMinX, int iNumber, int r, int g, int b)
 {
 	char szString[32];
-	sprintf(szString, "%d", iNumber);
+	 _snprintf(szString, sizeof(szString),  "%d",  iNumber );
 	return DrawHudStringReverse(xpos, ypos, iMinX, szString, r, g, b);
 }
 
@@ -359,7 +359,7 @@ int CHud ::DrawHudNumberSML(int x, int y, int iFlags, int iNumber, int r, int g,
 		ConsolePrint("ERROR: numofdigits( )\n");
 	/*		if( iNumber < 3 ) { 
 		char a[50];
-		sprintf( a, "[%i][%i](%i)[%i] \n", idigits, power10(idigits), iNumber, iMaxMP );
+		 _snprintf(a, sizeof(a),  "[%i][%i](%i)[%i] \n",  idigits,  power10(idigits),  iNumber,  iMaxMP );
 		ConsolePrint( a );
 	}*/
 	itemp = idigits;

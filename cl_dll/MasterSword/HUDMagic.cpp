@@ -94,7 +94,7 @@ int CHudMagic::MsgFunc_Spells(const char *pszName, int iSize, void *pbuf)
 	char MenuText[1024];
 	//Activate
 	if( !SpellsMemorized() ) return;
-	strcpy( MenuText, "Cast spell:\n\n" );
+	 strncpy(MenuText,  "Cast spell:\n\n", sizeof(MenuText) );
 	spellgroup_v &SpellList = player.m_SpellList;
 	 for (int n = 0; n < SpellList.size(); n++) 
 	{
@@ -117,7 +117,7 @@ void CHudMagic_SelectMenuItem(int idx, TCallbackMenu *pcbMenu)
 
 	char szString[32];
 
-	sprintf(szString, "prep %s\n", player.m_SpellList[iSpell].c_str());
+	 _snprintf(szString, sizeof(szString),  "prep %s\n",  player.m_SpellList[iSpell].c_str() );
 	ClientCmd(szString);
 }
 int CHudMagic::SpellsMemorized(void) { return player.m_SpellList.size(); }

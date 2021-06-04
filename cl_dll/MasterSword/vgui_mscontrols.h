@@ -241,7 +241,7 @@ class CheckButton : public CommandButton
 public:
 	CheckButton( char *CVARName, int x, int y, int wide, int tall ) : CommandButton( "", x, y, wide, tall, true )
 	{
-		strcpy( m_CVARName, CVARName );
+		 strncpy(m_CVARName,  CVARName, sizeof(m_CVARName) );
 		m_CVARName[255] = 0;
 		addActionSignal( new Action_ClickCheck( this ) );
 	}

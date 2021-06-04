@@ -125,7 +125,7 @@ HLSPRITE LoadSprite(const char *pszName)
 	else
 		i = 640;
 
-	sprintf(sz, pszName, i);
+	 _snprintf(sz, sizeof(sz),  pszName,  i );
 
 	return SPR_Load(sz);
 }

@@ -167,7 +167,7 @@ int CHudDeathNotice ::MsgFunc_DeathMsg(const char *pszName, int iSize, void *pbu
 	int i = 0;
 
 	char killedwith[32];
-	strcpy(killedwith, "d_");
+	 strncpy(killedwith,  "d_", sizeof(killedwith) );
 	strncat(killedwith, READ_STRING(), 32);
 
 	if (gViewPort)
@@ -286,9 +286,9 @@ int CHudDeathNotice ::MsgFunc_DeathMsg(const char *pszName, int iSize, void *pbu
 
 			// replace the code names with the 'real' names
 			if (!strcmp(killedwith + 2, "egon"))
-				strcpy(killedwith, "d_gluon gun");
+				 strncpy(killedwith,  "d_gluon gun", sizeof(killedwith) );
 			if (!strcmp(killedwith + 2, "gauss"))
-				strcpy(killedwith, "d_tau cannon");
+				 strncpy(killedwith,  "d_tau cannon", sizeof(killedwith) );
 
 			ConsolePrint(killedwith + 2); // skip over the "d_" part
 		}

@@ -322,7 +322,7 @@ BOOL CSatchel::Deploy()
 		m_pPlayer->pev->weaponmodel = MAKE_STRING("models/p_satchel_radio.mdl");
 		SendWeaponAnim(SATCHEL_RADIO_DRAW);
 		// use hivehand animations
-		strcpy(m_pPlayer->m_szAnimExtention, "hive");
+		 strncpy(m_pPlayer->m_szAnimExtention,  "hive", sizeof(m_pPlayer->m_szAnimExtention) );
 	}
 	else
 	{
@@ -330,7 +330,7 @@ BOOL CSatchel::Deploy()
 		m_pPlayer->pev->weaponmodel = MAKE_STRING("models/p_satchel.mdl");
 		SendWeaponAnim(SATCHEL_DRAW);
 		// use tripmine animations
-		strcpy(m_pPlayer->m_szAnimExtention, "trip");
+		 strncpy(m_pPlayer->m_szAnimExtention,  "trip", sizeof(m_pPlayer->m_szAnimExtention) );
 	}
 
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
@@ -459,12 +459,12 @@ void CSatchel::WeaponIdle(void)
 	case 0:
 		SendWeaponAnim(SATCHEL_FIDGET1);
 		// use tripmine animations
-		strcpy(m_pPlayer->m_szAnimExtention, "trip");
+		 strncpy(m_pPlayer->m_szAnimExtention,  "trip", sizeof(m_pPlayer->m_szAnimExtention) );
 		break;
 	case 1:
 		SendWeaponAnim(SATCHEL_RADIO_FIDGET1);
 		// use hivehand animations
-		strcpy(m_pPlayer->m_szAnimExtention, "hive");
+		 strncpy(m_pPlayer->m_szAnimExtention,  "hive", sizeof(m_pPlayer->m_szAnimExtention) );
 		break;
 	case 2:
 		if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
@@ -479,7 +479,7 @@ void CSatchel::WeaponIdle(void)
 		SendWeaponAnim(SATCHEL_DRAW);
 
 		// use tripmine animations
-		strcpy(m_pPlayer->m_szAnimExtention, "trip");
+		 strncpy(m_pPlayer->m_szAnimExtention,  "trip", sizeof(m_pPlayer->m_szAnimExtention) );
 
 		m_flNextPrimaryAttack = gpGlobals->time + 0.5;
 		m_flNextSecondaryAttack = gpGlobals->time + 0.5;

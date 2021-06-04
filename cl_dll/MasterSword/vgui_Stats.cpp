@@ -224,22 +224,22 @@ void CStatPanel::Update()
 		switch (i)
 		{
 		case 0:
-			sprintf(cDisplayText, "Name: %s\n", player.DisplayName());
+			 _snprintf(cDisplayText, sizeof(cDisplayText),  "Name: %s\n",  player.DisplayName() );
 			break;
 		case 1:
-			sprintf(cDisplayText, "Gender: %s\n", GenderList[player.m_Gender]);
+			 _snprintf(cDisplayText, sizeof(cDisplayText),  "Gender: %s\n",  GenderList[player.m_Gender] );
 			break;
 		case 2:
-			sprintf(cDisplayText, "%s %s\n", player.m_Race, player.GetTitle());
+			 _snprintf(cDisplayText, sizeof(cDisplayText),  "%s %s\n",  player.m_Race,  player.GetTitle() );
 			break;
 		case 3:
 			cDisplayText[0] = 0;
 			break;
 		case 4:
-			sprintf(cDisplayText, "Gold: %i\n", (int)player.m_Gold);
+			 _snprintf(cDisplayText, sizeof(cDisplayText),  "Gold: %i\n",  (int)player.m_Gold );
 			break;
 		case 5:
-			sprintf(cDisplayText, "Player Kills: %i\n", player.m_PlayersKilled);
+			 _snprintf(cDisplayText, sizeof(cDisplayText),  "Player Kills: %i\n",  player.m_PlayersKilled );
 			break;
 		default:
 			cDisplayText[0] = 0;
@@ -252,7 +252,7 @@ void CStatPanel::Update()
 	for (i = 0; i < NATURAL_MAX_STATS; i++)
 	{
 
-		sprintf(cDisplayText, "%s: %i \n", NatStatList[i].Name, player.GetNatStat(i));
+		 _snprintf(cDisplayText, sizeof(cDisplayText),  "%s: %i \n",  NatStatList[i].Name,  player.GetNatStat(i) );
 
 		TextPanel *pTextbox = Nat_StatLabel[i];
 		pTextbox->setText(cDisplayText);
@@ -261,7 +261,7 @@ void CStatPanel::Update()
 		TextPanel *pModbox = Nat_StatModsLabel[i];
 		int iBonus = player.GetNatStatBonus( i );
 		pModbox->SetFGColorRGB( (iBonus < 0 ? COLOR(255,0,0,10) : COLOR( 0,240,0,0 )) );
-		sprintf( cDisplayText, (iBonus < 0 ? "(%i)" : "(+%i)"), iBonus );
+		 _snprintf(cDisplayText, sizeof(cDisplayText),  (iBonus < 0 ? "(%i)" : "(+%i)"),  iBonus );
 		pModbox->setText( cDisplayText );
 #endif
 	}
@@ -273,9 +273,9 @@ void CStatPanel::Update()
 		bool blank = i == SKILL_MAX_STATS - 1;
 		int real_idx = FOUND_PARRY ? i + 1 : i;
 		if (!blank)
-			sprintf(cDisplayText, "%s: %i\n", SkillStatList[real_idx].Name, player.GetSkillStat(SKILL_FIRSTSKILL + real_idx));
+			 _snprintf(cDisplayText, sizeof(cDisplayText),  "%s: %i\n",  SkillStatList[real_idx].Name,  player.GetSkillStat(SKILL_FIRSTSKILL + real_idx) );
 		else
-			strcpy(cDisplayText, "\n");
+			 strncpy(cDisplayText,  "\n", sizeof(cDisplayText) );
 
 		TextPanel *pTextbox = Skill_StatLabel[i];
 		pTextbox->setText(cDisplayText);
@@ -285,7 +285,7 @@ void CStatPanel::Update()
 			pTextbox->SetFGColorRGB(Color_NormalText);
 	}
 
-	sprintf(cDisplayText, "Parry: %i\n", player.GetSkillStat(SKILL_PARRY));
+	 _snprintf(cDisplayText, sizeof(cDisplayText),  "Parry: %i\n",  player.GetSkillStat(SKILL_PARRY) );
 	TextPanel *pTextbox = Skill_StatLabel[SKILL_MAX_STATS];
 	pTextbox->setText(cDisplayText);
 	pTextbox->SetFGColorRGB(Color_NormalText);
@@ -340,26 +340,26 @@ void CStatPanel::Update()
 			if (strcmp(Name, "unused") != 0)
 			{
 				if (EngineFunc::CVAR_GetFloat("ms_xpdisplay") == 0)
-					sprintf(cDisplayText, "%s: %i (%.2f%%%%) [%i left]\n", Name, (int)SubStat.Value, Percent, (int)ceil(ExpToLevel));
+					 _snprintf(cDisplayText, sizeof(cDisplayText),  "%s: %i (%.2f%%%%) [%i left]\n",  Name,  (int)SubStat.Value,  Percent,  (int)ceil(ExpToLevel) );
 				else if (EngineFunc::CVAR_GetFloat("ms_xpdisplay") == 1)
-					sprintf(cDisplayText, "%s: %i, %i/%i (%.2f%%%%)\n", Name, (int)SubStat.Value, (SubStat.Value > 25 ? TestExpArray[m_ActiveStat][i] : SubStat.Exp), (int)ceil(ExpNeeded), Percent);
+					 _snprintf(cDisplayText, sizeof(cDisplayText),  "%s: %i,  %i/%i (%.2f%%%%)\n",  Name,  (int)SubStat.Value,  (SubStat.Value > 25 ? TestExpArray[m_ActiveStat][i] : SubStat.Exp),  (int)ceil(ExpNeeded),  Percent );
 				else if (EngineFunc::CVAR_GetFloat("ms_xpdisplay") == 2)
-					sprintf(cDisplayText, "%s: %i (%.2f%%%%) %i XP Left\n", Name, (int)SubStat.Value, Percent, (int)ceil(ExpToLevel));
+					 _snprintf(cDisplayText, sizeof(cDisplayText),  "%s: %i (%.2f%%%%) %i XP Left\n",  Name,  (int)SubStat.Value,  Percent,  (int)ceil(ExpToLevel) );
 				else if (EngineFunc::CVAR_GetFloat("ms_xpdisplay") == 3)
 				{
 					if ((int)SubStat.Value < 5)
-						sprintf(cDisplayText, "%s: %i (%.1f%%%% trained)\n", Name, (int)SubStat.Value, Percent);
+						 _snprintf(cDisplayText, sizeof(cDisplayText),  "%s: %i (%.1f%%%% trained)\n",  Name,  (int)SubStat.Value,  Percent );
 					if ((int)SubStat.Value >= 5 && (int)SubStat.Value < 10)
-						sprintf(cDisplayText, "%s: %i (%.2f%%%% trained)\n", Name, (int)SubStat.Value, Percent);
+						 _snprintf(cDisplayText, sizeof(cDisplayText),  "%s: %i (%.2f%%%% trained)\n",  Name,  (int)SubStat.Value,  Percent );
 					if ((int)SubStat.Value >= 10 && (int)SubStat.Value < 15)
-						sprintf(cDisplayText, "%s: %i (%.3f%%%% trained)\n", Name, (int)SubStat.Value, Percent);
+						 _snprintf(cDisplayText, sizeof(cDisplayText),  "%s: %i (%.3f%%%% trained)\n",  Name,  (int)SubStat.Value,  Percent );
 					if ((int)SubStat.Value >= 15 && (int)SubStat.Value < 20)
-						sprintf(cDisplayText, "%s: %i (%.4f%%%% trained)\n", Name, (int)SubStat.Value, Percent);
+						 _snprintf(cDisplayText, sizeof(cDisplayText),  "%s: %i (%.4f%%%% trained)\n",  Name,  (int)SubStat.Value,  Percent );
 					if ((int)SubStat.Value > 20)
-						sprintf(cDisplayText, "%s: %i (%.5f%%%% trained)\n", Name, (int)SubStat.Value, Percent);
+						 _snprintf(cDisplayText, sizeof(cDisplayText),  "%s: %i (%.5f%%%% trained)\n",  Name,  (int)SubStat.Value,  Percent );
 				}
 				else if (EngineFunc::CVAR_GetFloat("ms_xpdisplay") >= 4)
-					sprintf(cDisplayText, "%s: %i (%.0f%%%% trained)\n", Name, (int)SubStat.Value, Percent);
+					 _snprintf(cDisplayText, sizeof(cDisplayText),  "%s: %i (%.0f%%%% trained)\n",  Name,  (int)SubStat.Value,  Percent );
 
 				Label *pLabel = m_StatTypeLabel[i - UnusedSlots];
 				pLabel->setVisible(true);
@@ -369,7 +369,7 @@ void CStatPanel::Update()
 			else
 			{
 				++UnusedSlots;
-				sprintf(cDisplayText, "");
+				 strncpy(cDisplayText,  "", sizeof(cDisplayText) );
 			}
 		}
 
@@ -490,7 +490,7 @@ int __MsgFunc_SetStat(const char *pszName, int iSize, void *pbuf)
 			msg.g1 = 255;
 			msg.b1 = 0;
 			msg.r2 = msg.g2 = msg.b2 = 0;
-			sprintf(cMessage, "+ %i Gold\n", player.m_Gold - oldGold);
+			 _snprintf(cMessage, sizeof(cMessage),  "+ %i Gold\n",  player.m_Gold - oldGold );
 		}
 		else if (player.m_Gold < oldGold)
 		{
@@ -498,7 +498,7 @@ int __MsgFunc_SetStat(const char *pszName, int iSize, void *pbuf)
 			msg.g1 = 0;
 			msg.b1 = 0;
 			msg.r2 = msg.g2 = msg.b2 = 0;
-			sprintf(cMessage, "- %i Gold", oldGold - player.m_Gold);
+			 _snprintf(cMessage, sizeof(cMessage),  "- %i Gold",  oldGold - player.m_Gold );
 		}
 
 		msg.effect = 1;
@@ -526,7 +526,7 @@ int __MsgFunc_SetStat(const char *pszName, int iSize, void *pbuf)
 	}
 	else if (iStatType == 11) // MIB FEB2015_21 [RACE_MENU] - Allow setting race
 	{
-		strcpy(player.m_Race, READ_STRING());
+		 strncpy(player.m_Race,  READ_STRING(), sizeof(player.m_Race) );
 	}
 
 	UpdateVGUIStats();

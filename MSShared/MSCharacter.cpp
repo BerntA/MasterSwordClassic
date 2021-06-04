@@ -61,13 +61,13 @@ const char *GetSaveFileName(int iCharacter, CBasePlayer *pPlayer)
 	//iCharacter = pPlayer->m_CharacterNum;
 	//Print("CHAR_SAVE_DEBUG [MSCharacter]: %i vs %i\n",iCharacter+1,pPlayer->m_CharacterNum);
 
-	sprintf(cFileName, "%s/save/%s%s_%i.char", EngineFunc::GetGameDir(), Prefix.c_str(), FileID.c_str(), iCharacter + 1);
+	 _snprintf(cFileName, sizeof(cFileName),  "%s/save/%s%s_%i.char",  EngineFunc::GetGameDir(),  Prefix.c_str(),  FileID.c_str(),  iCharacter + 1 );
 	ReplaceChar(cFileName, ':', '-');
 #else
 	//Client
 	//Print("CHAR_CLIENT [MSCharacter]: %i\n",iCharacter+1); //MAR2010_08
 	msstring Prefix = !MSGlobals::ServerSideChar ? "cl_" : "";
-	sprintf(cFileName, "%s/save/%ssave%i.char", EngineFunc::GetGameDir(), Prefix.c_str(), iCharacter + 1);
+	 _snprintf(cFileName, sizeof(cFileName),  "%s/save/%ssave%i.char",  EngineFunc::GetGameDir(),  Prefix.c_str(),  iCharacter + 1 );
 #endif
 
 	return cFileName;
@@ -80,7 +80,7 @@ const char *GetSaveFileName(int iCharacter, const char *AuthID)
 
 	//Server
 	Print("CHAR_SAVE_DEBUG [GetSaveFileName]: %s %#i\n", cFileName, iCharacter + 1);
-	sprintf(cFileName, "%s/save/%s_%i.char", EngineFunc::GetGameDir(), AuthID, iCharacter + 1);
+	 _snprintf(cFileName, sizeof(cFileName),  "%s/save/%s_%i.char",  EngineFunc::GetGameDir(),  AuthID,  iCharacter + 1 );
 	ReplaceChar(cFileName, ':', '-');
 
 	return cFileName;

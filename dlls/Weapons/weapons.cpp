@@ -255,7 +255,7 @@ void W_Precache(void)
 	//NOV2010_28 - Thothie: Major ancient bugger up fix masked by casual
 	//- this was often resulting in wrong map script name, as was not set to lower case!
 	char toconv[256];
-	strcpy(toconv, STRING(gpGlobals->mapname));
+	 strncpy(toconv,  STRING(gpGlobals->mapname), sizeof(toconv) );
 	MSGlobals::MapName = _strlwr(toconv);
 
 	MSGlobalItemInit();
@@ -770,7 +770,7 @@ BOOL CBasePlayerWeapon ::DefaultDeploy(char *szViewModel, char *szWeaponModel, i
 
 	m_pPlayer->pev->viewmodel = MAKE_STRING(szViewModel); //player's WEAPON view model
 	m_pPlayer->pev->weaponmodel = MAKE_STRING(szWeaponModel);
-	strcpy( m_pPlayer->m_szAnimExtention, szAnimExt );
+	 strncpy(m_pPlayer->m_szAnimExtention,  szAnimExt, sizeof(m_pPlayer->m_szAnimExtention) );
 	SendWeaponAnim( iAnim );
 
 	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5;

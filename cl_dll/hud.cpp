@@ -243,7 +243,7 @@ int __MsgFunc_AllowSpec(const char *pszName, int iSize, void *pbuf)
 }
 #define SetMSHUD(ptr, type) \
 	ptr = new (type);       \
-	strcpy(ptr->Name, #type)
+	 strncpy(ptr->Name,  #type, sizeof(ptr->Name) )
 // This is called every time the DLL is loaded
 void CHud ::Init(void)
 {
@@ -472,7 +472,7 @@ void CHud ::VidInit(void)
 				if (p->iRes == m_iRes)
 				{
 					char sz[256];
-					sprintf(sz, "sprites/%s.spr", p->szSprite);
+					 _snprintf(sz, sizeof(sz),  "sprites/%s.spr",  p->szSprite );
 					m_rghSprites[index] = SPR_Load(sz);
 					m_rgrcRects[index] = p->rc;
 					strncpy(&m_rgszSpriteNames[index * MAX_SPRITE_NAME_LENGTH], p->szName, MAX_SPRITE_NAME_LENGTH);
@@ -495,7 +495,7 @@ void CHud ::VidInit(void)
 			if (p->iRes == m_iRes)
 			{
 				char sz[256];
-				sprintf(sz, "sprites/%s.spr", p->szSprite);
+				 _snprintf(sz, sizeof(sz),  "sprites/%s.spr",  p->szSprite );
 				m_rghSprites[index] = SPR_Load(sz);
 				index++;
 			}

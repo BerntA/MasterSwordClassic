@@ -1614,7 +1614,7 @@ void CMSMonster ::Speak(char *pszSentence, speech_type SpeechType)
 		break;
 	case SPEECH_LOCAL:
 		char cTemp[4096];
-		sprintf(cTemp, "%s says, \"%s\"\n", DisplayName(), pszSentence);
+		 _snprintf(cTemp, sizeof(cTemp),  "%s says,  \"%s\"\n",  DisplayName(),  pszSentence );
 		strcat(FinalSentence, cTemp);
 		SayTextType = IsPlayer() ? SAYTEXT_LOCAL : SAYTEXT_NPC;
 		break;
@@ -1654,13 +1654,13 @@ void CMSMonster ::Speak(char *pszSentence, speech_type SpeechType)
 				{
 					int rnd_muffle = RANDOM_LONG(1, 4);
 					if (rnd_muffle == 1)
-						sprintf(FinalSentence, "[muted] %s: %s\n", DisplayName(), "Hmmmf... Mmmm! MMmmmmf!");
+						 _snprintf(FinalSentence, sizeof(FinalSentence),  "[muted] %s: %s\n",  DisplayName(),  "Hmmmf... Mmmm! MMmmmmf!" );
 					else if (rnd_muffle == 2)
-						sprintf(FinalSentence, "[muted] %s: %s\n", DisplayName(), "Mmmmm! Mmmmmmmmmf!");
+						 _snprintf(FinalSentence, sizeof(FinalSentence),  "[muted] %s: %s\n",  DisplayName(),  "Mmmmm! Mmmmmmmmmf!" );
 					else if (rnd_muffle == 3)
-						sprintf(FinalSentence, "[muted] %s: %s\n", DisplayName(), "Ffffffmmmmffff!!!");
+						 _snprintf(FinalSentence, sizeof(FinalSentence),  "[muted] %s: %s\n",  DisplayName(),  "Ffffffmmmmffff!!!" );
 					else if (rnd_muffle == 4)
-						sprintf(FinalSentence, "[muted] %s: %s\n", DisplayName(), "MMmmmmf! HMmmmmmf!");
+						 _snprintf(FinalSentence, sizeof(FinalSentence),  "[muted] %s: %s\n",  DisplayName(),  "MMmmmmf! HMmmmmmf!" );
 				}
 			}
 
@@ -1726,7 +1726,7 @@ void CMSMonster ::HearPhrase(CMSMonster *pSpeaker, const char *phrase)
 	if (!IsAlive())
 		return;
 
-	strcpy(cTemp1, phrase);
+	 strncpy(cTemp1,  phrase, sizeof(cTemp1) );
 	_strlwr(cTemp1); //lower case comparison
 
 	listenphrase_t *BestPhrase = NULL;
@@ -2263,7 +2263,7 @@ float CMSMonster::TraceAttack(damage_t &Damage)
 	{
 		out_skill.append(".");
 		char toconv[256];
-		strcpy(toconv, SpellTypeList[Damage.ExpProp]);
+		 strncpy(toconv,  SpellTypeList[Damage.ExpProp], sizeof(toconv) );
 		out_skill.append(msstring(_strlwr(toconv)));
 	}
 	Parameters.add(out_skill);

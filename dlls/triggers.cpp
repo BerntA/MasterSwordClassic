@@ -831,7 +831,7 @@ void PlayCDTrack(int iTrack)
 	{
 		char string[64];
 
-		sprintf(string, "cd play %3d\n", iTrack);
+		 _snprintf(string, sizeof(string),  "cd play %3d\n",  iTrack );
 		CLIENT_COMMAND(pClient, string);
 	}
 }
@@ -1762,14 +1762,14 @@ void CChangeLevel ::KeyValue(KeyValueData *pkvd)
 	{
 		if (strlen(pkvd->szValue) >= cchMapNameMost)
 			ALERT(at_error, "Map name '%s' too long (32 chars)\n", pkvd->szValue);
-		strcpy(m_szMapName, pkvd->szValue);
+		 strncpy(m_szMapName,  pkvd->szValue, sizeof(m_szMapName) );
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "landmark"))
 	{
 		if (strlen(pkvd->szValue) >= cchMapNameMost)
 			ALERT(at_error, "Landmark name '%s' too long (32 chars)\n", pkvd->szValue);
-		strcpy(m_szLandmarkName, pkvd->szValue);
+		 strncpy(m_szLandmarkName,  pkvd->szValue, sizeof(m_szLandmarkName) );
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "changetarget"))
@@ -1903,7 +1903,7 @@ void CChangeLevel ::ChangeLevelNow(CBaseEntity *pActivator)
 		}
 	}
 	// This object will get removed in the call to CHANGE_LEVEL, copy the params into "safe" memory
-	strcpy(st_szNextMap, m_szMapName);
+	 strncpy(st_szNextMap,  m_szMapName, sizeof(st_szNextMap) );
 
 	m_hActivator = pActivator;
 	SUB_UseTargets(pActivator, USE_TOGGLE, 0);
@@ -1913,7 +1913,7 @@ void CChangeLevel ::ChangeLevelNow(CBaseEntity *pActivator)
 	pentLandmark = FindLandmark(m_szLandmarkName);
 	if (!FNullEnt(pentLandmark))
 	{
-		strcpy(st_szNextSpot, m_szLandmarkName);
+		 strncpy(st_szNextSpot,  m_szLandmarkName, sizeof(st_szNextSpot) );
 		gpGlobals->vecLandmarkOffset = VARS(pentLandmark)->origin;
 	}
 	//	ALERT( at_console, "Level touches %d levels\n", ChangeList( levels, 16 ) );
@@ -2117,12 +2117,12 @@ void NextLevel(void)
 	{
 		gpGlobals->mapname = ALLOC_STRING("start");
 		pChange = GetClassPtr((CChangeLevel *)NULL);
-		strcpy(pChange->m_szMapName, "start");
+		 strncpy(pChange->m_szMapName,  "start", sizeof(pChange->m_szMapName) );
 	}
 	else
 		pChange = GetClassPtr((CChangeLevel *)VARS(pent));
 
-	strcpy(st_szNextMap, pChange->m_szMapName);
+	 strncpy(st_szNextMap,  pChange->m_szMapName, sizeof(st_szNextMap) );
 	g_fGameOver = TRUE;
 
 	if (pChange->pev->nextthink < gpGlobals->time)

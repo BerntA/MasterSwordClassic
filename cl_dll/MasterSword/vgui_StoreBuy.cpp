@@ -97,7 +97,7 @@ void CStoreBuyPanel::ItemHighlighted(void *pData)
 					continue;
 
 				char cTemp[256];
-				sprintf(cTemp, Localized("#ITEM_COST"), StoreItem.iCost);
+				 _snprintf(cTemp, sizeof(cTemp),  Localized("#ITEM_COST"),  StoreItem.iCost );
 				m_InfoPanel->m_SaleText->setText(cTemp);
 				break;
 			}

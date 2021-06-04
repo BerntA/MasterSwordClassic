@@ -152,7 +152,7 @@ void CBasePlayer::Think(void)
 			if( player.SwitchHands( g_SwitchToHand, false ) )
 			{
 				char cCmd[16];
-				sprintf( cCmd, "hand %i\n", g_SwitchToHand );
+				 _snprintf(cCmd, sizeof(cCmd),  "hand %i\n",  g_SwitchToHand );
 				gEngfuncs.pfnServerCmd( cCmd );
 			}
 			g_SwitchToHand = -1;
@@ -615,14 +615,14 @@ void ShowWeaponDesc(CGenericItem *pItem)
 	static char cDescString[256];
 
 	if (!pItem->DisplayDesc.len())
-		strcpy(cDescString, "No Description");
+		 strncpy(cDescString,  "No Description", sizeof(cDescString) );
 	else
 	{
 		char amt[16] = {""};
 		if (FBitSet(pItem->MSProperties(), ITEM_GROUPABLE) && pItem->iQuantity > 1)
-			sprintf(amt, " (%i)", pItem->iQuantity);
+			 _snprintf(amt, sizeof(amt),  " (%i)",  pItem->iQuantity );
 
-		sprintf(cDescString, "%s%s", pItem->DisplayDesc.c_str(), amt);
+		 _snprintf(cDescString, sizeof(cDescString),  "%s%s",  pItem->DisplayDesc.c_str(),  amt );
 	}
 	static client_textmessage_t msg;
 	msg.effect = 1;
@@ -1203,9 +1203,9 @@ int __MsgFunc_CLDllFunc(const char *pszName, int iSize, void *pbuf)
 			int flags = READ_BYTE();
 			bool fShowBrowser = flags & (1 << 0),
 				 fPlaySound = (flags & (1 << 1)) ? true : false;
-			strcpy(player.m_NextMap, READ_STRING());
-			strcpy(player.m_OldTransition, READ_STRING());
-			strcpy(player.m_NextTransition, READ_STRING());
+			 strncpy(player.m_NextMap,  READ_STRING(), sizeof(player.m_NextMap) );
+			 strncpy(player.m_OldTransition,  READ_STRING(), sizeof(player.m_OldTransition) );
+			 strncpy(player.m_NextTransition,  READ_STRING(), sizeof(player.m_NextTransition) );
 
 			//if( fShowBrowser && !fBroswerVisible() )
 			//	__CmdFunc_ToggleServerBrowser( );
@@ -1387,7 +1387,7 @@ int __MsgFunc_CLDllFunc(const char *pszName, int iSize, void *pbuf)
 				msg.fxtime = 4.0;
 
 				static char msgtext[256];
-				sprintf(msgtext, Localized("#QUICKSLOT_CREATE"), (Slot + 1));
+				 _snprintf(msgtext, sizeof(msgtext),  Localized("#QUICKSLOT_CREATE"),  (Slot + 1) );
 
 				msg.pMessage = msgtext;
 				gHUD.m_Message.MessageAdd(msg);

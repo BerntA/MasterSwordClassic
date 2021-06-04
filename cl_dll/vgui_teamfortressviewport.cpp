@@ -192,10 +192,10 @@ char *GetVGUITGAName(const char *pszName)
 	const char *gamedir;
 
 	//Always use 640 res
-	sprintf(sz, pszName, 640);
+	 _snprintf(sz, sizeof(sz),  pszName,  640 );
 
 	gamedir = gEngfuncs.pfnGetGameDirectory();
-	sprintf(gd, "%s/gfx/vgui/%s.tga", gamedir, sz);
+	 _snprintf(gd, sizeof(gd),  "%s/gfx/vgui/%s.tga",  gamedir,  sz );
 
 	return gd;
 }
@@ -670,8 +670,8 @@ void TeamFortressViewport::Initialize(void)
 	g_iTeamNumber = 0;
 
 	dbg("Init Teamnames");
-	strcpy(m_sMapName, "");
-	strcpy(m_szServerName, "");
+	 strncpy(m_sMapName,  "", sizeof(m_sMapName) );
+	 strncpy(m_szServerName,  "", sizeof(m_szServerName) );
 	for (int i = 0; i < 5; i++)
 	{
 		m_iValidClasses[i] = 0;
@@ -804,7 +804,7 @@ try
 			cText[31] = '\0';
 
 			// save off the last button text we've come across (for error reporting)
-			strcpy( szLastButtonText, cText );
+			 strncpy(szLastButtonText,  cText, sizeof(szLastButtonText) );
 
 			// Get the button command
 			pfile = gEngfuncs.COM_ParseFile(pfile, token);
@@ -821,7 +821,7 @@ try
 
 				if ( token[0] == '{' )
 				{
-					strcpy( cCommand, token );
+					 strncpy(cCommand,  token, sizeof(cCommand) );
 				}
 				else
 				{
@@ -1089,12 +1089,12 @@ void TeamFortressViewport::UpdateSpectatorMenu()
 		if (m_iUser2 > 0)
 		{
 			// Locked onto a target, show the player's name
-			sprintf(sz, "#Spec_Mode%d : %s", m_iUser1, g_PlayerInfoList[m_iUser2].name);
+			 _snprintf(sz, sizeof(sz),  "#Spec_Mode%d : %s",  m_iUser1,  g_PlayerInfoList[m_iUser2].name );
 			m_pSpectatorLabel->setText(CHudTextMessage::BufferedLocaliseTextString(sz));
 		}
 		else
 		{
-			sprintf(sz, "#Spec_Mode%d", m_iUser1);
+			 _snprintf(sz, sizeof(sz),  "#Spec_Mode%d",  m_iUser1 );
 			m_pSpectatorLabel->setText(CHudTextMessage::BufferedLocaliseTextString(sz));
 		}
 	}
@@ -1135,8 +1135,8 @@ void TeamFortressViewport::UpdateSpectatorPanel()
 			gHUD.m_TextMessage.MsgFunc_TextMsg(NULL, strlen(tempString) + 1, tempString);
 		}
 
-		sprintf(bottomText, "#Spec_Mode%d", g_iUser1);
-		sprintf(helpString2, "#Spec_Mode%d", g_iUser1);
+		 _snprintf(bottomText, sizeof(bottomText),  "#Spec_Mode%d",  g_iUser1 );
+		 _snprintf(helpString2, sizeof(helpString2),  "#Spec_Mode%d",  g_iUser1 );
 
 		if (gEngfuncs.IsSpectateOnly())
 			strcat(helpString2, " - HLTV");
@@ -1156,7 +1156,7 @@ void TeamFortressViewport::UpdateSpectatorPanel()
 		// create player & health string
 		if (player && name)
 		{
-			strcpy(bottomText, name);
+			 strncpy(bottomText,  name, sizeof(bottomText) );
 		}
 
 		// in first person mode colorize player names
@@ -1179,8 +1179,8 @@ void TeamFortressViewport::UpdateSpectatorPanel()
 		if (gHUD.m_Spectator.m_autoDirector->value)
 		{
 			char tempString[128];
-			sprintf(tempString, "#Spec_Auto %s", helpString2);
-			strcpy(helpString2, tempString);
+			 _snprintf(tempString, sizeof(tempString),  "#Spec_Auto %s",  helpString2 );
+			 strncpy(helpString2,  tempString, sizeof(helpString2) );
 		}
 
 		m_pSpectatorPanel->m_BottomMainLabel->setText(CHudTextMessage::BufferedLocaliseTextString(bottomText));
@@ -1294,7 +1294,7 @@ CMenuPanel *TeamFortressViewport::CreateTextWindow(int iTextToShow)
 	if (iTextToShow == SHOW_MOTD)
 	{
 		if (!m_szServerName || !m_szServerName[0])
-			strcpy(cTitle, "Half-Life");
+			 strncpy(cTitle,  "Half-Life", sizeof(cTitle) );
 		else
 			strncpy(cTitle, m_szServerName, MAX_TITLE_LENGTH);
 		cTitle[MAX_TITLE_LENGTH - 1] = 0;
@@ -1305,7 +1305,7 @@ CMenuPanel *TeamFortressViewport::CreateTextWindow(int iTextToShow)
 		// Get the current mapname, and open it's map briefing text
 		if (m_sMapName && m_sMapName[0])
 		{
-			strcpy( sz, "maps/");
+			 strncpy(sz,  "maps/", sizeof(sz) );
 			strcat( sz, m_sMapName );
 			strcat( sz, ".txt" );
 		}
@@ -1315,13 +1315,13 @@ CMenuPanel *TeamFortressViewport::CreateTextWindow(int iTextToShow)
 			if (!level)
 				return NULL;
 
-			strcpy( sz, level );
+			 strncpy(sz,  level, sizeof(sz) );
 			char *ch = strchr( sz, '.' );
 			*ch = '\0';
 			strcat( sz, ".txt" );
 
 			// pull out the map name
-			strcpy( m_sMapName, level );
+			 strncpy(m_sMapName,  level, sizeof(m_sMapName) );
 			ch = strchr( m_sMapName, '.' );
 			if ( ch )
 			{
@@ -1376,11 +1376,11 @@ CMenuPanel *TeamFortressViewport::CreateTextWindow(int iTextToShow)
 
 		if ( g_iPlayerClass == PC_CIVILIAN )
 		{
-			sprintf(sz, "classes/long_civilian.txt");
+			 strncpy(sz,  "classes/long_civilian.txt", sizeof(sz) );
 		}
 		else
 		{
-			sprintf(sz, "classes/long_%s.txt", sTFClassSelection[ g_iPlayerClass ]);
+			 _snprintf(sz, sizeof(sz),  "classes/long_%s.txt",  sTFClassSelection[ g_iPlayerClass ] );
 		}
 		char *pfile = (char*)gEngfuncs.COM_LoadFile( sz, 5, NULL );
 		if (pfile)

@@ -178,7 +178,7 @@ void MSChar_Interface::Think_SendChar(CBasePlayer *pPlayer)
 #else
 	char Buffer[10 + MAX_UL_SIZE * 2];
 
-	strcpy(Buffer, "ul ");
+	 strncpy(Buffer,  "ul ", sizeof(Buffer) );
 
 	for (int i = 0; i < PacketDataSize; i++)
 	{

@@ -225,7 +225,7 @@ bool CMSMonster::Script_ExecuteCmd(CScript *Script, SCRIPT_EVENT &Event, scriptc
 	else if (Cmd.Name() == "race")
 	{
 		if (Params.size() >= 1)
-			strcpy(m_Race, Params[0]);
+			 strncpy(m_Race,  Params[0], sizeof(m_Race) );
 
 		else
 			ERROR_MISSING_PARMS;
@@ -1546,7 +1546,7 @@ bool CMSMonster::Script_ExecuteCmd(CScript *Script, SCRIPT_EVENT &Event, scriptc
 			if (Params.size() >= 3 && IsPlayer()) //Use gait
 			{
 				CBasePlayer *pPlayer = (CBasePlayer *)this;
-				strcpy(pPlayer->m_szAnimLegs, Params[2]);
+				 strncpy(pPlayer->m_szAnimLegs,  Params[2], sizeof(pPlayer->m_szAnimLegs) );
 				if (Params.size() >= 4) //Hold the anim for a set amount of time
 					pPlayer->m_TimeResetLegs = gpGlobals->time + atof(Params[3]);
 				SetBits(Flags, (1 << 1));

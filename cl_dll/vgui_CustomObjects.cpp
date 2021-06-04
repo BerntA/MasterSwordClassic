@@ -62,8 +62,8 @@ char *GetTGANameForRes(const char *pszName)
 		i = 320;
 	else
 		i = 640;
-	sprintf(sz, pszName, i);
-	sprintf(gd, "gfx/vgui/%s.tga", sz);
+	 _snprintf(sz, sizeof(sz),  pszName,  i );
+	 _snprintf(gd, sizeof(gd),  "gfx/vgui/%s.tga",  sz );
 
 	enddbg;
 
@@ -80,7 +80,7 @@ BitmapTGA *LoadTGAForRes(const char *pImageName)
 	startdbg;
 
 	char sz[256];
-	sprintf(sz, "%%d_%s", pImageName);
+	 _snprintf(sz, sizeof(sz),  "%%d_%s",  pImageName );
 	pTGA = vgui_LoadTGA(GetTGANameForRes(sz));
 
 	enddbg;
@@ -148,18 +148,18 @@ void CommandButton::RecalculateText(void)
 	{
 		if ( m_cBoundKey == (char)255 )
 		{
-			strcpy( szBuf, m_sMainText );
+			 strncpy(szBuf,  m_sMainText, sizeof(szBuf) );
 		}
 		else
 		{
-			sprintf( szBuf, "  %c  %s", m_cBoundKey, m_sMainText );
+			 _snprintf(szBuf, sizeof(szBuf),  "  %c  %s",  m_cBoundKey,  m_sMainText );
 		}
 		szBuf[MAX_BUTTON_SIZE-1] = 0;
 	}
 	else
 	{
 		// just draw a space if no key bound
-		sprintf( szBuf, "     %s", m_sMainText );
+		 _snprintf(szBuf, sizeof(szBuf),  "     %s",  m_sMainText );
 		szBuf[MAX_BUTTON_SIZE-1] = 0;
 	}*/
 
@@ -399,7 +399,7 @@ void CImageLabel::LoadImage(const char *pImageName)
 		// try to load file resolution independent
 
 		char sz[256];
-		sprintf(sz, "%s/%s", gEngfuncs.pfnGetGameDirectory(), pImageName);
+		 _snprintf(sz, sizeof(sz),  "%s/%s",  gEngfuncs.pfnGetGameDirectory(),  pImageName );
 		FileInputStream *fis = new FileInputStream(sz, false);
 		m_pTGA = new BitmapTGA(fis, true);
 		fis->close();

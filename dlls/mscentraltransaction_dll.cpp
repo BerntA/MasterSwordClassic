@@ -664,7 +664,7 @@ void CTransaction_DLL::HandleMsg(msg_t &Msg)
 		if (fileExists)
 		{
 			char cFileName[256];
-			sprintf(cFileName, "%s/%s", EngineFunc::GetGameDir(), tempFileName.c_str());
+			 _snprintf(cFileName, sizeof(cFileName),  "%s/%s",  EngineFunc::GetGameDir(),  tempFileName.c_str() );
 			ofstream tempOut;
 
 			tempOut.open(cFileName);
@@ -714,7 +714,7 @@ void CTransaction_DLL::HandleMsg(msg_t &Msg)
 			//Write "edana.bsp" to the crashed.cfg so auto restarters don't
 			//keep looping an illegal map
 			char cFileName[512];
-			sprintf(cFileName, "%s/crashed.cfg", EngineFunc::GetGameDir());
+			 _snprintf(cFileName, sizeof(cFileName),  "%s/crashed.cfg",  EngineFunc::GetGameDir() );
 
 			std::remove(cFileName);
 
@@ -787,7 +787,7 @@ void CTransaction_DLL::Think()
 			{
 				LastSentMap = MSGlobals::MapName;
 				//strcpy( MsgPassword.mapName , MSGlobals::MapName.c_str() );
-				sprintf(MsgPassword.mapName, "%s.bsp", MSGlobals::MapName.c_str());
+				 _snprintf(MsgPassword.mapName, sizeof(MsgPassword.mapName),  "%s.bsp",  MSGlobals::MapName.c_str() );
 				char cfileName[MAX_PATH];
 				GET_GAME_DIR(cfileName);
 				msstring fileName = (msstring(cfileName) + "/maps/") + MSGlobals::MapName + ".bsp";
@@ -801,9 +801,9 @@ void CTransaction_DLL::Think()
 			}
 			//Attempting some optimization here. Stops FN from reading through the map file every few seconds per server.
 			else if (FNMapSynch == 1) //FN Told us our map was good.
-				strcpy(MsgPassword.mapName, "MAP_VERIFIED");
+				 strncpy(MsgPassword.mapName,  "MAP_VERIFIED", sizeof(MsgPassword.mapName) );
 			else if (FNMapSynch == -1) //FN Told us our map was bad.
-				strcpy(MsgPassword.mapName, "BAD_MAP");
+				 strncpy(MsgPassword.mapName,  "BAD_MAP", sizeof(MsgPassword.mapName) );
 
 			dbg("Socket Send");
 			send(m_Socket, (const char *)&MsgPassword, sizeof(MsgPassword), 0);
@@ -911,7 +911,7 @@ void CTransaction::GetCharFileName(const char *AuthID, int iCharacter, string &F
 
 	//Server
 	//Print("CHAR_SAVE_DEBUG [MScentral]: %s %#i\n",cFileName,iCharacter+1); //MAR2010_08
-	sprintf(cFileName, "%s/save/%s%s_%i.char", EngineFunc::GetGameDir(), CENTRAL_FILEPREFIX, AuthID, iCharacter + 1);
+	 _snprintf(cFileName, sizeof(cFileName),  "%s/save/%s%s_%i.char",  EngineFunc::GetGameDir(),  CENTRAL_FILEPREFIX,  AuthID,  iCharacter + 1 );
 	ReplaceChar(cFileName, ':', '-');
 
 	FileName = cFileName;

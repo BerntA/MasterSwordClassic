@@ -216,7 +216,7 @@ bool CBasePlayer::CreateStats()
 	//	CStat::InitStatList( m_ClStats );
 	//#endif
 
-	strcpy(m_Race, RACE_HUMAN);
+	 strncpy(m_Race,  RACE_HUMAN, sizeof(m_Race) );
 
 	m_CharacterState = CHARSTATE_UNLOADED; //1 == Stats Created but character not loaded
 
@@ -307,7 +307,7 @@ void CBasePlayer::InitialSpawn(void)
 void CBasePlayer ::PlaySound(int channel, const char *sample, float volume, bool fGenderSpecific, float attenuation)
 {
 	char SoundName[128];
-	strcpy(SoundName, sample);
+	 strncpy(SoundName,  sample, sizeof(SoundName) );
 
 	if (fGenderSpecific && m_Gender == GENDER_FEMALE)
 	{
@@ -317,9 +317,9 @@ void CBasePlayer ::PlaySound(int channel, const char *sample, float volume, bool
 			pszStart += 7;
 			int iLeftLen = pszStart - sample;
 			char cTemp1[128];
-			strcpy(cTemp1, sample);
+			 strncpy(cTemp1,  sample, sizeof(cTemp1) );
 			cTemp1[iLeftLen] = 0;
-			sprintf(SoundName, "%sfemale%s", cTemp1, pszStart);
+			 _snprintf(SoundName, sizeof(SoundName),  "%sfemale%s",  cTemp1,  pszStart );
 		}
 	}
 
@@ -448,7 +448,7 @@ int CBasePlayer::NewItemHand(CGenericItem *pItem, bool CheckWeight, bool bVerbos
 					}
 				}
 
-				sprintf(cHandStr, "your hands are full");
+				 strncpy(cHandStr,  "your hands are full", sizeof(cHandStr) );
 			}
 		}
 		else if (pItem->m_PrefHand == BOTH_HANDS)
@@ -465,7 +465,7 @@ int CBasePlayer::NewItemHand(CGenericItem *pItem, bool CheckWeight, bool bVerbos
 				}
 			}
 
-			sprintf(cHandStr, "you need both hands available");
+			 strncpy(cHandStr,  "you need both hands available", sizeof(cHandStr) );
 		}
 
 		if (Success)
@@ -473,7 +473,7 @@ int CBasePlayer::NewItemHand(CGenericItem *pItem, bool CheckWeight, bool bVerbos
 		else
 		{
 			if (bVerbose)
-				sprintf(cErrorString, "You can't get %s because %s!", SPEECH_GetItemName(pItem), cHandStr);
+				 _snprintf(cErrorString, sizeof(cErrorString),  "You can't get %s because %s!",  SPEECH_GetItemName(pItem),  cHandStr );
 			iAddHand = -2;
 		}
 	}
@@ -481,7 +481,7 @@ int CBasePlayer::NewItemHand(CGenericItem *pItem, bool CheckWeight, bool bVerbos
 		if (!pszErrorString && bVerbose)
 			SendEventMsg(HUDEVENT_UNABLE, cErrorString);
 		else
-			strcpy(pszErrorString, cErrorString);
+			 strncpy(pszErrorString,  cErrorString, sizeof(pszErrorString) );
 
 	return iAddHand;
 }
@@ -536,7 +536,7 @@ bool CBasePlayer::CanHold(CGenericItem *pItem, bool bVerbose, char *pszErrorStri
 	if (TotalItems >= MaxItems)
 	{
 		if (bVerbose)
-			sprintf(cErrorString, "You are carrying too many items.");
+			 strncpy(cErrorString,  "You are carrying too many items.", sizeof(cErrorString) );
 		pItem->pev->origin = pev->origin;
 		Success = false;
 	}
@@ -551,7 +551,7 @@ bool CBasePlayer::CanHold(CGenericItem *pItem, bool bVerbose, char *pszErrorStri
 	if (pItem->Weight() + Weight() > Volume())
 	{
 		if (bVerbose)
-			sprintf(cErrorString, "The %s would make your equipment too heavy!", pItem->DisplayName());
+			 _snprintf(cErrorString, sizeof(cErrorString),  "The %s would make your equipment too heavy!",  pItem->DisplayName() );
 		pItem->pev->origin = pev->origin; //Thothie - attempting to stop items that are too heavy from going to oblivion
 		Success = false;
 	}
@@ -561,7 +561,7 @@ bool CBasePlayer::CanHold(CGenericItem *pItem, bool bVerbose, char *pszErrorStri
 		if (!pszErrorString && bVerbose)
 			SendEventMsg(HUDEVENT_UNABLE, cErrorString);
 		else
-			strcpy(pszErrorString, cErrorString);
+			 strncpy(pszErrorString,  cErrorString, sizeof(pszErrorString) );
 	}
 #endif
 
@@ -669,7 +669,7 @@ bool CBasePlayer::PutInPack(CGenericItem *pItem, CGenericItem *pContainer, bool 
 
 	//RemovePlayerItem() gets called from the Item's PutInPack( ) function
 	char sz[32];
-	strcpy(sz, SPEECH_GetItemName(pItem));
+	 strncpy(sz,  SPEECH_GetItemName(pItem), sizeof(sz) );
 	if (bVerbose)
 		SendInfoMsg("You put %s in %s\n", sz, SPEECH_GetItemName(pContainer));
 #ifndef VALVE_DLL
@@ -1412,7 +1412,7 @@ void charinfo_t::AssignChar(int CharIndex, charloc_e eLocation, char *pData, int
 		OldTrans = CharData.OldTrans;
 		NextMap = CharData.NextMap;
 		NewTrans = CharData.NewTrans;
-		strcpy(Race, CharData.Race); // MIB FEB2015_21 [RACE_MENU] - Copy the race over
+		strncpy(Race, CharData.Race, MSSTRING_SIZE); // MIB FEB2015_21 [RACE_MENU] - Copy the race over
 
 		//MiB JAN2010_27 - Char Selection Fix
 		//Find last body used

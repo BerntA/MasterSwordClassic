@@ -111,7 +111,7 @@ BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress
 		clientaddr_t &ClientInfo = g_NewClients[iPlayerOfs];
 		ClientInfo.pe = pEntity;
 		ClientInfo.TimeClientConnected = gpGlobals->time;
-		strcpy(ClientInfo.Addr, pszAddress);
+		 strncpy(ClientInfo.Addr,  pszAddress, sizeof(ClientInfo.Addr) );
 		ClientInfo.fDisplayedGreeting = false;
 		pEntity->free = false;
 		logfile << "Client Queue: [" << iPlayerOfs << "] " << pszAddress << endl;
@@ -232,7 +232,7 @@ void ClientPutInServer(edict_t *pEntity)
 
 			if (strstr(pPlayer->m_ClientAddress, "loopback") ||
 				strstr(pPlayer->m_ClientAddress, "127.0.0.1"))
-				sprintf(pPlayer->m_ClientAddress, "%s:%i", g_NetCode.m.HostIP.c_str(), Port.c_str()); //If local player, use local address
+				_snprintf(pPlayer->m_ClientAddress, 128, "%s:%i", g_NetCode.m.HostIP.c_str(), Port.c_str()); //If local player, use local address
 			bool fEntryFound = false;
 		}
 		else
@@ -296,12 +296,12 @@ void Host_Say(edict_t *pEntity, int teamonly)
 	{
 		if (CMD_ARGC() >= 2)
 		{
-			sprintf(szTemp, "%s %s", (char *)pcmd, (char *)CMD_ARGS());
+			 _snprintf(szTemp, sizeof(szTemp),  "%s %s",  (char *)pcmd,  (char *)CMD_ARGS() );
 		}
 		else
 		{
 			// Just a one word command, use the first word...sigh
-			sprintf(szTemp, "%s", (char *)pcmd);
+			 _snprintf(szTemp, sizeof(szTemp),  "%s",  (char *)pcmd );
 		}
 		p = szTemp;
 	}
@@ -328,9 +328,9 @@ void Host_Say(edict_t *pEntity, int teamonly)
 
 	// turn on color set 2  (color on,  no sound)
 	if (teamonly)
-		sprintf(text, "%c(TEAM) %s: ", 2, STRING(pEntity->v.netname));
+		 _snprintf(text, sizeof(text),  "%c(TEAM) %s: ",  2,  STRING(pEntity->v.netname) );
 	else
-		sprintf(text, "%c%s: ", 2, STRING(pEntity->v.netname));
+		 _snprintf(text, sizeof(text),  "%c%s: ",  2,  STRING(pEntity->v.netname) );
 
 	j = sizeof(text) - 2 - strlen(text); // -2 for /n and null terminator
 	if ((int)strlen(p) > j)
@@ -1371,7 +1371,7 @@ void ClientCommand2(edict_t *pEntity)
 		{
 			char pszMatch[64] = {0};
 			if (CMD_ARGC() > 1)
-				strcpy(pszMatch, CMD_ARGV(1));
+				 strncpy(pszMatch,  CMD_ARGV(1), sizeof(pszMatch) );
 			int count = 0;
 			for (int i = 0; i < CGenericItemMgr::ItemCount(); i++)
 			{
@@ -1513,7 +1513,7 @@ void ClientCommand2(edict_t *pEntity)
 		}
 		/*else if ( FStrEq(pcmd, "uniqueid" ) &&  pPlayer->IsElite() ) {
 			char cTemp1[64];
-			sprintf( cTemp1, "%.3f", CVAR_GET_FLOAT("ms_key") );
+			 _snprintf(cTemp1, sizeof(cTemp1),  "%.3f",  CVAR_GET_FLOAT("ms_key") );
 			pPlayer->SendInfoMsg( "My ID: %s\n", cTemp1 );
 		}*/
 		else if (FStrEq(pcmd, "npc") && CMD_ARGV(1))
@@ -1621,7 +1621,7 @@ void ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 	/*	if ( pEntity->v.netname && STRING(pEntity->v.netname)[0] != 0 && !FStrEq( STRING(pEntity->v.netname), g_engfuncs.pfnInfoKeyValue( infobuffer, "name" )) )
 	{
 		char text[256];
-		sprintf( text, "* %s prefers the name %s\n", STRING(pEntity->v.netname), g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
+		 _snprintf(text, sizeof(text),  "* %s prefers the name %s\n",  STRING(pEntity->v.netname),  g_engfuncs.pfnInfoKeyValue( infobuffer,  "name" ) );
 		MESSAGE_BEGIN( MSG_ALL, gmsgSayText, NULL );
 			WRITE_BYTE( ENTINDEX(pEntity) );
 			WRITE_STRING( text );
@@ -2745,7 +2745,7 @@ void UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientd
 	cd->flSwimTime = ent->v.flSwimTime;
 	cd->waterjumptime = ent->v.teleport_time;
 
-	strcpy(cd->physinfo, ENGINE_GETPHYSINFO(ent));
+	 strncpy(cd->physinfo,  ENGINE_GETPHYSINFO(ent), sizeof(cd->physinfo) );
 
 	cd->maxspeed = ent->v.maxspeed;
 	cd->fov = ent->v.fov;
@@ -2914,8 +2914,8 @@ int InconsistentFile(const edict_t *player, const char *filename, char *disconne
 	// Default behavior is to kick the player
 	//	sprintf( disconnect_message, "Server is enforcing file consistency for %s\n", filename );
 	sprintf(disconnect_message, "DO NOT MODIFY MASTER SWORD FILES\n"
-								"EITHER YOU OR THE SERVER HAS MODIFIED AN IMPORTANT FILE\n"
-								"TRY ANOTHER SERVER OR, IF YOU HAVE MODIFIED FILES, REINSTALL\n");
+		"EITHER YOU OR THE SERVER HAS MODIFIED AN IMPORTANT FILE\n"
+		"TRY ANOTHER SERVER OR, IF YOU HAVE MODIFIED FILES, REINSTALL\n");
 
 	// Kick now with specified disconnect message.
 	return 1;
