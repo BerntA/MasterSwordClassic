@@ -1433,7 +1433,7 @@ char *UTIL_VarArgs(char *format, ...)
 	static char string[1024];
 
 	va_start(argptr, format);
-	vsprintf(string, format, argptr);
+	vsnprintf(string, sizeof(string), format, argptr);
 	va_end(argptr);
 
 	return string;
@@ -1949,7 +1949,7 @@ void UTIL_LogPrintf(char *fmt, ...)
 	static char string[1024];
 
 	va_start(argptr, fmt);
-	vsprintf(string, fmt, argptr);
+	vsnprintf(string, sizeof(string), fmt, argptr);
 	va_end(argptr);
 
 	// Print to server console

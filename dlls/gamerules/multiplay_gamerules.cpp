@@ -487,21 +487,6 @@ void CHalfLifeMultiplay :: InitHUD( CBasePlayer *pPlayer )
 		MSGlobals::GameScript->CallScriptEvent( "game_playerjoin", &Parameters );
 	}
 
-	//Thothie JUN2007 - Check for Entmod, crash if present
-	float thoth_entmodcheck = EngineFunc::CVAR_GetFloat("DF_entversion");
-	if ( thoth_entmodcheck > 0 )
-	{
-		//only crashes if you are on FN
-		//(I figure maybe some mappers may use entmod for development)
-		float thoth_central_check = EngineFunc::CVAR_GetFloat("ms_central_enabled");
-		if ( thoth_central_check == 1 )
-		{
-			MessageBox(NULL,"You are attempting to cheat with Entmod. Your server IP and Steam_ID have been marked on [FN]", "ERROR",MB_OK|MB_ICONEXCLAMATION);
-			//it doesn't actually "mark you on FN" of course, but it'd be nice if it did ^_^
-			exit (-1);
-		}
-	}
-
 	//Notify all the entities with scripts
 	CBaseEntity *pEntity = NULL;
 	edict_t		*pEdict = NULL;
@@ -583,7 +568,7 @@ void CHalfLifeMultiplay :: ClientDisconnected( edict_t *pClient )
 		//- reconnecting clients are assigned to their old slots somehow.
 		//- hoping this will undo that
 		int iPlayerOfs = pPlayer->entindex() -1;
-		strcpy(g_NewClients[iPlayerOfs].Addr,"127.0.0.1");
+		strncpy(g_NewClients[iPlayerOfs].Addr, "127.0.0.1", 128);
 	
 		//Thothie JUN2007a - Capturing game player leave scriptside
 		//this is used to remove his items from world to prevent duplication

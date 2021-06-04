@@ -458,7 +458,7 @@ void MSCentral::Print(const char *szFormat, ...)
 
 	va_start(argptr, szFormat);
 
-	vsprintf(string, szFormat, argptr);
+	vsnprintf(string, sizeof(string), szFormat, argptr);
 	va_end(argptr);
 
 	UTIL_LogPrintf(msstring("Central Server: ") + string + "\n");

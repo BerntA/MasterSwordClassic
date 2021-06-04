@@ -472,7 +472,7 @@ void Print(char *szFmt, ...)
 
 	va_start(argptr, szFmt);
 
-	vsprintf(string, szFmt, argptr);
+	vsnprintf(string, sizeof(string), szFmt, argptr);
 	va_end(argptr);
 
 	//#ifdef VALVE_DLL
@@ -491,7 +491,7 @@ void Log(char *szFmt, ...)
 
 	va_start(argptr, szFmt);
 
-	vsprintf(string, szFmt, argptr);
+	vsnprintf(string, sizeof(string), szFmt, argptr);
 	va_end(argptr);
 
 	logfile << string << endl;
@@ -515,7 +515,7 @@ void DbgLog(char *szFmt, ...)
 
 	va_start(argptr, szFmt);
 
-	vsprintf(string, szFmt, argptr);
+	vsnprintf(string, sizeof(string), szFmt, argptr);
 	va_end(argptr);
 
 	logfile << string << endl;

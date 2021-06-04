@@ -265,7 +265,7 @@ void AlertMessage(ALERT_TYPE atype, char *szFmt, ...)
 	static char string[1024];
 
 	va_start(argptr, szFmt);
-	vsprintf(string, szFmt, argptr);
+	vsnprintf(string, sizeof(string), szFmt, argptr);
 	va_end(argptr);
 
 	ConsolePrint("cl: ");
@@ -277,7 +277,7 @@ char *UTIL_VarArgs(char *format, ...)
 	static char string[1024];
 
 	va_start(argptr, format);
-	vsprintf(string, format, argptr);
+	vsnprintf(string, sizeof(string), format, argptr);
 	va_end(argptr);
 
 	return (char *)string;

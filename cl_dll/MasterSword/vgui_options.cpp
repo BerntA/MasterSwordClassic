@@ -615,13 +615,13 @@ int __MsgFunc_Vote(const char *pszName, int iSize, void *pbuf)
 			else
 				strcpy(cTargetPlayerName, "<unknown>");
 
-			sprintf(MSGlobals::CurrentVote.Desc, Localized(msstring("#VOTE_") + MSGlobals::CurrentVote.Type + "_INPROGRESS_DESC"), cSourcePlayerName, cTargetPlayerName);
+			_snprintf(MSGlobals::CurrentVote.Desc, MSSTRING_SIZE, Localized(msstring("#VOTE_") + MSGlobals::CurrentVote.Type + "_INPROGRESS_DESC"), cSourcePlayerName, cTargetPlayerName);
 		}
 		else if (MSGlobals::CurrentVote.Type == "advtime" && Params.size() >= 3)
 		{
 			msstring FormatStr = Localized(msstring("#VOTE_") + MSGlobals::CurrentVote.Type + "_INPROGRESS_DESC" + Params[2]);
 
-			sprintf(MSGlobals::CurrentVote.Desc, FormatStr, cSourcePlayerName);
+			_snprintf(MSGlobals::CurrentVote.Desc, MSSTRING_SIZE, FormatStr, cSourcePlayerName);
 		}
 
 		if (MSGlobals::GameScript)

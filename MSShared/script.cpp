@@ -207,7 +207,7 @@ public:
 		if (!m_GroupFile.IsOpen())
 		{
 			char cGroupFilePath[MAX_PATH];
-			sprintf(cGroupFilePath, "%s/dlls/sc.dll", EngineFunc::GetGameDir());
+			_snprintf(cGroupFilePath, MAX_PATH, "%s/dlls/sc.dll", EngineFunc::GetGameDir());
 			m_GroupFile.Open(cGroupFilePath);
 		}
 
@@ -335,18 +335,20 @@ msstring_ref CScript::GetConst(msstring_ref Text)
 	return Text;
 }
 
-bool GetString(char *Return, const char *sentence, int start, char *endchars)
+bool GetString(char *Return, size_t size, const char *sentence, int start, char *endchars)
 {
-	//Quickie function to return the next CMD or parameter in a script string
-	int i = 0, n, iPosition = start;
-	strcpy(Return, "");
-	while (1)
+	// Quickie function to return the next CMD or parameter in a script string
+	int i = 0, n, iPosition = start, endCharSize = strlen(endchars);
+	strncpy(Return, "", size);
+	while (i < (size - 1))
 	{
-		for (n = 0; (unsigned)n < strlen(endchars); n++)
+		for (n = 0; n < endCharSize; n++)
 			if (sentence[iPosition] == endchars[n])
 				return true;
+
 		if (sentence[iPosition] == 0)
 			return false;
+
 		Return[i] = sentence[iPosition];
 		Return[i + 1] = '\0';
 		iPosition++;
@@ -768,7 +770,7 @@ msstring CScript::ScriptGetter_FileSize(msstring &FullName, msstring &ParserName
 #ifdef VALVE_DLL
 		GET_GAME_DIR(cfileName);
 #else
-		strcpy(cfileName, gEngfuncs.pfnGetGameDirectory());
+		strncpy(cfileName, gEngfuncs.pfnGetGameDirectory(), MAX_PATH);
 #endif
 
 		//GET_GAME_DIR( cfileName );
@@ -801,13 +803,12 @@ msstring CScript::ScriptGetter_Float(msstring &FullName, msstring &ParserName, m
 	msstring Return;
 	if (Params.size() >= 2)
 	{
-		char cReturn[256];
+		char cReturn[MSSTRING_SIZE];
 		msstring Return = msstring("%.") + atoi(Params[0]) + "f";
-		sprintf(cReturn, Return, atof(Params[1]));
+		_snprintf(cReturn, MSSTRING_SIZE, Return, atof(Params[1]));
 		return msstring(cReturn);
 	}
-	else
-		return "0";
+	return "0";
 }
 
 //$func(<eventname>,[params...])
@@ -1179,7 +1180,7 @@ msstring CScript::ScriptGetter_GetAttackProp(msstring &FullName, msstring &Parse
 		else if (PropName == "hold_min&max")
 		{
 			msstring Return;
-			sprintf(Return, "%.2f;%.2f", AttData.tProjMinHold, AttData.tMaxHold);
+			_snprintf(Return, MSSTRING_SIZE, "%.2f;%.2f", AttData.tProjMinHold, AttData.tMaxHold);
 			return Return;
 		}
 		else if (PropName == "projectile")
@@ -1187,7 +1188,7 @@ msstring CScript::ScriptGetter_GetAttackProp(msstring &FullName, msstring &Parse
 		else if (PropName == "COF")
 		{
 			msstring Return;
-			sprintf(Return, "%.2f;%.2f", AttData.flAccuracyDefault, AttData.flAccBest);
+			_snprintf(Return, MSSTRING_SIZE, "%.2f;%.2f", AttData.flAccuracyDefault, AttData.flAccBest);
 			return Return;
 		}
 		else if (PropName == "delay.end")
@@ -2670,7 +2671,7 @@ msstring CScript::ScriptGetter_LCase(msstring &FullName, msstring &ParserName, m
 	if (Params.size() >= 1)
 	{
 		char toconv[256];
-		strcpy(toconv, Params[0]);
+		strncpy(toconv, Params[0], sizeof(toconv));
 		return msstring(_strlwr(toconv));
 	}
 	else
@@ -2944,7 +2945,7 @@ msstring CScript::ScriptGetter_RelPos(msstring &FullName, msstring &ParserName, 
 
 		Vector vTemp = StringToVec(PosString);
 		Vector Pos = StartPos + GetRelativePos(Angle, vTemp);
-		//sprintf( cReturn, "(%.2f,%.2f,%.2f)", Pos.x, Pos.y, Pos.z );
+		//_snprintf( cReturn, "(%.2f,%.2f,%.2f)", Pos.x, Pos.y, Pos.z );
 		RETURN_VECTOR(Pos)
 	}
 	else
@@ -3236,7 +3237,7 @@ msstring CScript::ScriptGetter_UCase(msstring &FullName, msstring &ParserName, m
 	if (Params.size() >= 1)
 	{
 		char toconv[256];
-		strcpy(toconv, Params[0]);
+		strncpy(toconv, Params[0], sizeof(toconv));
 		return _strupr(toconv);
 	}
 	else
@@ -3968,7 +3969,7 @@ bool CScript::Spawn(string_i Filename, CBaseEntity *pScriptedEnt, IScripted *pSc
 
 #ifndef SCRIPT_LOCKDOWN
 	char cScriptFile[MAX_PATH];
-	sprintf(cScriptFile, "test_scripts/%s", ScriptName.c_str());
+	_snprintf(cScriptFile, "test_scripts/%s", ScriptName.c_str());
 
 	int iFileSize;
 	byte *pMemFile = LOAD_FILE_FOR_ME(cScriptFile, &iFileSize);
@@ -3989,9 +3990,9 @@ bool CScript::Spawn(string_i Filename, CBaseEntity *pScriptedEnt, IScripted *pSc
 #ifdef VALVE_DLL
 			GET_GAME_DIR(cGameDir);
 #else
-			strcpy(cGameDir, gEngfuncs.pfnGetGameDirectory());
+			strncpy(cGameDir, gEngfuncs.pfnGetGameDirectory(), MAX_PATH);
 #endif
-			sprintf(cScriptFile, "test_scripts/%s", ScriptName.c_str()); //Thothie FEB2010_06 - attempting to fix other folks not being able to use test_scripts folder
+			_snprintf(cScriptFile, MAX_PATH, "test_scripts/%s", ScriptName.c_str()); //Thothie FEB2010_06 - attempting to fix other folks not being able to use test_scripts folder
 
 			int iFileSize;
 			byte *pMemFile = LOAD_FILE_FOR_ME(cScriptFile, &iFileSize);
@@ -4133,8 +4134,7 @@ bool CScript::ParseScriptFile(const char *pszScriptData)
 	while (*pszScriptData)
 	{
 		char cBuf[768];
-		cBuf[0] = 0;
-		if (GetString(cBuf, pszScriptData, 0, "\r\n"))
+		if (GetString(cBuf, min(strlen(pszScriptData), sizeof(cBuf)), pszScriptData, 0, "\r\n"))
 			pszScriptData += strlen(cBuf);
 		else
 			pszScriptData += strlen(cBuf);
@@ -4570,7 +4570,7 @@ int CScript::ParseLine(const char *pszCommandLine /*in*/, int LineNum /*in*/, SC
 		msstring testvar_scope = "preload";
 		conflict_check(testvar, testvar_type, testvar_scope);
 #endif
-		strcpy(TestCommand, "setvar");
+		strncpy(TestCommand, "setvar", 128);
 		KeepCmd = true;
 	}
 	//this fails, as it sometimes runs at load time (not sure why)
@@ -4653,7 +4653,7 @@ int CScript::ParseLine(const char *pszCommandLine /*in*/, int LineNum /*in*/, SC
 		{
 			TmpLineOfs += strlen(cSpaces) + strlen(cBuffer);
 			if (!ResourceIdx)
-				strcpy(cBuffer, cSpaces); //The first parameter ends up in cSpaces.... move it to cBuffer
+				strncpy(cBuffer, cSpaces, sizeof(cBuffer)); //The first parameter ends up in cSpaces.... move it to cBuffer
 			bool SkipFirst = (!SndType && strstr(TestCommand, "sound")) ? true : false;
 
 			if (!SkipFirst || ResourceIdx) //Sounds skip the first parameter
@@ -5241,88 +5241,6 @@ bool GetModelBounds(void *pModel, Vector Bounds[2])
 
 	return true;
 }
-
-//[MiB NOV2007a]
-void CheckIfUsingCE()
-{
-	// Get the list of process identifiers.
-
-	DWORD aProcesses[1024], cbNeeded, cProcesses;
-	unsigned int i;
-
-	if (!EnumProcesses(aProcesses, sizeof(aProcesses), &cbNeeded))
-		return;
-
-	// Calculate how many process identifiers were returned.
-
-	cProcesses = cbNeeded / sizeof(DWORD);
-
-	// Print the name and process identifier for each process.
-
-	for (i = 0; i < cProcesses; i++)
-		if (aProcesses[i] != 0)
-			CheckProcess(aProcesses[i]);
-}
-
-void CheckProcess(DWORD processID)
-{
-	TCHAR szProcessName[MAX_PATH] = TEXT("<unknown>");
-
-	// Get a handle to the process.
-
-	HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION |
-									  PROCESS_VM_READ,
-								  FALSE, processID);
-
-	// Get the process name.
-
-	if (NULL != hProcess)
-	{
-		HMODULE hMod;
-		DWORD cbNeeded;
-
-		if (EnumProcessModules(hProcess, &hMod, sizeof(hMod),
-							   &cbNeeded))
-		{
-			GetModuleBaseName(hProcess, hMod, szProcessName,
-							  sizeof(szProcessName) / sizeof(TCHAR));
-		}
-	}
-
-	//MessageBox(NULL,UTIL_VarArgs("Checking Procs: %s",szProcessName),"DEBUG",MB_OK|MB_ICONEXCLAMATION);
-
-	// Check to see if this process is the "Cheat Engine.exe" process (Yes, that's actually what they named it.
-	//if( strcmp( szProcessName, "Cheat Engine.exe" ) == 0 )
-	//char toconv[256];
-	//strcpy( toconv, Params[0] );
-	//return _strlwr( toconv );
-
-	char toconv[256];
-	strcpy(toconv, szProcessName);
-	msstring thoth_proc = _strlwr(toconv);
-
-	if (thoth_proc.contains("cheat engine.exe") || thoth_proc.contains("artmoney.exe") || thoth_proc.contains("prjredux"))
-	{
-		// If it is
-		// Do the things with the fucking up the cheater's game.
-		// [THOTH]
-		MessageBox(NULL, "Memory area not secure. Cannot continue.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
-		exit(-1);
-	}
-
-#ifdef VALVE_DLL
-	//Thothie FEB2008a - handle restarter
-	if (thoth_proc.contains("restarter.exe"))
-	{
-		char cFileName[512];
-		sprintf(cFileName, "%s/%s", EngineFunc::GetGameDir(), "heartbeat.txt");
-		std::remove(cFileName);
-	}
-#endif VALVE_DLL
-
-	CloseHandle(hProcess);
-}
-//[/MiB]
 
 #if !TURN_OFF_ALERT
 //Thothie JAN2013

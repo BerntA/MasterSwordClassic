@@ -226,7 +226,7 @@ void ClientPutInServer(edict_t *pEntity)
 			int iPlayerOfs = ENTINDEX(pEntity) - 1;
 			logfile << "Client Address " << g_NewClients[iPlayerOfs].Addr << "... Slot [" << iPlayerOfs << "]\r\n";
 
-			strcpy(pPlayer->m_ClientAddress, g_NewClients[iPlayerOfs].Addr);
+			strncpy(pPlayer->m_ClientAddress, g_NewClients[iPlayerOfs].Addr, sizeof(pPlayer->m_ClientAddress));
 
 			msstring Port = CVAR_GET_STRING("clientport");
 

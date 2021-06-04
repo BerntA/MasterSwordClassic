@@ -322,7 +322,7 @@ extern "C" void LogText(char *szFmt, ...)
 	va_list argptr;
 	static char string[1024];
 	va_start(argptr, szFmt);
-	vsprintf(string, szFmt, argptr);
+	vsnprintf(string, sizeof(string), szFmt, argptr);
 	va_end(argptr);
 
 	logfile << string;

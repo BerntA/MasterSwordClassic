@@ -1017,7 +1017,7 @@ bool CHudSpectator::ParseOverviewFile()
 				if (!stricmp(token, "image"))
 				{
 					pfile = gEngfuncs.COM_ParseFile(pfile, token);
-					strcpy(m_OverviewData.layersImages[m_OverviewData.layers], token);
+					strncpy(m_OverviewData.layersImages[m_OverviewData.layers], token, 255);
 				}
 				else if (!stricmp(token, "height"))
 				{

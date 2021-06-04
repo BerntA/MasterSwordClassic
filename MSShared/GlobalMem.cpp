@@ -22,7 +22,7 @@ void EnableAllocateTrace() { AllocationStack--; }
 #endif
 #endif
 
-#define MS_FATAL_ERROR_MEM(Message) MessageBox(NULL, Message, "Memory Error", MB_OK);
+#define MS_FATAL_ERROR_MEM(MemErrMsg) Print("%s\n", MemErrMsg);
 extern bool g_MemWarningActive;
 
 //Debug memory testing

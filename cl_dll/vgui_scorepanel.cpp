@@ -1133,7 +1133,7 @@ void MSG_ScoreInfo(const char *pszName, int iSize, void *pbuf)
 	if (cl > 0 && cl <= MAX_PLAYERS)
 	{
 		if (FBitSet(Flags, (1 << 2)))
-			strcpy(g_PlayerExtraInfo[cl].Title, sTitle);
+			strncpy(g_PlayerExtraInfo[cl].Title, sTitle, sizeof(g_PlayerExtraInfo[cl].Title));
 		//g_PlayerExtraInfo[cl].SkillAve = iSkillave;
 		g_PlayerExtraInfo[cl].teamnumber = 0; //teamnumber;
 		g_PlayerExtraInfo[cl].Flags = Flags;

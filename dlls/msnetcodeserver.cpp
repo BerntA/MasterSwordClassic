@@ -86,7 +86,7 @@ bool CNetCodeServer::Init()
 	while( Host->h_addr_list[i] )
 	{
 		char cTestIP[32];
-		strcpy( cTestIP, inet_ntoa( *(in_addr *)Host->h_addr_list[i] ) );
+		strncpy( cTestIP, inet_ntoa( *(in_addr *)Host->h_addr_list[i] ), sizeof(cTestIP) );
 		if( i > 0 || m.HostIP == "0.0.0.0" )
 		{
 			//if( strstr(CVAR_GET_STRING("net_address"),cTestIP) )
@@ -226,7 +226,7 @@ void CNetCodeServer::Think()
 		send(newsock, (char *)&SendByte, 1, 0);										   //
 
 		char Address[32];
-		sprintf(Address, "%s:%i", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
+		_snprintf(Address, sizeof(Address), "%s:%i", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
 
 		logfile << "[Net] Incoming savefile connection from: " << Address << "\r\n";
 	}

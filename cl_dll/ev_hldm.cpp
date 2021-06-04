@@ -1086,19 +1086,14 @@ void EV_FireGauss(event_args_t *args)
 
 void EV_TrainPitchAdjust(event_args_t *args)
 {
-	int idx;
-	vec3_t origin;
-
 	unsigned short us_params;
 	int noise;
 	float m_flVolume;
 	int pitch;
 	int stop;
+	int idx = args->entindex;
 
-	char sz[256];
-
-	idx = args->entindex;
-
+	vec3_t origin;
 	VectorCopy(args->origin, origin);
 
 	us_params = (unsigned short)args->iparam1;
@@ -1108,40 +1103,39 @@ void EV_TrainPitchAdjust(event_args_t *args)
 	noise = (int)(((us_params) >> 12) & 0x0007);
 	pitch = (int)(10.0 * (float)((us_params >> 6) & 0x003f));
 
+	const char *soundPath = NULL;
 	switch (noise)
 	{
 	case 1:
-		strcpy(sz, "plats/ttrain1.wav");
+		soundPath = "plats/ttrain1.wav";
 		break;
 	case 2:
-		strcpy(sz, "plats/ttrain2.wav");
+		soundPath = "plats/ttrain2.wav";
 		break;
 	case 3:
-		strcpy(sz, "plats/ttrain3.wav");
+		soundPath = "plats/ttrain3.wav";
 		break;
 	case 4:
-		strcpy(sz, "plats/ttrain4.wav");
+		soundPath = "plats/ttrain4.wav";
 		break;
 	case 5:
-		strcpy(sz, "plats/ttrain6.wav");
+		soundPath = "plats/ttrain6.wav";
 		break;
 	case 6:
-		strcpy(sz, "plats/ttrain7.wav");
+		soundPath = "plats/ttrain7.wav";
 		break;
-	default:
-		// no sound
-		strcpy(sz, "");
-		return;
 	}
 
+	if (soundPath == NULL)
+		return; // No sound
+
+	char sz[32];
+	strncpy(sz, soundPath, sizeof(sz));
+
 	if (stop)
-	{
 		gEngfuncs.pEventAPI->EV_StopSound(idx, CHAN_STATIC, sz);
-	}
 	else
-	{
 		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_STATIC, sz, m_flVolume, ATTN_NORM, SND_CHANGE_PITCH, pitch);
-	}
 }
 
 int EV_TFC_IsAllyTeam(int iTeam1, int iTeam2)

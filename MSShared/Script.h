@@ -344,15 +344,9 @@ public:
 
 #undef SCRIPTVAR
 #define SCRIPTVAR GetFirstScriptVar
-bool GetString(char *Return, const char *sentence, int start, char *endchars);
+bool GetString(char *Return, size_t size, const char *sentence, int start, char *endchars);
 void ReplaceChar(char *pString, char org, char dest);
 float GetNumeric(const char *pszText);
-
-//[MiB NOV2007a]
-void CheckIfUsingCE();
-//static mslist<scriptarray_t> GlobalScriptArrays; // MiB JUN2010_25
-void CheckProcess(DWORD processID);
-//[/MiB]
 
 enum scriptconatiner_e
 {

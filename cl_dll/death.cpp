@@ -225,7 +225,7 @@ int CHudDeathNotice ::MsgFunc_DeathMsg(const char *pszName, int iSize, void *pbu
 		rgDeathNoticeList[i].iNonPlayerKill = TRUE;
 
 		// Store the object's name in the Victim slot (skip the d_ bit)
-		strcpy(rgDeathNoticeList[i].szVictim, killedwith + 2);
+		strncpy(rgDeathNoticeList[i].szVictim, killedwith + 2, MAX_PLAYER_NAME_LENGTH);
 	}
 	else
 	{

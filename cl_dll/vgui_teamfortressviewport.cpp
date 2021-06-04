@@ -675,7 +675,7 @@ void TeamFortressViewport::Initialize(void)
 	for (int i = 0; i < 5; i++)
 	{
 		m_iValidClasses[i] = 0;
-		strcpy(m_sTeamNames[i], "");
+		strncpy(m_sTeamNames[i], "", MAX_TEAMNAME_SIZE);
 	}
 
 	dbg("Call App::getInstance()->setCursorOveride");

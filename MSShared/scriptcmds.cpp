@@ -1852,7 +1852,6 @@ bool CScript::ScriptCmd_ChatLog(SCRIPT_EVENT &Event, scriptcmd_t &Cmd, msstringl
 //- Called periodically by game_master and client,
 bool CScript::ScriptCmd_CheatEngineCheck(SCRIPT_EVENT &Event, scriptcmd_t &Cmd, msstringlist &Params)
 {
-	CheckIfUsingCE();
 	return true;
 }
 

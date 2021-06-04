@@ -209,22 +209,22 @@ public:
 	}
 #define RETURN_FLOAT_PRECISION(a) \
 	{                             \
-		sprintf(Return, "%f", a); \
+		_snprintf(Return, MSSTRING_SIZE, "%f", a); \
 		return Return;            \
 	}
 #define RETURN_FLOAT(a)             \
 	{                               \
-		sprintf(Return, "%.2f", a); \
+		_snprintf(Return, MSSTRING_SIZE, "%.2f", a); \
 		return Return;              \
 	}
 #define RETURN_INT(a)             \
 	{                             \
-		sprintf(Return, "%i", a); \
+		_snprintf(Return, MSSTRING_SIZE, "%i", a); \
 		return Return;            \
 	}
 #define RETURN_VECTOR(a)                                    \
 	{                                                       \
-		sprintf(Return, "(%.2f,%.2f,%.2f)", a.x, a.y, a.z); \
+		_snprintf(Return, MSSTRING_SIZE, "(%.2f,%.2f,%.2f)", a.x, a.y, a.z); \
 		return Return;                                      \
 	}
 #define RETURN_POSITION(name, position)              \

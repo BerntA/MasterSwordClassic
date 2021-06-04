@@ -1946,8 +1946,8 @@ int CChangeLevel::AddTransitionToList(LEVELLIST *pLevelList, int listCount, cons
 		if (pLevelList[i].pentLandmark == pentLandmark && strcmp(pLevelList[i].mapName, pMapName) == 0)
 			return 0;
 	}
-	strcpy(pLevelList[listCount].mapName, pMapName);
-	strcpy(pLevelList[listCount].landmarkName, pLandmarkName);
+	strncpy(pLevelList[listCount].mapName, pMapName, sizeof(pLevelList[listCount].mapName));
+	strncpy(pLevelList[listCount].landmarkName, pLandmarkName, sizeof(pLevelList[listCount].landmarkName));
 	pLevelList[listCount].pentLandmark = pentLandmark;
 	pLevelList[listCount].vecLandmarkOrigin = VARS(pentLandmark)->origin;
 

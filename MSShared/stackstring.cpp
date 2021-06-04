@@ -25,7 +25,7 @@ msstring &msstring::operator=(const msstring_ref a)
 }
 msstring &msstring::operator=(int a)
 {
-	sprintf(data, "%i", a);
+	_snprintf(data, MSSTRING_SIZE, "%i", a);
 	return *this;
 }
 msstring &msstring::operator=(const msstring &a) { return operator=(a.data); }
@@ -172,7 +172,7 @@ void msvariant::SetFromInt(int a)
 }
 void msvariant::SetFromFloat(float a)
 {
-	sprintf(m_String.c_str(), "%f", a);
+	_snprintf(m_String.c_str(), MSSTRING_SIZE, "%f", a);
 	m_Int = (int)a;
 	m_Float = a;
 }

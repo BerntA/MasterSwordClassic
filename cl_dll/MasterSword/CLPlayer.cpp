@@ -1077,7 +1077,7 @@ void __CmdFunc_BindTeleport(void)
 	cl_entity_t *clplayer = gEngfuncs.GetLocalPlayer();
 	if (clplayer)
 	{
-		sprintf(BindStr.c_str(), "bind %s \"teleport %.2f %.2f %.2f\"\n", Key.c_str(), clplayer->origin.x, clplayer->origin.y, clplayer->origin.z);
+		_snprintf(BindStr.c_str(), MSSTRING_SIZE, "bind %s \"teleport %.2f %.2f %.2f\"\n", Key.c_str(), clplayer->origin.x, clplayer->origin.y, clplayer->origin.z);
 		gEngfuncs.pfnClientCmd(BindStr);
 	}
 #endif

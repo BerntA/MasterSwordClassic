@@ -1370,7 +1370,7 @@ void SENTENCEG_Init()
 		if (strlen(pString) >= CBSENTENCENAME_MAX)
 			ALERT(at_warning, "Sentence %s longer than %d letters\n", pString, CBSENTENCENAME_MAX - 1);
 
-		strcpy(gszallsentencenames[gcallsentences++], pString);
+		strncpy(gszallsentencenames[gcallsentences++], pString, CBSENTENCENAME_MAX);
 
 		j--;
 		if (j <= i)
@@ -1642,7 +1642,7 @@ void TEXTURETYPE_Init()
 		// null-terminate name and save in sentences array
 		j = min(j, CBTEXTURENAMEMAX - 1 + i);
 		buffer[j] = 0;
-		strcpy(&(grgszTextureName[gcTextures++][0]), &(buffer[i]));
+		strncpy(&(grgszTextureName[gcTextures++][0]), &(buffer[i]), CBTEXTURENAMEMAX);
 	}
 
 	g_engfuncs.pfnFreeFile(pMemFile);

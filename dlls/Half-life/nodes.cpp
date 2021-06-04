@@ -1701,7 +1701,7 @@ void CTestHull ::BuildNodeGraph(void)
 	CreateDirectory(szNrpFilename, NULL);
 	strcat(szNrpFilename, "/graphs");
 	CreateDirectory(szNrpFilename, NULL);
-
+	
 	strcat(szNrpFilename, "/");
 	strcat(szNrpFilename, STRING(gpGlobals->mapname));
 	strcat(szNrpFilename, ".nrp");

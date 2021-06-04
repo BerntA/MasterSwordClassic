@@ -17,6 +17,7 @@ CMSStream NullFile;
 bool g_log_initialized = false;
 void MSErrorConsoleText(const msstring_ref pszLabel, const msstring_ref Progress)
 {
+	//Print("%s, %s\n", pszLabel, Progress);
 #ifndef TURN_OFF_ALERT
 	if (g_log_initialized)
 	{
@@ -97,17 +98,17 @@ void CMSStream::DebugOpen()
 	int year = TheTime->tm_year + 1900;
 	//sprintf( pFileName, "msc_log_%i_%i", month, year );
 	pFileName = "log_msdll";
-	sprintf(pChatName, "msc_chatlog_%02d_%i", month, year);
+	_snprintf(pChatName, sizeof(pChatName), "msc_chatlog_%02d_%i", month, year);
 #else
 	pFileName = "log_cldll";
 #endif
 
-	sprintf(cLogfile, "%s/../%s.log", MSGlobals::DllPath.c_str(), pFileName);
+	_snprintf(cLogfile, MAX_PATH, "%s/../%s.log", MSGlobals::DllPath.c_str(), pFileName);
 	try
 	{
 		logfile.open(cLogfile);
 #ifdef VALVE_DLL
-		sprintf(cChatFile, "%s/../%s.log", MSGlobals::DllPath.c_str(), pChatName);
+		_snprintf(cChatFile, MAX_PATH, "%s/../%s.log", MSGlobals::DllPath.c_str(), pChatName);
 		chatlog.open(cChatFile, 1);
 #endif
 		g_log_initialized = true;
@@ -124,8 +125,8 @@ msstring EntToString(class CBaseEntity *pEntity) //Converts an entity to a strin
 	if (!pEntity)
 		return "";
 
-	static char RetString[32] = "";
-	sprintf(RetString, ENT_FORMAT, pEntity->entindex(), (int)pEntity);
+	static char RetString[32];
+	_snprintf(RetString, sizeof(RetString), ENT_FORMAT, pEntity->entindex(), (int)pEntity);
 
 	return RetString;
 }
@@ -147,7 +148,7 @@ CBaseEntity *StringToEnt(msstring_ref EntString) //Converts an string of format 
 msstring_ref VecToString(Vector &Vec)
 {
 	static char RetString[128];
-	sprintf(RetString, "(%.2f,%.2f,%.2f)", Vec.x, Vec.y, Vec.z);
+	_snprintf(RetString, sizeof(RetString), "(%.2f,%.2f,%.2f)", Vec.x, Vec.y, Vec.z);
 	return RetString;
 }
 Vector StringToVec(msstring_ref String)

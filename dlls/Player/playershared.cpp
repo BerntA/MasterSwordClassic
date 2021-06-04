@@ -1032,7 +1032,7 @@ void CBasePlayer::SendInfoMsg(char *msg, ...)
 	va_list argptr;
 	static char string[1024];
 	va_start(argptr, msg);
-	vsprintf(string, msg, argptr);
+	vsnprintf(string, sizeof(string), msg, argptr);
 	va_end(argptr);
 	SendEventMsg(string);
 }

@@ -316,9 +316,9 @@ void CGenericItemMgr::GenericItemPrecache(void)
 #ifdef VALVE_DLL
 		GET_GAME_DIR(cGameDir);
 #else
-	strcpy(cGameDir, gEngfuncs.pfnGetGameDirectory());
+		strncpy(cGameDir, gEngfuncs.pfnGetGameDirectory(), MAX_PATH);
 #endif
-		sprintf(cGroupFilePath, "%s/dlls/sc.dll", cGameDir);
+		_snprintf(cGroupFilePath, MAX_PATH, "%s/dlls/sc.dll", cGameDir);
 
 		//CGroupFile &GroupFile = *msnew CGroupFile();
 		CGroupFile GroupFile;
@@ -364,7 +364,8 @@ void CGenericItemMgr::GenericItemPrecache(void)
 #endif*/
 
 	dbg("Load global items");
-	while (GetString(cString, (char *)pStringPtr, i, "\r\n"))
+
+	while (GetString(cString, min(FileSize, sizeof(cString)), (char *)pStringPtr, i, "\r\n"))
 	{
 		n = i;
 		i += strlen(cString) + 1;
