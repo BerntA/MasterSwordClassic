@@ -22,7 +22,6 @@
 #include "MSDLLHeaders.h"
 #include "Weapons.h"
 #include "player.h"
-#include "talkmonster.h"
 #include "gamerules.h"
 
 static char *memfgets(byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bufferSize);
@@ -1931,6 +1930,7 @@ void CSpeaker ::Spawn(void)
 
 #define ANNOUNCE_MINUTES_MIN 0.25
 #define ANNOUNCE_MINUTES_MAX 2.25
+static float g_talkWaitTime = 0.0f; // time delay until it's ok to speak: used so that two NPCs don't talk at once
 
 void CSpeaker ::Precache(void)
 {
@@ -1947,9 +1947,9 @@ void CSpeaker ::SpeakerThink(void)
 	int pitch = 100;
 
 	// Wait for the talkmonster to finish first.
-	if (gpGlobals->time <= CTalkMonster::g_talkWaitTime)
+	if (gpGlobals->time <= g_talkWaitTime)
 	{
-		pev->nextthink = CTalkMonster::g_talkWaitTime + RANDOM_FLOAT(5, 10);
+		pev->nextthink = g_talkWaitTime + RANDOM_FLOAT(5, 10);
 		return;
 	}
 
@@ -2019,7 +2019,7 @@ void CSpeaker ::SpeakerThink(void)
 		pev->nextthink = gpGlobals->time +
 						 RANDOM_FLOAT(ANNOUNCE_MINUTES_MIN * 60.0, ANNOUNCE_MINUTES_MAX * 60.0);
 
-		CTalkMonster::g_talkWaitTime = gpGlobals->time + 5; // time delay until it's ok to speak: used so that two NPCs don't talk at once
+		g_talkWaitTime = gpGlobals->time + 5; // time delay until it's ok to speak: used so that two NPCs don't talk at once
 	}
 
 	return;

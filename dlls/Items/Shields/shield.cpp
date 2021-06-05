@@ -3,7 +3,6 @@
 #include "animation.h"
 #include "Weapons/Weapons.h"
 #include "Player/player.h"
-#include "shieldglobal.h"
 #include "Shield.h"
 #include "logfile.h"
 

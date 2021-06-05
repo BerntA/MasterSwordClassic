@@ -367,7 +367,3 @@ extern "C" char *strlwr(char *str)
 { 
 	return FStrEq( EngineFunc::GetString( m_string ), a ) ? true : false; 
 }*/
-
-//Needed to support sound.cpp
-#include "talkmonster.h"
-float CTalkMonster::g_talkWaitTime = 0; // time delay until it's ok to speak: used so that two NPCs don't talk at once

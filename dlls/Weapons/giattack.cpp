@@ -21,7 +21,6 @@
 #include "logfile.h"
 
 #ifdef VALVE_DLL
-#include "Items/Shields/shieldglobal.h"
 #include "Items/Shields/Shield.h"
 #include "soundent.h"
 #endif
