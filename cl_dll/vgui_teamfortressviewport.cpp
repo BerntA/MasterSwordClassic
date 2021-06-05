@@ -1139,7 +1139,7 @@ void TeamFortressViewport::UpdateSpectatorPanel()
 		 _snprintf(helpString2, sizeof(helpString2),  "#Spec_Mode%d",  g_iUser1 );
 
 		if (gEngfuncs.IsSpectateOnly())
-			strcat(helpString2, " - HLTV");
+			strncat(helpString2, " - HLTV", 7);
 
 		// check if we're locked onto a target, show the player's name
 		if ((g_iUser2 > 0) && (g_iUser2 <= gEngfuncs.GetMaxClients()) && (g_iUser1 != OBS_ROAMING))

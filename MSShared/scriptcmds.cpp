@@ -3037,7 +3037,7 @@ bool CScript::ScriptCmd_HelpTip(SCRIPT_EVENT &Event, scriptcmd_t &Cmd, msstringl
 	{
 		MSGlobals::Buffer[0] = 0;
 		for (int i = 0; i < Params.size() - 3; i++)
-			strcat(MSGlobals::Buffer, Params[i + 3]);
+			strncat(MSGlobals::Buffer, Params[i + 3], Params[i + 3].len());
 		if (Params[0] != "all")
 		{
 			CBaseEntity *pEntity = m.pScriptedEnt ? m.pScriptedEnt->RetrieveEntity(Params[0]) : NULL;
@@ -5791,7 +5791,7 @@ bool CScript::ScriptCmd_SetTrans(SCRIPT_EVENT &Event, scriptcmd_t &Cmd, msstring
 		CBasePlayer *pPlayer = pEntity->IsPlayer() ? (CBasePlayer *)pEntity : NULL;
 		if (pPlayer)
 		{
-			strncpy(pPlayer->m_SpawnTransition, Params[1], MSSTRING_SIZE);
+			strncpy(pPlayer->m_SpawnTransition, Params[1], 32);
 		}
 		else
 		{
@@ -6301,7 +6301,7 @@ bool CScript::ScriptCmd_ToSpawn(SCRIPT_EVENT &Event, scriptcmd_t &Cmd, msstringl
 		if (pPlayer)
 		{
 			if (Params.size() >= 2)
-				strncpy(pPlayer->m_SpawnTransition, Params[1], MSSTRING_SIZE);
+				strncpy(pPlayer->m_SpawnTransition, Params[1], 32);
 			pPlayer->m_JoinType = 2;
 			CBaseEntity *pSpawnSpot = pPlayer->FindSpawnSpot();
 			UTIL_SetOrigin(pPlayer->pev, pSpawnSpot->pev->origin);

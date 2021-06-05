@@ -166,7 +166,7 @@ void CHudMisc ::UserCmd_RemovePack(void)
 		SendString += Size + 1;
 		SendString += ". ";
 		SendString += (ItemName + "\n").c_str();
-		strcat(MenuText, SendString);
+		strncat(MenuText, SendString, SendString.len());
 		iBitsValid += pow(2, Size);
 
 		m_RemoveList.add(pGearItem->m_iId);
@@ -256,7 +256,7 @@ void CHudMisc ::UserCmd_Offer(void)
 	m_OfferTarget = EntInfo;
 
 	int iBitsValid = 0;
-	char MenuText[512] = "";
+	char MenuText[1024];
 	clrmem(m_OfferInfo);
 	//bool fOfferedSomething = false;
 
@@ -264,7 +264,7 @@ void CHudMisc ::UserCmd_Offer(void)
 
 	//if( player.m_Gold )
 	{
-		strcat(MenuText, "\n\n1. Gold\n\n");
+		strncat(MenuText, "\n\n1. Gold\n\n", 15);
 		iBitsValid |= (1 << 0);
 		//fOfferedSomething = true;
 	}
@@ -275,7 +275,8 @@ void CHudMisc ::UserCmd_Offer(void)
 		if (!player.Hand(i))
 			continue;
 
-		strcat(MenuText, UTIL_VarArgs("%i. %s hand: %s\n", r + 2, SPEECH_IntToHand(i, true), SPEECH::ItemName(player.Hand(i), true)));
+		const char *arg = UTIL_VarArgs("%i. %s hand: %s\n", r + 2, SPEECH_IntToHand(i, true), SPEECH::ItemName(player.Hand(i), true));
+		strncat(MenuText, arg, strlen(arg));
 		m_OfferInfo.OfferItem[r] = i;
 		iBitsValid |= (1 << (++r)); //Starts at 1
 									//fOfferedSomething = true;
@@ -287,7 +288,7 @@ void CHudMisc ::UserCmd_Offer(void)
 		return;
 	}*/
 
-	strcat(MenuText, "\n(Press 'offer' again to cancel)\n");
+	strncat(MenuText, "\n(Press 'offer' again to cancel)\n", 35);
 	gHUD.m_Menu->ShowMenu(iBitsValid, MenuText, CHudMisc_SelectMenuItem, MENU_OFFER);
 	enddbg;
 }

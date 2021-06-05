@@ -1120,7 +1120,8 @@ void __CmdFunc_DynamicNPC(void)
 	int iBitsValid = 0;
 	for (int i = 0; i < NPCList.size(); i++)
 	{
-		strcat(MenuText, UTIL_VarArgs("%i. %s\n", i + 1, NPCList[i].c_str()));
+		const char *arg = UTIL_VarArgs("%i. %s\n", i + 1, NPCList[i].c_str());
+		strncat(MenuText, arg, strlen(arg));
 		iBitsValid |= (1 << i);
 	}
 
