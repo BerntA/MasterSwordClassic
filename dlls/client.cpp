@@ -1369,7 +1369,7 @@ void ClientCommand2(edict_t *pEntity)
 	{
 		if (FStrEq(pcmd, "listitems"))
 		{
-			char pszMatch[64] = {0};
+			char pszMatch[64]; pszMatch[0] = 0;
 			if (CMD_ARGC() > 1)
 				 strncpy(pszMatch,  CMD_ARGV(1), sizeof(pszMatch) );
 			int count = 0;

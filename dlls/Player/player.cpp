@@ -3695,8 +3695,6 @@ void CBasePlayer ::UpdateClientData(void)
 				Flags |= (1 << 4); //Server-side characters?
 			if (GetOtherPlayerTransition(this))
 				Flags |= (1 << 5); //Other players are on and eligible to join?
-			if (MSGlobals::LegalMap)
-				Flags |= (1 << 6); //Playing a legal map from the dev team.
 			WRITE_BYTE(Flags);
 			WRITE_STRING(GETPLAYERAUTHID(edict()));
 

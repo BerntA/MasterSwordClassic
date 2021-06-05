@@ -1117,10 +1117,10 @@ int USENTENCEG_PickSequential(int isentenceg, char *szfound, int ipick, int fres
 	if (ipick >= count)
 		ipick = count - 1;
 
-	 strncpy(szfound,  "!", sizeof(szfound) );
-	strcat(szfound, szgroupname);
+	strncpy(szfound, "!", 64);
+	strncat(szfound, szgroupname, CBSENTENCENAME_MAX);
 	itoa(ipick, sznum, 10);
-	strcat(szfound, sznum);
+	strncat(szfound, sznum, sizeof(sznum));
 
 	if (ipick >= count)
 	{
@@ -1177,10 +1177,10 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 			USENTENCEG_InitLRU(plru, count);
 		else
 		{
-			 strncpy(szfound,  "!", sizeof(szfound) );
-			strcat(szfound, szgroupname);
+			strncpy(szfound, "!", 64);
+			strncat(szfound, szgroupname, CBSENTENCENAME_MAX);
 			itoa(ipick, sznum, 10);
-			strcat(szfound, sznum);
+			strncat(szfound, sznum, sizeof(sznum));
 			return ipick;
 		}
 	}
@@ -1300,10 +1300,10 @@ void SENTENCEG_Stop(edict_t *entity, int isentenceg, int ipick)
 	if (isentenceg < 0 || ipick < 0)
 		return;
 
-	 strncpy(buffer,  "!", sizeof(buffer) );
-	strcat(buffer, rgsentenceg[isentenceg].szgroupname);
+	strncpy(buffer, "!", sizeof(buffer));
+	strncat(buffer, rgsentenceg[isentenceg].szgroupname, CBSENTENCENAME_MAX);
 	itoa(ipick, sznum, 10);
-	strcat(buffer, sznum);
+	strncat(buffer, sznum, sizeof(sznum));
 
 	STOP_SOUND(entity, CHAN_VOICE, buffer);
 }
@@ -1444,16 +1444,19 @@ int SENTENCEG_Lookup(const char *sample, char *sentencenum)
 	// this is a sentence name; lookup sentence number
 	// and give to engine as string.
 	for (i = 0; i < gcallsentences; i++)
+	{
 		if (!stricmp(gszallsentencenames[i], sample + 1))
 		{
 			if (sentencenum)
 			{
-				 strncpy(sentencenum,  "!", sizeof(sentencenum) );
+				strncpy(sentencenum, "!", 32);
 				itoa(i, sznum, 10);
-				strcat(sentencenum, sznum);
+				strncat(sentencenum, sznum, sizeof(sznum));
 			}
 			return i;
 		}
+	}
+
 	// sentence name not found!
 	return -1;
 }
@@ -1937,7 +1940,7 @@ void CSpeaker ::Precache(void)
 }
 void CSpeaker ::SpeakerThink(void)
 {
-	char *szSoundFile;
+	char *szSoundFile = "";
 	float flvolume = pev->health * 0.1;
 	float flattenuation = 0.3;
 	int flags = 0;

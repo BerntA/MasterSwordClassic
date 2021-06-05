@@ -61,11 +61,11 @@ static CBasePlayer *FindPlayerByName(const char *pTestName)
 
 static void VoiceServerDebug(char const *pFmt, ...)
 {
-	char msg[4096];
-	va_list marker;
-
 	if (!voice_serverdebug.value)
 		return;
+
+	char msg[4096];
+	va_list marker;
 
 	va_start(marker, pFmt);
 	_vsnprintf(msg, sizeof(msg), pFmt, marker);

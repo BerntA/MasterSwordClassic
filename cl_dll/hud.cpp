@@ -243,7 +243,7 @@ int __MsgFunc_AllowSpec(const char *pszName, int iSize, void *pbuf)
 }
 #define SetMSHUD(ptr, type) \
 	ptr = new (type);       \
-	 strncpy(ptr->Name,  #type, sizeof(ptr->Name) )
+	 strncpy(ptr->Name,  #type, 32 )
 // This is called every time the DLL is loaded
 void CHud ::Init(void)
 {

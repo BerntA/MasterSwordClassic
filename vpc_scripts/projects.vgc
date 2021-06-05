@@ -17,3 +17,8 @@ $Project "client"
 {
 	"cl_dll\client.vpc"
 }
+
+$Project "dedicated"
+{
+	"dedicated\dedicated.vpc"
+}

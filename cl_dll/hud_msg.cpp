@@ -84,7 +84,6 @@ void CHud ::MsgFunc_InitHUD(const char *pszName, int iSize, void *pbuf)
 	MSGlobals::GameType = (flags & (1 << 3)) ? GAMETYPE_ADVENTURE : GAMETYPE_CHALLENGE;
 	MSGlobals::ServerSideChar = (flags & (1 << 4)) ? true : false;
 	MSCLGlobals::OtherPlayers = (flags & (1 << 5)) ? true : false;
-	MSGlobals::LegalMap = (flags & (1 << 6)) ? true : false;
 
 	logfile << "[MsgFunc_InitHUD: AuthID]"
 			<< "\r\n";

@@ -197,7 +197,7 @@ void CHudServers::ServerResponse(struct net_response_s *response)
 			browser->remote_address = response->remote_address;
 			browser->info = new char[len];
 			browser->ping = (int)(1000.0 * response->ping);
-			 strncpy(browser->info,  szresponse, sizeof(browser->info) );
+			strncpy(browser->info, szresponse, len);
 
 			NET_API->SetValueForKey(browser->info, "address", gEngfuncs.pNetAPI->AdrToString(&response->remote_address), len);
 			NET_API->SetValueForKey(browser->info, "ping", sz, len);

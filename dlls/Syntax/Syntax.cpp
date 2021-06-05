@@ -7,10 +7,11 @@ const char *SPEECH::ItemName(CGenericItem *pItem, bool fCapital)
 {
 	bool bNotUnique = (pItem->iQuantity > 1);
 	char pchQuantity[32]; pchQuantity[0] = 0;
+	const char *pchDisplayOther = pItem->DisplayPrefix.c_str();
 	if (pItem->iQuantity > 1)
 		_snprintf(pchQuantity, sizeof(pchQuantity), "%i", pItem->iQuantity);
-	else if (pItem->DisplayPrefix.len())
-		_snprintf(pchQuantity, sizeof(pchQuantity), "%s", pItem->DisplayPrefix.c_str());
+	else if (pchDisplayOther && pchDisplayOther[0])
+		_snprintf(pchQuantity, sizeof(pchQuantity), "%s", pchDisplayOther);
 	_snprintf(ReturnString, MAX_SIZE, "%s %s%s", pchQuantity, pItem->DisplayName(), (bNotUnique ? "s" : ""));
 	if (fCapital)
 		ReturnString[0] = toupper(ReturnString[0]);

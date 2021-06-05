@@ -452,7 +452,7 @@ BOOL CHalfLifeMultiplay :: ClientConnected( edict_t *pEntity, const char *pszNam
 	//Check if the player has been banned by vote
 	if( CheckBanned( AuthID ) )
 	{
-		 strncpy(szRejectReason,  "You are BANNED\n", sizeof(szRejectReason) );
+		strncpy(szRejectReason, "You are BANNED\n", 128);
 		return FALSE;
 	}
 

@@ -457,7 +457,6 @@ void MSCentral::Print(const char *szFormat, ...)
 	static char string[1024];
 
 	va_start(argptr, szFormat);
-
 	vsnprintf(string, sizeof(string), szFormat, argptr);
 	va_end(argptr);
 
@@ -911,7 +910,7 @@ void CTransaction::GetCharFileName(const char *AuthID, int iCharacter, string &F
 
 	//Server
 	//Print("CHAR_SAVE_DEBUG [MScentral]: %s %#i\n",cFileName,iCharacter+1); //MAR2010_08
-	 _snprintf(cFileName, sizeof(cFileName),  "%s/save/%s%s_%i.char",  EngineFunc::GetGameDir(),  CENTRAL_FILEPREFIX,  AuthID,  iCharacter + 1 );
+	_snprintf(cFileName, MAX_PATH,  "%s/save/%s%s_%i.char",  EngineFunc::GetGameDir(),  CENTRAL_FILEPREFIX,  AuthID,  iCharacter + 1 );
 	ReplaceChar(cFileName, ':', '-');
 
 	FileName = cFileName;

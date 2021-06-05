@@ -74,27 +74,6 @@ cvar_t ms_allowdev = {"ms_allowdev", "1", 0};
 //SOCKET g_PingSock;
 void UnBanAll();
 void InitializeGMs();
-//map checksums:
-bool FileCheckSumMatch(const char *FileName, unsigned char *CheckSum);
-struct mapchecksum_t
-{
-	const char *pszMapName;
-	byte CheckSum[17];
-} g_MapCheckSum[] =
-	{
-		"edana",
-		"\xb2\x50\x1a\xa0\x0\x72\x69\x52\x38\xac\x60\x4e\x37\x31\x91\x3",
-		"thornlands",
-		"\xd5\xb4\xa2\x6e\xbf\x1b\x54\x1e\x55\x94\x3d\x1d\x95\xa3\x11\x3c",
-		"helena",
-		"\x3c\xb\x85\xd1\x5b\x80\x40\xc6\x7e\x0\xb5\xfb\x9f\x4f\xf7\x5c",
-		"sfor",
-		"\xf6\x86\xda\x19\xcb\xb9\x35\xe9\xf8\x6b\x72\xf7\x97\x3f\x5a\x1",
-		"calruin",
-		"\x81\x3e\x22\x88\x16\x2a\xd9\x5d\x1d\x1f\x2d\x89\xfa\x7e\x82\x31",
-		"mscave",
-		"\xa5\xb7\x6e\x6e\x7c\xff\x4e\x54\x98\xc0\xb8\xf9\xf2\x2b\x79\x8e",
-};
 
 bool MSGlobalInit() //Called upon DLL Initialization
 {
@@ -190,29 +169,8 @@ void MSWorldSpawn()
 	UTIL_LogPrintf("***************************************\n");
 	UTIL_LogPrintf("***************************************\n");
 #endif
+
 	//g_SummonedMonsters = 0;
-
-	//Map verification
-	/*char cMapName[MAX_PATH];
-	GET_GAME_DIR( cMapName );
-	strcat( cMapName, "/maps/" );
-	strcat( cMapName, STRING(gpGlobals->mapname) );
-	strcat( cMapName, ".bsp" );
-	//ALERT( at_console, "Check Map %s\n", cMapName );
-	int MapIdx = -1;
-	for( int i = 0; i < ARRAYSIZE(g_MapCheckSum); i++ )
-		if( !stricmp(g_MapCheckSum[i].pszMapName,STRING(gpGlobals->mapname)) )
-			{ MapIdx = i; break; }
-	
-	if( MapIdx < 0 || !FileCheckSumMatch( cMapName, g_MapCheckSum[MapIdx].CheckSum) )
-	{
-		//ALERT( at_console, "File Check Failed!!\n" );
-		//exit( 0 );
-		MSGlobals::LegalMap = false;
-	}
-	else
-		MSGlobals::LegalMap = true;*/
-
 	//UnBanAll( ); //Unban all players //Thothie FEB2008a - commenting, seeing if this breaks
 
 	//Force items.txt to be unmodified --- Undone, servers need to be updated

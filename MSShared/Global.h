@@ -37,8 +37,7 @@ public:
 		ServerSideChar,						 //Whether characters are saved/loaded server-side
 		InvertTownAreaPKFlag,				 //Town areas work opposite - PK is only allowed _in_ the townarea
 		IsServer,							 //This is the server (not client)
-		InPrecache,							 //Dll is loading and precaching (The client doesn't precache, but this prevents spawn from being called on items)
-		LegalMap;							 //This is an official MS map
+		InPrecache;							 //Dll is loading and precaching (The client doesn't precache, but this prevents spawn from being called on items)
 	static gametype_e GameType;				 //Regular game (allows saving) or custom map (no saving allowed)
 	static vote_t CurrentVote;				 //Current vote
 	static msstring ServerName;				 //Client - Server name

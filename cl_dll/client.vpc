@@ -396,7 +396,6 @@ $Project "Client"
 		$File "..\dlls\syntax\syntax.cpp"
 		$File "..\msshared\votedefs.h"
 		$File "..\dlls\weapons\weapons.cpp"
-		$File ".\resource.h"
 		$File ".\mastersword\vgui_localizedpanel.h"
 		$File ".\vgui_status.h"
 	}

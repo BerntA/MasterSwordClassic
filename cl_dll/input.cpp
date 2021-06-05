@@ -209,8 +209,9 @@ int KB_ConvertString(char *in, char **ppout)
 
 	*pOut = '\0';
 
-	pOut = (char *)malloc(strlen(sz) + 1);
-	 strncpy(pOut,  sz, sizeof(pOut) );
+	size_t strLength = (strlen(sz) + 1);
+	pOut = (char *)malloc(strLength);
+	strncpy(pOut, sz, strLength);
 	*ppout = pOut;
 
 	return 1;

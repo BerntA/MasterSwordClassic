@@ -481,7 +481,7 @@ int CBasePlayer::NewItemHand(CGenericItem *pItem, bool CheckWeight, bool bVerbos
 		if (!pszErrorString && bVerbose)
 			SendEventMsg(HUDEVENT_UNABLE, cErrorString);
 		else
-			 strncpy(pszErrorString,  cErrorString, sizeof(pszErrorString) );
+			strncpy(pszErrorString, cErrorString, sizeof(cErrorString));
 
 	return iAddHand;
 }
@@ -561,7 +561,7 @@ bool CBasePlayer::CanHold(CGenericItem *pItem, bool bVerbose, char *pszErrorStri
 		if (!pszErrorString && bVerbose)
 			SendEventMsg(HUDEVENT_UNABLE, cErrorString);
 		else
-			 strncpy(pszErrorString,  cErrorString, sizeof(pszErrorString) );
+			strncpy(pszErrorString, cErrorString, sizeof(cErrorString));
 	}
 #endif
 

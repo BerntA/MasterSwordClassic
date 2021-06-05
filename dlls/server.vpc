@@ -38,7 +38,7 @@ $Configuration
 	
 	$Compiler
 	{
-		$AdditionalIncludeDirectories	"$BASE;../cl_dlls;../engine;../common;../pm_shared;../game_shared;../MSShared;./Effects;./gamerules;./Global;./Half-life;./Items;./md5;./Monsters;./Player;./Stats;./Syntax;./Weapons;./"
+		$AdditionalIncludeDirectories	"$BASE;../cl_dlls;../engine;../common;../pm_shared;../game_shared;../MSShared;./Effects;./gamerules;./Global;./Half-life;./Items;./Monsters;./Player;./Stats;./Syntax;./Weapons;./"
 		$PreprocessorDefinitions		"$BASE;VALVE_DLL"
 		$PreprocessorDefinitions		"$BASE;SWDS" [$POSIX]
 		
@@ -118,7 +118,6 @@ $Project "Server"
 		$File	".\half-life\cbase.cpp"
 		$File	".\cbase.h"
 		$File	"..\engine\progdefs.h"
-		$File	".\resource.h"
 		$File	"..\common\const.h"
 		$File	".\cdll_dll.h"
 		$File	".\client.cpp"
@@ -213,14 +212,6 @@ $Project "Server"
 			$File	".\gamerules\teams.h"
 			$File	"..\msshared\titles.h"
 			$File	"..\msshared\votedefs.h"
-		}
-		
-		$Folder	"MD5"
-		{
-			$File	".\md5\etypes.h"
-			$File	".\md5\mapcheck.cpp"
-			$File	".\md5\md5.cpp"
-			$File	".\md5\md5.h"
 		}
 	}
 

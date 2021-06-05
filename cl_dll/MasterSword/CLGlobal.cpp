@@ -306,7 +306,7 @@ string_t MSCLGlobals::AllocString(const char *pszString)
 	//Create new string
 	uint len = strlen(pszString) + 1;
 	char *pszNewString = msnew(char[len]);
-	 strncpy(pszNewString,  pszString, sizeof(pszNewString) );
+	strncpy(pszNewString, pszString, len);
 
 	m_Strings.push_back((char *)pszNewString);
 

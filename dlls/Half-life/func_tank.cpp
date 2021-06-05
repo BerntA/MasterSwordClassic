@@ -485,7 +485,7 @@ void CFuncTank::TrackTarget(void)
 	edict_t *pPlayer = FIND_CLIENT_IN_PVS(edict());
 	BOOL updateTime = FALSE, lineOfSight;
 	Vector angles, direction, targetPosition, barrelEnd;
-	edict_t *pTarget;
+	edict_t *pTarget = NULL;
 
 	// Get a position to aim for
 	if (m_pController)

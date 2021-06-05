@@ -952,7 +952,7 @@ void V_GetChaseOrigin(float *angles, float *origin, float distance, float *retur
 	vec3_t vecEnd;
 	vec3_t forward;
 	vec3_t vecStart;
-	pmtrace_t *trace;
+	pmtrace_t *trace = NULL;
 	int maxLoops = 8;
 
 	int ignoreent = -1; // first, ignore no entity
@@ -1004,6 +1004,9 @@ void V_GetChaseOrigin(float *angles, float *origin, float distance, float *retur
 	{
 		gEngfuncs.Con_Printf("Trace loops %i , entity %i, model %s, solid %i\n",(8-maxLoops),ent->curstate.number, ent->model->name , ent->curstate.solid ); 
 	} */
+
+	if (trace == NULL)
+		return;
 
 	VectorMA(trace->endpos, 4, trace->plane.normal, returnvec);
 

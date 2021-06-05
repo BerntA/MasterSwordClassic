@@ -5791,7 +5791,7 @@ bool CScript::ScriptCmd_SetTrans(SCRIPT_EVENT &Event, scriptcmd_t &Cmd, msstring
 		CBasePlayer *pPlayer = pEntity->IsPlayer() ? (CBasePlayer *)pEntity : NULL;
 		if (pPlayer)
 		{
-			 strncpy(pPlayer->m_SpawnTransition,  Params[1], sizeof(pPlayer->m_SpawnTransition) );
+			strncpy(pPlayer->m_SpawnTransition, Params[1], MSSTRING_SIZE);
 		}
 		else
 		{
@@ -6301,7 +6301,7 @@ bool CScript::ScriptCmd_ToSpawn(SCRIPT_EVENT &Event, scriptcmd_t &Cmd, msstringl
 		if (pPlayer)
 		{
 			if (Params.size() >= 2)
-				 strncpy(pPlayer->m_SpawnTransition,  Params[1], sizeof(pPlayer->m_SpawnTransition) );
+				strncpy(pPlayer->m_SpawnTransition, Params[1], MSSTRING_SIZE);
 			pPlayer->m_JoinType = 2;
 			CBaseEntity *pSpawnSpot = pPlayer->FindSpawnSpot();
 			UTIL_SetOrigin(pPlayer->pev, pSpawnSpot->pev->origin);

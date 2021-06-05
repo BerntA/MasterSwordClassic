@@ -1286,7 +1286,7 @@ void TeamFortressViewport::SetCurrentMenu(CMenuPanel *pMenu)
 CMenuPanel *TeamFortressViewport::CreateTextWindow(int iTextToShow)
 {
 	//char sz[256];
-	char *cText;
+	char *cText = "N/A";
 	char *pfile = NULL;
 	static const int MAX_TITLE_LENGTH = 32;
 	char cTitle[MAX_TITLE_LENGTH];

@@ -65,7 +65,6 @@ string_i MSGlobals::DefaultSpawnBoxModel;
 IScripted *MSGlobals::GameScript = NULL;
 char MSGlobals::Buffer[32768]; //A huge buffer for text or anything else
 int MSGlobals::ClEntities[CLPERMENT_TOTAL] = {500, 501, 502};
-bool MSGlobals::LegalMap = false;
 int MSGlobals::gSoundPrecacheCount = 0;
 
 msstringlist vote_t::VotesTypes;		//All The vote types
@@ -471,7 +470,6 @@ void Print(char *szFmt, ...)
 	static char string[1024];
 
 	va_start(argptr, szFmt);
-
 	vsnprintf(string, sizeof(string), szFmt, argptr);
 	va_end(argptr);
 
@@ -490,7 +488,6 @@ void Log(char *szFmt, ...)
 	static char string[1024];
 
 	va_start(argptr, szFmt);
-
 	vsnprintf(string, sizeof(string), szFmt, argptr);
 	va_end(argptr);
 
@@ -514,7 +511,6 @@ void DbgLog(char *szFmt, ...)
 	static char string[1024];
 
 	va_start(argptr, szFmt);
-
 	vsnprintf(string, sizeof(string), szFmt, argptr);
 	va_end(argptr);
 

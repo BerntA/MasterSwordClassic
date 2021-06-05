@@ -12,4 +12,5 @@ $Group "msc"
 {
 	"client"
 	"server"
+	//"dedicated"
 }

@@ -3954,7 +3954,7 @@ bool CScript::Spawn(string_i Filename, CBaseEntity *pScriptedEnt, IScripted *pSc
 	bool fReturn = false;
 
 	//This should always be true for non-dev builds, because it must use the script library
-	char *ScriptData;
+	char *ScriptData = NULL;
 	msstring ScriptName = m.ScriptFile;
 	ScriptName += SCRIPT_EXT;
 
@@ -4134,7 +4134,7 @@ bool CScript::ParseScriptFile(const char *pszScriptData)
 	while (*pszScriptData)
 	{
 		char cBuf[768];
-		if (GetString(cBuf, min(strlen(pszScriptData), sizeof(cBuf)), pszScriptData, 0, "\r\n"))
+		if (GetString(cBuf, min(strlen(pszScriptData)+1, sizeof(cBuf)), pszScriptData, 0, "\r\n"))
 			pszScriptData += strlen(cBuf);
 		else
 			pszScriptData += strlen(cBuf);

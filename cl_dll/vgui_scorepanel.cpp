@@ -1123,7 +1123,7 @@ void MSG_ScoreInfo(const char *pszName, int iSize, void *pbuf)
 	// (1<<0) - Is Elite
 	// (1<<1) - Standing in transition
 	// (1<<2) - Character is loaded
-	msstring_ref sTitle;
+	msstring_ref sTitle = "Pending...";
 	if (FBitSet(Flags, (1 << 2)))
 		sTitle = READ_STRING();
 	//byte	iTitle = READ_BYTE();

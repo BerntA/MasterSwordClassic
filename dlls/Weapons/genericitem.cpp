@@ -423,7 +423,6 @@ void CGenericItemMgr::GenericItemPrecache(void)
 		//if( g_MSScriptInfo->Containter == MS_SCRIPT_LIBRARY )
 		delete[] pStringPtr;
 
-end: //Cleanup time
 	Log("Done precaching items");
 	enddbg;
 }

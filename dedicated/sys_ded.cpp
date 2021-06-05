@@ -21,7 +21,7 @@
 
 #include "dll_state.h"
 #include "enginecallback.h"
-#include "md5.h"
+
 #if defined( _WIN32 )
 #include "../utils/procinfo/procinfo.h"
 #endif
@@ -30,8 +30,9 @@
 static const char *g_pszengine = "sw.dll";
 #else
 static const char *g_pszengine = "engine_i386.so";
-static char g_szEXEName[ 256 ];
 #endif
+
+static char g_szEXEName[256];
 
 #define MINIMUM_WIN_MEMORY		0x0c00000 
 #define MAXIMUM_WIN_MEMORY		0x2000000 // max 32 mb
@@ -110,19 +111,6 @@ void Sys_FreeLibrary( long library )
 #else
 	dlclose( (void *)library );
 #endif
-}
-
-int Sys_GetExecutableName( char *out )
-{
-#ifdef _WIN32
-	if ( !::GetModuleFileName( ( HINSTANCE )GetModuleHandle( NULL ), out, 256 ) )
-	{
-		return 0;
-	}
-#else
-	strcpy( out, g_szEXEName );
-#endif
-	return 1;
 }
 
 /*
@@ -255,115 +243,6 @@ void Load3rdParty( void )
 }
 
 /*
-============
-StripExtension
- 
-Strips the extension off a filename.  Works backward to insure stripping
-of extensions only, and not parts of the path that might contain a
-period (i.e. './hlds_run').
-============
-*/
-void StripExtension (char *in, char *out)
-{
-        char * in_current  = in + strlen(in);
-        char * out_current = out + strlen(in);
-        int    found_extension = 0;
- 
-        while (in_current >= in) {
-                if ((found_extension == 0) && (*in_current == '.')) {
-                        *out_current = 0;
-                        found_extension = 1;
-                }
-                else {
-                        if ((*in_current == '/') || (*in_current == '\\'))
-                                found_extension = 1;
- 
-                        *out_current = *in_current;
-                }
- 
-                in_current--;
-                out_current--;
-        }
-}
-
-/*
-==============
-CheckExeChecksum
-
-Simple self-crc check
-==============
-*/
-int CheckExeChecksum( void )
-{
-	unsigned char g_MD5[16];
-	char szFileName[ 256 ];
-	unsigned int newdat = 0;	
-	unsigned int olddat;
-	char datfile[ 256 ];
-
-	// Get our filename
-	if ( !Sys_GetExecutableName( szFileName ) )
-	{
-		return 0;
-	}
-
-	// compute raw 16 byte hash value
-	if ( !MD5_Hash_File( g_MD5, szFileName ) )
-	{
-		return 0;
-	}
-
-	StripExtension( szFileName, datfile );
-
-	strcat( datfile, ".dat" );
-
-	// Check .dat file ( or write a new one if running with -newdat )
-	FILE *fp = fopen( datfile, "rb" );
-	if ( !fp || CheckParm( "-newdat" ) )  // No existing file, or we are asked to create a new one
-	{
-		if ( fp )
-		{
-			fclose( fp );
-		}
-
-		newdat = *(unsigned int *)&g_MD5[0];
-		fp = fopen ( datfile, "wb" );
-		if ( fp )
-		{
-			fwrite( &newdat, sizeof( unsigned int ), 1, fp );
-			fclose( fp );
-		}
-	}
-	else
-	{
-		int bOk = 0;
-
-		if ( fread( &newdat, sizeof( unsigned int ), 1, fp ) == 1 )
-			bOk = 1;
-
-		fclose( fp );
-
-		if ( bOk )
-		{
-			olddat = *(unsigned int *)&g_MD5[0];
-			if ( olddat != newdat )
-			{
-				const char *pmsg = "Your Half-Life executable appears to have been modified.  Please check your system for viruses and then re-install Half-Life.";
-
-#ifdef _WIN32
-				MessageBox( NULL, pmsg, "Half-Life Dedicated Server", MB_OK );
-#else
-				printf( "%s\n", pmsg );
-#endif
-				return 0;
-			}
-		}
-	}
-
-	return 1;
-}
-
-/*
 ==============
 EF_VID_ForceUnlockedAndReturnState
 
@@ -442,11 +321,6 @@ InitInstance
 int InitInstance( void )
 {
 	Load3rdParty();
-
-#if !defined( _DEBUG )
-	if ( !CheckExeChecksum() )
-		return 0;
-#endif
 
 	Eng_SetState( DLL_INACTIVE );
 
@@ -800,124 +674,11 @@ void GameShutdown( void )
 	}
 }
 
-#ifdef _WIN32
-/*
-==============
-WinMain
-
-EXE entry point
-==============
-*/
-int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow )
-{
-	int		iret = -1;
-
-	// Store off command line for argument searching
-	gpszCmdLine = strdup( GetCommandLine() );
-
-	if ( !InitInstance() )
-	{
-		goto cleanup;
-	}
-
-	if ( !CreateConsoleWindow() )
-	{
-		goto cleanup;
-	}
-
-	if ( !GameInit() )
-	{
-		goto cleanup;
-	}
-
-	if ( engineapi.SetStartupMode )
-	{
-		engineapi.SetStartupMode( 1 );
-	}
-
-	while ( 1 )
-	{
-		int bDone = 0;
-
-		static double oldtime = 0.0;
-
-		MSG msg;
-		double newtime;
-		double dtime;
-
-		// Try to allow other apps to get some CPU
-		Sys_Sleep( 1 );
-
-		if ( !engineapi.Sys_FloatTime )
-			break;
-
-		while ( 1 )
-		{
-			newtime = engineapi.Sys_FloatTime();
-			if ( newtime < oldtime )
-			{
-				oldtime = newtime - 0.05;
-			}
-			
-			dtime = newtime - oldtime;
-
-			if ( dtime > 0.001 )
-				break;
-
-			// Running really fast, yield some time to other apps
-			Sys_Sleep( 1 );
-		}
-		
-		while ( ::PeekMessage( &msg, NULL, 0, 0, PM_NOREMOVE ) )
-		{
-			if (!::GetMessage( &msg, NULL, 0, 0))
-			{
-				bDone = 1;
-				break;
-			}
-
-			::TranslateMessage( &msg );
-			::DispatchMessage( &msg );
-		}
-
-		if ( bDone )
-			break;
-
-		ProcessConsoleInput();
-
-		if ( engineapi.Host_Frame )
-		{
-			Eng_Frame( 0, dtime );
-		}
-
-		UpdateStatus( 0  /* don't force */ );
-
-		oldtime = newtime;
-	}
-
-	GameShutdown();
-
-	DestroyConsoleWindow();
-
-	iret = 1;
-
-cleanup:
-
-	if ( gpszCmdLine )
-	{
-		free( gpszCmdLine );
-	}
-
-	return iret;
-}
-
-#else
-
 #define MAX_LINUX_CMDLINE 512 
 
-static char cmdline[ MAX_LINUX_CMDLINE ];
+static char cmdline[MAX_LINUX_CMDLINE];
 
-void BuildCmdLine( int argc, char **argv )
+void BuildCmdLine(int argc, char **argv)
 {
 	int len;
 	int i;
@@ -927,27 +688,22 @@ void BuildCmdLine( int argc, char **argv )
 		len += strlen(argv[i]) + 1;
 	}
 
-	if ( len > MAX_LINUX_CMDLINE )
+	if (len > MAX_LINUX_CMDLINE)
 	{
-		printf( "command line too long, %i max\n", MAX_LINUX_CMDLINE );
+		printf("command line too long, %i max\n", MAX_LINUX_CMDLINE);
 		exit(-1);
 		return;
 	}
 
 	cmdline[0] = '\0';
-	for ( i = 1; i < argc; i++ )
+	for (i = 1; i < argc; i++)
 	{
-		if ( i > 1 )
+		if (i > 1)
 		{
-			strcat( cmdline, " " );
+			strcat(cmdline, " ");
 		}
-		strcat( cmdline, argv[ i ] );
+		strcat(cmdline, argv[i]);
 	}
-}
-
-char *GetCommandLine( void )
-{
-	return cmdline;
 }
 
 int main(int argc, char **argv)
@@ -955,36 +711,37 @@ int main(int argc, char **argv)
 	int		iret = -1;
 
 #ifdef _DEBUG
-	strcpy(g_szEXEName, "hlds_run.dbg" );
+	strcpy(g_szEXEName, "hlds_run.dbg");
 #else
 	strcpy(g_szEXEName, *argv);
 #endif
+
 	// Store off command line for argument searching
 	BuildCmdLine(argc, argv);
-	gpszCmdLine = strdup( GetCommandLine() );
+	gpszCmdLine = strdup(cmdline);
 
-	if ( !InitInstance() )
+	if (!InitInstance())
 	{
 		goto cleanup;
 	}
 
-	if ( !CreateConsoleWindow() )
+	if (!CreateConsoleWindow())
 	{
 		goto cleanup;
 	}
 
-	if ( !GameInit() )
+	if (!GameInit())
 	{
 		goto cleanup;
 	}
 
-	if ( engineapi.SetStartupMode )
+	if (engineapi.SetStartupMode)
 	{
-		engineapi.SetStartupMode( 1 );
+		engineapi.SetStartupMode(1);
 	}
 
-   while ( 1 )
-   {
+	while (1)
+	{
 		char *p;
 		static double oldtime = 0.0;
 
@@ -992,40 +749,50 @@ int main(int argc, char **argv)
 		double dtime;
 
 		// Try to allow other apps to get some CPU
-		Sys_Sleep( 1 );
+		Sys_Sleep(1);
 
-		if ( !engineapi.Sys_FloatTime )
+		if (!engineapi.Sys_FloatTime)
 			break;
 
-		while ( 1 )
+		while (1)
 		{
 			newtime = engineapi.Sys_FloatTime();
-			if ( newtime < oldtime )
+			if (newtime < oldtime)
 			{
 				oldtime = newtime - 0.05;
 			}
-			
+
 			dtime = newtime - oldtime;
 
-			if ( dtime > 0.001 )
+			if (dtime > 0.001)
 				break;
 
 			// Running really fast, yield some time to other apps
-			Sys_Sleep( 1 );
+			Sys_Sleep(1);
 		}
-		
-		Eng_Frame( 0, dtime );
 
-		p = Sys_ConsoleInput();
-		if ( p )
+#ifdef _WIN32
+		ProcessConsoleInput();
+
+		if (engineapi.Host_Frame)
 		{
-			engineapi.Cbuf_AddText( p );
-			engineapi.Cbuf_AddText( "\n" );
+			Eng_Frame(0, dtime);
 		}
+
+		UpdateStatus(0  /* don't force */);
+#else
+		Eng_Frame(0, dtime);
+		p = Sys_ConsoleInput();
+		if (p)
+		{
+			engineapi.Cbuf_AddText(p);
+			engineapi.Cbuf_AddText("\n");
+		}
+#endif
 
 		oldtime = newtime;
 	}
-	
+
 	GameShutdown();
 
 	DestroyConsoleWindow();
@@ -1034,18 +801,16 @@ int main(int argc, char **argv)
 
 cleanup:
 
-	if ( gpszCmdLine )
+	if (gpszCmdLine)
 	{
-		free( gpszCmdLine );
+		free(gpszCmdLine);
 	}
 
-	if ( hDLLThirdParty )
+	if (hDLLThirdParty)
 	{
-		Sys_FreeLibrary( hDLLThirdParty );
+		Sys_FreeLibrary(hDLLThirdParty);
 		hDLLThirdParty = 0L;
 	}
 
 	return iret;
 }
-
-#endif

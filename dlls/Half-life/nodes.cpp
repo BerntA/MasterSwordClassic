@@ -2363,10 +2363,7 @@ int CGraph ::FLoadGraph(char *szMapName)
 	strcat(szDirName, "/graphs");
 	CreateDirectory(szDirName, NULL);
 
-	 strncpy(szFilename,  "maps/graphs/", sizeof(szFilename) );
-	strcat(szFilename, szMapName);
-	strcat(szFilename, ".nod");
-
+	_snprintf(szFilename, MAX_PATH, "maps/graphs/%s.nod", szMapName);
 	pMemFile = aMemFile = LOAD_FILE_FOR_ME(szFilename, &length);
 
 	if (!aMemFile)
@@ -2665,13 +2662,8 @@ int CGraph ::CheckNODFile(char *szMapName)
 	char szBspFilename[MAX_PATH];
 	char szGraphFilename[MAX_PATH];
 
-	 strncpy(szBspFilename,  "maps/", sizeof(szBspFilename) );
-	strcat(szBspFilename, szMapName);
-	strcat(szBspFilename, ".bsp");
-
-	 strncpy(szGraphFilename,  "maps/graphs/", sizeof(szGraphFilename) );
-	strcat(szGraphFilename, szMapName);
-	strcat(szGraphFilename, ".nod");
+	_snprintf(szBspFilename, MAX_PATH, "maps/%s.bsp", szMapName);
+	_snprintf(szGraphFilename, MAX_PATH, "maps/graphs/%s.nod", szMapName);
 
 	retValue = TRUE;
 
