@@ -55,7 +55,10 @@
 #include "vgui_MenuBase.h"
 #include "vgui_Menu_Main.h"
 #include "vgui_Menu_Interact.h"
+
 //------------
+
+float g_fMenuLastClosed = 0.0f;
 
 CAction_SelectMainOption::CAction_SelectMainOption(class VGUI_MenuBase *pPanel, int iValue, msvariant Data)
 {

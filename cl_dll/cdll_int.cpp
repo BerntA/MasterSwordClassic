@@ -49,6 +49,7 @@ extern "C"
 cl_enginefunc_t gEngfuncs;
 CHud gHUD;
 TeamFortressViewport *gViewPort = NULL;
+extern float g_fMenuLastClosed;
 
 // IMAGE-SPACE GLOW - Thothie TWHL JUN2010_22 - see comments in CLRender.cpp
 extern void InitScreenGlow(void);
@@ -305,6 +306,8 @@ the hud variables.
 
 void DLLEXPORT HUD_Init(void)
 {
+	g_fMenuLastClosed = 0.0f;
+
 	DBG_INPUT;
 	startdbg;
 

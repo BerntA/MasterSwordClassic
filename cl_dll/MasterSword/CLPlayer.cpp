@@ -1168,6 +1168,7 @@ void __CmdFunc_ToggleServerBrowser(void);
 bool fBroswerVisible();
 void ShowVGUIMenu(int iMenu);
 void Player_UseStamina(float flAddAmt);
+extern float g_fMenuLastClosed;
 
 int __MsgFunc_CLDllFunc(const char *pszName, int iSize, void *pbuf)
 {
@@ -1187,6 +1188,7 @@ int __MsgFunc_CLDllFunc(const char *pszName, int iSize, void *pbuf)
 
 		player.Spawn();
 		logfile << "Player Successfully Spawned" << endl;
+		g_fMenuLastClosed = 0.0f;
 		break;
 	case 1: //Killed
 		if (player.m_CharacterState == CHARSTATE_UNLOADED)

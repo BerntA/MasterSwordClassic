@@ -21,6 +21,10 @@ enum interactbtn_e
 	INTERACT_FORGIVE,
 	INTERACT_CANCEL
 };
+
+extern void IN_UseUp();
+extern float g_fMenuLastClosed;
+
 void ShowWeaponDesc(CGenericItem *pItem);
 
 // Interact Menu
@@ -55,11 +59,14 @@ public:
 
 	void Open()
 	{
+		IN_UseUp();
+
 		m_Title->setFont(g_FontTitle);
 		m_Title->setText(Localized("#MENU_INTERACT_TITLE"));
 		m_LastButton = 0;
 		m_EntIdx = -1;
 		m_Options.clearitems();
+
 		for (int i = 0; i < m_Buttons.size(); i++) //Reset all buttons except cance
 		{
 			m_Buttons[i]->setVisible(false);
@@ -95,10 +102,10 @@ public:
 		g_FontTitle->getTextSize(NPCName, textw, texth);
 		//Thothie JAN2008a can't figure how title text centers self
 		//- so always using small text as it looks less odd uncentered
-		/*if( textw >= (m_pMainPanel->getWide()-XRES(5)) ) 
+		/*if( textw >= (m_pMainPanel->getWide()-XRES(5)) )
 		{
-			m_Title->setFont( g_FontSml );
-			m_Title->setText( NPCName );
+		m_Title->setFont( g_FontSml );
+		m_Title->setText( NPCName );
 		}*/
 
 		m_Title->setFont(g_FontSml); //JAN2008a - see above
@@ -131,9 +138,9 @@ public:
 		//Thothie JAN2007a - was: m_pMainPanel->setSize(w,YRES(72) + YRES(m_Options.size()*20 ) );
 		//- change to attempt to get more width out of menus
 		m_pMainPanel->setSize(XRES(200), YRES(72) + YRES((m_Options.size() + 1) * 20)); //Dynamically change the menu size to fit all number of options.
-																						// 50 (header size)
-																						// 22 (button size - cancel isn't included in m_Options)
-																						// 72 (Total displacement)
+		// 50 (header size)
+		// 22 (button size - cancel isn't included in m_Options)
+		// 72 (Total displacement)
 		//[/MiB]
 
 		SetButton(m_LastButton++, Localized(MenuOption.Title), MenuOption.Type);
@@ -166,13 +173,8 @@ public:
 
 	void Select(int BtnIdx, msvariant &Data)
 	{
-		//Thothie AUG2013 - attempting to fix new steam bug that causes +use not to release when menu closes
-		//so far, all failed
-		//player.pev->button = 0;
-		//player.ClearConditions(IN_USE);
-		//player.pbs.ButtonsDown = 0;
-		//gHUD.m_Spectator.HandleButtonsUp( IN_USE );
-		//player.m_StatusFlags = ClearBits(player.m_StatusFlags,IN_USE);
+		IN_UseUp();
+		g_fMenuLastClosed = gEngfuncs.GetClientTime();
 
 		bool SendCmd = true;
 		if (BtnIdx >= 0 && BtnIdx < (signed)m_Options.size())
@@ -215,6 +217,7 @@ void VGUI_ShowMenuInteract()
 	VGUI_MainPanel *pPanel = VGUI::FindPanel(INTERACT_MENU_NAME);
 	if (!pPanel)
 		return;
+
 	VGUI_MenuInteract *pInteractPanel = (VGUI_MenuInteract *)pPanel;
 
 	int EntIdx = READ_LONG();

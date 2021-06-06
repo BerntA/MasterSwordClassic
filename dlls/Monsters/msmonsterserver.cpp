@@ -2837,13 +2837,6 @@ void CMSMonster::OpenMenu(CBasePlayer *pPlayer)
 void CMSMonster::UseMenuOption(CBasePlayer *pPlayer, int Option)
 {
 	pPlayer->InMenu = false;
-	//Thothie AUG2013_09 - attempt to fix bug where refuses to release +use on menu exit, since the Steam update. (failed)
-	//CLIENT_COMMAND( pPlayer->edict(), "-use" );
-	//pPlayer->m_afButtonReleased = IN_USE;
-	//pPlayer->pev->button = 0;
-	//pPlayer->m_StatusFlags = ClearBits(pPlayer->m_StatusFlags,IN_USE);
-	CLIENT_COMMAND(pPlayer->edict(), "+use;-use\n");
-
 	mslist<menuoption_t> &Menuoptions = m_MenuOptions[pPlayer->entindex()];
 
 	//Thothie JAN2008a - need a way of dealing with canceled menus

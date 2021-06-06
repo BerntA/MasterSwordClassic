@@ -60,6 +60,7 @@ int CL_ButtonBits(int);
 
 // xxx need client dll function to get and clear impuse
 extern cvar_t *in_joystick;
+extern float g_fMenuLastClosed;
 
 int in_impulse = 0;
 int in_cancel = 0;
@@ -805,6 +806,12 @@ void DLLEXPORT CL_CreateMove(float frametime, struct usercmd_s *cmd, int active)
 	// set button and flag bits
 	//
 	cmd->buttons = CL_ButtonBits(1);
+
+	if ((cmd->buttons & IN_USE) && ((gEngfuncs.GetClientTime() - g_fMenuLastClosed) < 0.5f))
+	{
+		cmd->buttons &= ~IN_USE;
+		IN_UseUp();
+	}
 
 	// If they're in a modal dialog, ignore the attack button.
 	if (GetClientVoiceMgr()->IsInSquelchMode())
