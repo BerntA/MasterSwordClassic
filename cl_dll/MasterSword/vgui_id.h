@@ -7,6 +7,7 @@ class VGUI_ID : public Panel
 public:
 	VGUI_FadeText *m_Label[2];
 	entinfo_t *m_LastID;
+	cl_entity_s *m_pClientEnt;
 
 	VGUI_ID(Panel *pParent, int x, int y) : Panel(x, y, XRES(200), YRES(36))
 	{
@@ -19,45 +20,89 @@ public:
 			m_Label[i]->setFont(g_FontID);
 		}
 		m_Label[0]->SetFGColorRGB(Color_Text_White);
+
+		m_LastID = NULL;
+		m_pClientEnt = NULL;
+	}
+
+	void SetStatus(void)
+	{
+		if (m_LastID == NULL)
+			return;
+
+		static char pchOutputString[MSSTRING_SIZE];
+		_snprintf(pchOutputString, MSSTRING_SIZE, "%s", m_LastID->Name.c_str());
+
+		if (m_pClientEnt == NULL)
+		{
+			m_Label[0]->setText(pchOutputString);
+			return;
+		}
+
+		int maxHP = ((int)m_pClientEnt->curstate.vuser3.x);
+		int currHP = ((int)m_pClientEnt->curstate.vuser3.y);
+		if ((maxHP <= 0) || (currHP <= 0))
+		{
+			m_Label[0]->setText(pchOutputString);
+			return;
+		}
+
+		_snprintf(pchOutputString, MSSTRING_SIZE, "%s (%i / %i)", m_LastID->Name.c_str(), currHP, maxHP);
+		m_Label[0]->setText(pchOutputString);
 	}
 
 	void Update(entinfo_t *pEntInfo)
 	{
+		SetStatus();
+
 		if (pEntInfo == m_LastID)
 			return;
 
 		if (pEntInfo)
 		{
-			entinfo_t &EntInfo = *pEntInfo;
-			m_Label[0]->setText(EntInfo.Name);
-
 			msstring String;
 			COLOR DifficultyColor = COLOR(0, 255, 0, 0);
-			if (EntInfo.Type == ENT_FRIENDLY)
+
+			switch (pEntInfo->Type)
+			{
+
+			case ENT_FRIENDLY:
 			{
 				String = "Friendly";
 				DifficultyColor = COLOR(0, 255, 0, 0);
+				break;
 			}
-			else if (EntInfo.Type == ENT_WARY)
+
+			case ENT_WARY:
 			{
 				String = "Wary";
 				DifficultyColor = COLOR(255, 255, 0, 0);
+				break;
 			}
-			else if (EntInfo.Type == ENT_HOSTILE)
+
+			case ENT_HOSTILE:
 			{
 				String = "Hostile";
 				DifficultyColor = COLOR(255, 0, 0, 0);
+				break;
 			}
-			else if (EntInfo.Type == ENT_DEADLY)
+
+			case ENT_DEADLY:
 			{
 				String = "Deadly";
 				DifficultyColor = COLOR(255, 0, 0, 0);
+				break;
 			}
-			else if (EntInfo.Type == ENT_BOSS)
+
+			case ENT_BOSS:
 			{
 				String = "Elite";
 				DifficultyColor = COLOR(255, 128, 0, 0);
+				break;
 			}
+
+			}
+
 			m_Label[1]->setText(String);
 			m_Label[1]->SetFGColorRGB(DifficultyColor);
 			m_Label[0]->StartFade(false);
@@ -75,6 +120,8 @@ public:
 		}
 
 		m_LastID = pEntInfo;
+		m_pClientEnt = (pEntInfo ? gEngfuncs.GetEntityByIndex(pEntInfo->entindex) : NULL);
+		SetStatus();
 		for (int i = 0; i < 2; i++)
 			m_Label[i]->Update();
 	}

@@ -491,6 +491,9 @@ void CMSMonster::KeyValue(KeyValueData *pkvd)
 //	�����
 void CMSMonster ::Think()
 {
+	pev->vuser3.x = MaxHP();
+	pev->vuser3.y = pev->health;
+	pev->vuser3.z = 0.0f;
 
 	//dbg( "Start" );
 	pev->ltime = gpGlobals->time;

@@ -2237,6 +2237,8 @@ int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *ho
 	state->skin = ent->v.skin;
 	state->effects = ent->v.effects;
 
+	memcpy(state->vuser3, ent->v.vuser3, 3 * sizeof(float));
+
 	// This non-player entity is being moved by the game .dll and not the physics simulation system
 	//  make sure that we interpolate it's position on the client if it moves
 	/*if ( !player &&
