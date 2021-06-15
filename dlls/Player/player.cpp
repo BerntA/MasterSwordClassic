@@ -1158,9 +1158,9 @@ void CBasePlayer::CinematicCamera(BOOL OnorOff, Vector vecPosition, Vector vecVi
 	else
 	{
 		m_afPhysicsFlags &= ~PFLAG_OBSERVER;
+		SET_VIEW(edict(), edict()); // Fixes invis ents if you died b4 changelevel, disconnect, etc.
 		if (CamEntity)
 		{
-			SET_VIEW(edict(), edict());
 			CamEntity->SUB_Remove();
 			CamEntity = NULL;
 		}

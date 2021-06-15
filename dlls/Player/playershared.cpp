@@ -1233,8 +1233,14 @@ void CBasePlayer::Deactivate()
 	m_Companions.clear();
 #ifdef VALVE_DLL
 	m_ClientItems.clear();
+	
+	if (CamEntity) // Delete this, if present. (fix mem leak if in death cam + disconnects)
+	{
+		CamEntity->SUB_Remove();
+		CamEntity = NULL;
+	}
 #endif
-
+	
 	CMSMonster::Deactivate();
 }
 
