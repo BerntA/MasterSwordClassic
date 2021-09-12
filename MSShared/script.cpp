@@ -2642,7 +2642,7 @@ msstring CScript::ScriptGetter_ItemExists(msstring &FullName, msstring &ParserNa
 				//- this be a hack, since we're using a return to do a method, one side effect is item doesn't vanish proper on the client
 				pPlayer->RemoveItem(ItemDesc.retItem);
 			}
-			if (Flags.contains("name") || !Flags.contains("partial"))
+			if (Flags.contains("name") && !Flags.contains("partial"))
 			{
 				//Thothie hack - more hax, I'm sure way to get an item's proper name from the item list without spawning it
 				//- however, I dun think I have time to figure it out before the next release. This at least works without issue.
