@@ -25,6 +25,7 @@ void safemem_varbase::Register()
 	Alloc();   //Alloc mem
 	Encrypt(); //Ecrypt for the first time.  Sets m_CheckSum and m_Key
 }
+
 void safemem_varbase::Alloc()
 {
 	startdbg;
@@ -36,7 +37,6 @@ void safemem_varbase::Alloc()
 
 	if (!pData)
 	{
-		MessageBox(NULL, "Could not allocate new buffer!", ENCRYPT_TITLE, MB_OK);
 		exit(0);
 		return;
 	}
@@ -66,9 +66,6 @@ void safemem_varbase::Encrypt()
 	ulong NewKey = GetTickCount(); //Validate old key
 	if (m_Key > NewKey)
 	{
-#ifdef DEV_BUILD
-		MessageBox(NULL, "Memory inconsistancy detected!", ENCRYPT_TITLE, MB_OK);
-#endif
 		Sleep(3000);
 		exit(0); //Harshly exit, on failure
 	}
@@ -136,9 +133,6 @@ void safemem_varbase::Decrypt() const
 	dbg("Validate");
 	if (CheckSum != m_CheckSum) //Validate Checksum
 	{
-#ifdef DEV_BUILD
-		MessageBox(NULL, "Memory inconsistancy detected!", ENCRYPT_TITLE, MB_OK);
-#endif
 		Sleep(3000);
 		exit(0); //Harshly exit, on failure
 	}
