@@ -1,6 +1,12 @@
 #define WIN32_LEAN_AND_MEAN
 
+#ifdef _WIN32
 #include "windows.h"
+#else
+#include <unistd.h> // usleep
+#define Sleep sleep
+#endif
+
 #include "memory"
 #include "sharedutil.h"
 #include "logfile.h"
