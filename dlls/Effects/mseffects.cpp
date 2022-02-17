@@ -210,7 +210,8 @@ public:
 		else if (pCaller && pCaller->IsPlayer())
 			pPlayer = (CBasePlayer *)pCaller;
 
-		pPlayer->pev->maxspeed = 0;
+		if (pPlayer)
+			pPlayer->pev->maxspeed = 0;
 	}
 };
 

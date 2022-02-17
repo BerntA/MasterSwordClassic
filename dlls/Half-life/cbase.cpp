@@ -143,14 +143,10 @@ int DispatchSpawn(edict_t *pent)
 {
 	DBG_INPUT;
 
-	CBaseEntity *pSound = UTIL_FindEntityByClassname(NULL, "soundent");
-
 	startdbg;
-	msstring classname = STRING(pent->v.classname);
 
 	//Set_DispatchSpawnDbg( "Begin" );
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
-
 	if (pEntity)
 	{
 		// Initialize these or entities who don't link to the world won't have anything in here

@@ -292,8 +292,6 @@ int GetAnimationEvent(void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEven
 	if (!pstudiohdr || pev->sequence >= pstudiohdr->numseq || !pMonsterEvent)
 		return 0;
 
-	int events = 0;
-
 	mstudioseqdesc_t *pseqdesc;
 	mstudioevent_t *pevent;
 
