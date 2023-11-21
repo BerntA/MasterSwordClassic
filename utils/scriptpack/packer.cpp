@@ -1,8 +1,8 @@
 #include "cbase.h"
 #include "iostream"
-#include "../../MSShared/encrypt.h"
-#include "../../MSShared/sharedutil.h"
-#include "../../MSShared/msfileio.h"
+#include "MS/encrypt.h"
+#include "MS/sharedutil.h"
+#include "MS/msfileio.h"
 
 using namespace std;
 

@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 $Macro SRCDIR		"..\.."
-$Macro OUTBINDIR	"$SRCDIR\bin"
+$Macro OUTBINDIR	"$SRCDIR\build"
 
 $Include "$SRCDIR\vpc_scripts\source_exe_con_base.vpc"
 
@@ -12,7 +12,7 @@ $Configuration
 {	
 	$Compiler
 	{
-		$AdditionalIncludeDirectories	"$BASE;.\;..\..\dlls;..\..\MSShared"
+		$AdditionalIncludeDirectories	"$BASE;.\;$SRCDIR\game\server;$SRCDIR\game\shared"
 		$PreprocessorDefinitions		"$BASE;NOT_HLDLL"
 		$PreprocessorDefinitions		"$BASE;SWDS" [$POSIX]
 	}
@@ -23,16 +23,16 @@ $Configuration
 	}
 }
 
-$Project "scriptpack"
+$Project "ScriptPack"
 {
 	$Folder	"Source Files"
 	{
-		$File "..\..\MSShared\encrypt.cpp"
-		$File "..\..\MSShared\GroupFile.cpp"
-		$File "..\..\MSShared\msfileio.cpp"
-		$File "..\..\MSShared\stackstring.cpp"
-		$File "..\..\MSShared\encrypt.h"
-		$File "..\..\MSShared\GroupFile.h"
+		$File "$SRCDIR\game\shared\MS\encrypt.cpp"
+		$File "$SRCDIR\game\shared\MS\GroupFile.cpp"
+		$File "$SRCDIR\game\shared\MS\msfileio.cpp"
+		$File "$SRCDIR\game\shared\MS\stackstring.cpp"
+		$File "$SRCDIR\game\shared\MS\encrypt.h"
+		$File "$SRCDIR\game\shared\MS\GroupFile.h"
 		$File "packer.cpp"
 		$File "scriptpack.cpp"
 		$File "packer.h"

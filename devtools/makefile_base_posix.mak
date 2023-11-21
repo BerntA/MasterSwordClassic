@@ -17,7 +17,9 @@ OS := $(shell uname)
 HOSTNAME := $(shell hostname)
 
 -include $(SRCROOT)/devtools/steam_def.mak
--include $(SRCROOT)/devtools/sourcesdk_def.mak
+
+SOURCE_SDK=1
+VALVE_NO_AUTO_P4=1
 
 # To build with clang, set the following in your environment:
 #   CC = clang

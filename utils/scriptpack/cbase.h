@@ -8,7 +8,8 @@
 #include "windows.h"
 #include "stdio.h"
 #include "packer.h"
-#include "../../MSShared/groupfile.h"
-void Print(char *szFmt, ...);
+#include "MS/groupfile.h"
+
+void Print(char* szFmt, ...);
 
 #endif // CBASE_H

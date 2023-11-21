@@ -1,0 +1,413 @@
+//-----------------------------------------------------------------------------
+//	CLIENT.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$Macro SRCDIR		"..\.."
+$Macro GAMENAME 	"msc"
+$Macro OUTBINNAME	"client"
+$Macro OUTBINDIR	"$SRCDIR\build"
+
+$Include "$SRCDIR\vpc_scripts\source_dll_base.vpc"
+
+$Configuration	"Debug"
+{
+	$General
+	{
+		$OutputDirectory			".\Debug"			[$WIN32]
+		$IntermediateDirectory		".\Debug"			[$WIN32]
+	}
+}
+
+$Configuration	"Release"
+{
+	$General
+	{
+		$OutputDirectory			".\Release"		[$WIN32]
+		$IntermediateDirectory		".\Release"		[$WIN32]
+	}
+}
+
+$Configuration
+{
+	$General
+	{
+			$OutputDirectory			".\$GAMENAME"		[$OSXALL]
+	}
+
+	$Compiler
+	{
+		$AdditionalIncludeDirectories	".\;$BASE;$SRCDIR/thirdparty;$SRCDIR/utils/vgui/include;$SRCDIR/public/engine;$SRCDIR/common;$SRCDIR/game/shared/movement;$SRCDIR/game/server;$SRCDIR/game/server/Half-life;$SRCDIR/game/shared;$SRCDIR/game/shared/MS;./MasterSword"
+		$PreprocessorDefinitions		"$BASE;ISCLIENT;CLIENT_WEAPONS;VERSION_SAFE_STEAM_API_INTERFACES;USE_BREAKPAD_HANDLER"
+		
+		// Remove warnings from warning level 4.
+		// 4514  warning C4514: 'acosl' : unreferenced inline function has been removed
+		// 4100  warning C4100: 'hwnd' : unreferenced formal parameter
+		// 4127  warning C4127: conditional expression is constant
+		// 4512  warning C4512: 'InFileRIFF' : assignment operator could not be generated
+		// 4611  warning C4611: interaction between '_setjmp' and C++ object destruction is non-portable
+		// 4710  warning C4710: function 'x' not inlined
+		// 4702  warning C4702: unreachable code
+		// 4505  unreferenced local function has been removed
+		// 4239  nonstandard extension used : 'argument' ( conversion from class Vector to class Vector& 
+		// 4097  typedef-name 'BaseClass' used as synonym for class-name 'CFlexCycler::CBaseFlex'
+		// 4324  Padding was added at the end of a structure
+		// 4244  type conversion warning.
+		// 4305  truncation from 'const double ' to 'float '
+		// 4786  Disable warnings about long symbol names
+		// 4250  'X' : inherits 'Y::Z' via dominance
+		// 4201  nonstandard extension used : nameless struct/union
+		// 4481  warning C4481: nonstandard extension used: override specifier 'override'
+		// 4748  warning C4748: /GS can not protect parameters and local variables from local buffer overrun because optimizations are disabled in function
+		// 4511 Disable warnings about private copy constructors
+		// 4121 warning C4121: 'symbol' : alignment of a member was sensitive to packing
+		// 4530 warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc (disabled due to std headers having exception syntax
+		// 4996 functions declared deprecated
+		// 4267 conversion from 'size_t' to 'int', possible loss of data
+		// 4311 pointer truncation from 'char *' to 'int'
+		// 4312 conversion from 'unsigned int' to 'memhandle_t' of greater size
+		$DisableSpecificWarnings	"$BASE;4100;4514;4127;4512;4611;4710;4702;4505;4239;4097;4324;4244;4305;4786;4250;4201;4481;4748;4511;4121;4530;4996;4267;4311;4312" [$WIN32]
+	}
+
+	$Linker
+	{
+		$IgnoreImportLibrary			"TRUE"
+		$AdditionalDependencies			"$BASE winmm.lib glaux.lib glu32.lib opengl32.lib"	[$WIN32]
+		$AdditionalDependencies			"$BASE wsock32.lib Ws2_32.lib" [$WIN32||$LINUXALL]
+	}
+}
+
+$Project "Client"
+{	
+	$Folder	"HL1"
+	{
+		$File ".\ammo_secondary.cpp"
+		$File ".\ammohistory.cpp"
+		$File ".\cdll_int.cpp"
+		$File ".\com_weapons.cpp"
+		$File ".\death.cpp"
+		$File ".\demo.cpp"
+		$File ".\ev_common.cpp"
+		$File ".\events.cpp"
+		$File ".\flashlight.cpp"
+		$File ".\geiger.cpp"
+		$File ".\hud_servers.cpp"
+		$File "hud_spectator.cpp"
+		$File ".\hud_update.cpp"
+		$File ".\message.cpp"
+		$File ".\parsemsg.cpp"
+		$File ".\parsemsg.h"
+		$File "$SRCDIR\game\shared\movement\pm_math.c"
+		$File ".\saytext.cpp"
+		$File ".\status_icons.cpp"
+		$File ".\statusbar.cpp"
+		$File ".\text_message.cpp"
+		$File ".\train.cpp"
+		$File ".\util.cpp"
+		$File "$SRCDIR\game\shared\vgui_checkbutton2.cpp"
+		$File ".\vgui_consolepanel.cpp"
+		$File ".\vgui_controlconfigpanel.cpp"
+		$File ".\vgui_customobjects.cpp"
+		$File "$SRCDIR\game\shared\vgui_grid.cpp"
+		$File "$SRCDIR\game\shared\vgui_helpers.cpp"
+		$File ".\vgui_int.cpp"
+		$File "$SRCDIR\game\shared\vgui_listbox.cpp"
+		$File "$SRCDIR\game\shared\vgui_loadtga.cpp"
+		$File ".\mastersword\vgui_localizedpanel.cpp"
+		$File ".\vgui_motdwindow.cpp"
+		$File ".\vgui_schememanager.cpp"
+		$File "$SRCDIR\game\shared\vgui_scrollbar2.cpp"
+		$File "$SRCDIR\game\shared\vgui_slider2.cpp"
+		$File "vgui_spectatorpanel.cpp"
+		$File "$SRCDIR\game\shared\voice_banmgr.cpp"
+		$File "$SRCDIR\game\shared\voice_status.cpp"
+		$File "$SRCDIR\game\shared\voice_vgui_tweakdlg.cpp"
+		$File ".\ev_hldm.cpp"
+		$File ".\gamestudiomodelrenderer.cpp"
+		$File ".\hl\hl_events.cpp"
+		$File ".\soundsystem.cpp"
+		$File ".\studio_util.cpp"
+		$File ".\ammohistory.h"
+		$File "$SRCDIR\game\server\cbase.h"
+		$File ".\hl\hl_baseentity.cpp"
+		$File ".\hud.cpp"
+		$File ".\hud.h"
+		$File ".\hud_msg.cpp"
+		$File ".\hud_redraw.cpp"
+		$File ".\mastersword\hudbase.h"
+		$File ".\in_camera.cpp"
+		$File ".\input.cpp"
+		$File ".\inputw32.cpp"
+		$File "$SRCDIR\common\mathlib.h"
+		$File ".\view.cpp"
+		
+		$Folder	"Headers"
+		{
+			$File "$SRCDIR\public\engine\cdll_int.h"
+			$File "$SRCDIR\common\cl_entity.h"
+			$File "cl_util.h"
+			$File "$SRCDIR\common\com_model.h"
+			$File "$SRCDIR\common\const.h"
+			$File "$SRCDIR\common\dlight.h"
+			$File "$SRCDIR\common\entity_state.h"
+			$File ".\hud_servers_priv.h"
+			$File "hud_spectator.h"
+			$File ".\vgui_consolepanel.h"
+			$File ".\vgui_controlconfigpanel.h"
+			$File ".\vgui_int.h"
+			$File "$SRCDIR\utils\vgui\include\vgui_panel.h"
+			$File ".\vgui_schememanager.h"
+			$File ".\vgui_serverbrowser.h"
+		}
+	}
+	
+	$Folder	"SDK2013"
+	{
+		$File "$SRCDIR\public\archtypes.h"
+		$File "$SRCDIR\thirdparty\sdl2\begin_code.h"
+		$File "$SRCDIR\thirdparty\sdl2\close_code.h"
+		$File ".\exports.h"
+		$File "$SRCDIR\public\filesystem.h"
+		$File "$SRCDIR\public\cl_dll\igameclientexports.h"
+		$File "$SRCDIR\public\interface.cpp"
+		$File "$SRCDIR\public\interface.h"
+		$File "$SRCDIR\public\keydefs.h"
+		$File "$SRCDIR\public\particleman.h"
+		$File "$SRCDIR\public\pman_particlemem.h"
+		$File "$SRCDIR\public\pman_triangleffect.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_assert.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_atomic.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_audio.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_bits.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_blendmode.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_clipboard.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_config.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_config_android.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_config_iphoneos.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_config_macosx.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_config_minimal.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_config_nintendods.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_config_pandora.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_config_windows.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_config_wiz.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_copying.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_cpuinfo.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_endian.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_error.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_events.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_gamecontroller.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_gesture.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_haptic.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_hints.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_input.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_joystick.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_keyboard.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_keycode.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_loadso.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_log.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_main.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_messagebox.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_mouse.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_mutex.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_name.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_opengl.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_opengles.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_opengles2.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_pixels.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_platform.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_power.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_quit.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_rect.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_render.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_revision.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_rwops.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_scancode.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_shape.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_stdinc.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_surface.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_system.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_syswm.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_test.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_test_assert.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_test_common.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_test_compare.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_test_crc32.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_test_font.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_test_fuzzer.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_test_harness.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_test_images.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_test_log.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_test_md5.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_test_random.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_thread.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_timer.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_touch.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_types.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_version.h"
+		$File "$SRCDIR\thirdparty\sdl2\sdl_video.h"
+		$File "$SRCDIR\public\steam\steamtypes.h"	
+	}
+	
+	$Folder	"MS"
+	{
+		$File ".\mastersword\action.cpp"
+		$File "mastersword\clglobal.cpp"
+		$File ".\mastersword\opengl\clopengl.cpp"
+		$File ".\mastersword\opengl\clopengl.h"
+		$File ".\mastersword\clplayer.cpp"
+		$File ".\mastersword\clrender.cpp"
+		$File ".\mastersword\clrenderent.cpp"
+		$File ".\mastersword\clrendermirror.cpp"
+		$File ".\entity.cpp"
+		$File ".\mastersword\fatigue.cpp"
+		$File ".\mastersword\health.cpp"
+		$File ".\mastersword\hudid.cpp"
+		$File ".\mastersword\hudmagic.cpp"
+		$File ".\mastersword\hudmisc.cpp"
+		$File ".\mastersword\hudmusic.cpp"
+		$File ".\mastersword\hudscript.cpp"
+		$File ".\mastersword\menu.cpp"
+		$File ".\mastersword\msnetcodeclient.cpp"
+		$File "$SRCDIR\game\shared\movement\pm_shared.cpp"
+		$File ".\studiomodelrenderer.cpp"
+		$File "$SRCDIR\thirdparty\tartan\textureloader.cpp"
+		$File "$SRCDIR\thirdparty\tartan\tgaloader.cpp"
+		
+		$Folder	"Generic Item"
+		{
+			$File "$SRCDIR\game\server\weapons\genericitem.cpp"
+			$File "$SRCDIR\game\server\weapons\genericitem.h"
+			$File "$SRCDIR\game\server\weapons\giarmor.cpp"
+			$File "$SRCDIR\game\server\weapons\giattack.cpp"
+			$File "$SRCDIR\game\server\weapons\gidrinkable.cpp"
+			$File "$SRCDIR\game\server\weapons\gipack.cpp"
+		}
+		
+		$Folder	"VGUI"
+		{
+			$File ".\mastersword\vgui_choosecharacter.cpp"
+			$File ".\mastersword\vgui_container.cpp"
+			$File ".\mastersword\vgui_containerlist.cpp"
+			$File "mastersword\vgui_eventconsole.h"
+			$File ".\mastersword\vgui_global.cpp"
+			$File ".\mastersword\vgui_health.h"
+			$File ".\mastersword\vgui_hud.cpp"
+			$File ".\mastersword\vgui_id.h"
+			$File "mastersword\vgui_infowin.h"
+			$File ".\mastersword\vgui_menu_interact.h"
+			$File ".\mastersword\vgui_menu_main.h"
+			$File ".\mastersword\vgui_menubase.cpp"
+			$File ".\mastersword\vgui_mscontrols.cpp"
+			$File ".\mastersword\vgui_options.cpp"
+			$File ".\mastersword\vgui_quickslot.h"
+			$File ".\vgui_scorepanel.cpp"
+			$File ".\vgui_serverbrowser.cpp"
+			$File ".\mastersword\vgui_spawn.cpp"
+			$File ".\mastersword\vgui_startsaytext.h"
+			$File ".\mastersword\vgui_stats.cpp"
+			$File ".\mastersword\vgui_storage.cpp"
+			$File ".\mastersword\vgui_store.cpp"
+			$File ".\mastersword\vgui_storebuy.cpp"
+			$File ".\mastersword\vgui_storemainwin.cpp"
+			$File ".\mastersword\vgui_storesell.cpp"
+			$File ".\vgui_teamfortressviewport.cpp"
+			$File ".\mastersword\vgui_vote.h"
+			$File "mastersword\vgui_choosecharacter.h"
+			$File ".\mastersword\vgui_container.h"
+			$File ".\mastersword\vgui_containerlist.h"
+			$File ".\mastersword\vgui_global.h"
+			$File ".\mastersword\vgui_hud.h"
+			$File ".\mastersword\vgui_menubase.h"
+			$File "mastersword\vgui_mscontrols.h"
+			$File ".\mastersword\vgui_options.h"
+			$File ".\vgui_scorepanel.h"
+			$File ".\mastersword\vgui_spawn.h"
+			$File ".\mastersword\vgui_stats.h"
+			$File ".\mastersword\vgui_storage.h"
+			$File ".\mastersword\vgui_storebuy.h"
+			$File ".\mastersword\vgui_storemainwin.h"
+			$File ".\mastersword\vgui_storesell.h"
+			$File ".\vgui_teamfortressviewport.h"
+		}
+		
+		$Folder	"Headers"
+		{
+			$File ".\mastersword\clenv.h"
+			$File "mastersword\clglobal.h"
+			$File ".\mastersword\clrender.h"
+			$File "$SRCDIR\game\shared\MS\encrypt.h"
+			$File "$SRCDIR\game\shared\MS\global.h"
+			$File "$SRCDIR\game\shared\MS\groupfile.h"
+			$File ".\mastersword\health.h"
+			$File ".\mastersword\hudid.h"
+			$File "mastersword\hudmagic.h"
+			$File ".\mastersword\hudmisc.h"
+			$File ".\mastersword\hudmusic.h"
+			$File ".\mastersword\hudscript.h"
+			$File ".\inc_huditem.h"
+			$File ".\mastersword\menu.h"
+			$File "$SRCDIR\game\shared\MS\msfileio.h"
+			$File "$SRCDIR\game\server\monsters\msmonster.h"
+			$File "mastersword\msnetcodeclient.h"
+			$File "$SRCDIR\game\server\player\player.h"
+			$File "$SRCDIR\game\server\stats\statdefs.h"
+			$File "studiomodelrenderer.h"
+			$File "$SRCDIR\game\server\weapons\weapons.h"
+		}
+	}
+	
+	$Folder	"Shared"
+	{
+		$File "$SRCDIR\game\shared\MS\buildcontrol.h"
+		$File "$SRCDIR\game\shared\MS\dbginputs.cpp"
+		$File "$SRCDIR\game\shared\MS\encrypt.cpp"
+		$File "$SRCDIR\game\server\genitemlist.cpp"
+		$File "$SRCDIR\game\shared\MS\global.cpp"
+		$File "$SRCDIR\game\shared\MS\globalmem.cpp"
+		$File "$SRCDIR\game\shared\MS\groupfile.cpp"
+		$File "$SRCDIR\game\server\logfile.h"
+		$File "$SRCDIR\game\shared\MS\mem_encrypt.cpp"
+		$File "$SRCDIR\game\shared\MS\mem_encrypt.h"
+		$File "$SRCDIR\game\shared\MS\msbasic.h"
+		$File "$SRCDIR\game\shared\MS\mscharacter.cpp"
+		$File "$SRCDIR\game\shared\MS\msdebug.h"
+		$File "$SRCDIR\game\shared\MS\msfileio.cpp"
+		$File "$SRCDIR\game\shared\MS\msmonstershared.cpp"
+		$File "$SRCDIR\game\shared\MS\msnetcode.cpp"
+		$File "$SRCDIR\game\shared\MS\msnetcode.h"
+		$File "$SRCDIR\game\shared\MS\music.h"
+		$File "$SRCDIR\game\shared\MS\netcodeshared.cpp"
+		$File "$SRCDIR\game\server\player\playershared.cpp"
+		$File "$SRCDIR\game\server\stats\races.cpp"
+		$File "$SRCDIR\game\shared\MS\script.cpp"
+		$File "$SRCDIR\game\shared\MS\script.h"
+		$File "$SRCDIR\game\shared\MS\scriptcmds.cpp"
+		$File "$SRCDIR\game\shared\MS\scriptedeffects.cpp"
+		$File "$SRCDIR\game\shared\MS\scriptedeffects.h"
+		$File "$SRCDIR\game\shared\MS\sharedmenu.h"
+		$File "$SRCDIR\game\shared\MS\sharedutil.cpp"
+		$File "$SRCDIR\game\shared\MS\sharedutil.h"
+		$File "$SRCDIR\game\shared\MS\stackstring.cpp"
+		$File "$SRCDIR\game\shared\MS\stackstring.h"
+		$File "$SRCDIR\game\server\stats\stats.cpp"
+		$File "$SRCDIR\game\server\store.h"
+		$File "$SRCDIR\game\server\syntax\syntax.cpp"
+		$File "$SRCDIR\game\shared\MS\votedefs.h"
+		$File "$SRCDIR\game\server\weapons\weapons.cpp"
+		$File ".\mastersword\vgui_localizedpanel.h"
+		$File ".\vgui_status.h"
+	}
+	
+	$Folder	"Link Libraries"
+	{		
+		$ImpLib     cg
+		$ImpLib     cgGL
+		$ImpLib     Glaux
+		$ImpLib		game_controls
+		$ImpLib     vgui
+		$ImpLib     SDL2
+		$ImpLib 	steam_api
+ 	}
+}

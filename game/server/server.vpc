@@ -1,0 +1,260 @@
+//-----------------------------------------------------------------------------
+//	SERVER.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$Macro SRCDIR		"..\.."
+$Macro GAMENAME 	"msc"
+$Macro OUTBINNAME	"ms"
+$Macro OUTBINDIR	"$SRCDIR\build"
+
+$include "$SRCDIR\vpc_scripts\source_dll_base.vpc"
+
+$Configuration	"Debug"
+{
+	$General
+	{
+		$OutputDirectory		".\Debug"			[$WIN32]
+		$IntermediateDirectory	".\Debug"			[$WIN32]
+	}
+}
+
+$Configuration	"Release"
+{
+	$General
+	{
+		$OutputDirectory		".\Release"		[$WIN32]
+		$IntermediateDirectory	".\Release"		[$WIN32]
+	}
+}
+
+$Configuration
+{
+	$General
+	{
+		$OutputDirectory		".\$GAMENAME"		[$OSXALL]
+	}
+	
+	$Compiler
+	{
+		$AdditionalIncludeDirectories	".\;$BASE;$SRCDIR/public/engine;$SRCDIR/common;$SRCDIR/game/shared/movement;$SRCDIR/game/shared;$SRCDIR/game/shared/MS;./Effects;./gamerules;./Global;./Half-life;./Items;./Monsters;./Player;./Stats;./Syntax;./Weapons"
+		$PreprocessorDefinitions		"$BASE;VALVE_DLL"
+		$PreprocessorDefinitions		"$BASE;SWDS" [$POSIX]
+		
+		// Remove warnings from warning level 4.
+		// 4514  warning C4514: 'acosl' : unreferenced inline function has been removed
+		// 4100  warning C4100: 'hwnd' : unreferenced formal parameter
+		// 4127  warning C4127: conditional expression is constant
+		// 4512  warning C4512: 'InFileRIFF' : assignment operator could not be generated
+		// 4611  warning C4611: interaction between '_setjmp' and C++ object destruction is non-portable
+		// 4710  warning C4710: function 'x' not inlined
+		// 4702  warning C4702: unreachable code
+		// 4505  unreferenced local function has been removed
+		// 4239  nonstandard extension used : 'argument' ( conversion from class Vector to class Vector& 
+		// 4097  typedef-name 'BaseClass' used as synonym for class-name 'CFlexCycler::CBaseFlex'
+		// 4324  Padding was added at the end of a structure
+		// 4244  type conversion warning.
+		// 4305  truncation from 'const double ' to 'float '
+		// 4786  Disable warnings about long symbol names
+		// 4250  'X' : inherits 'Y::Z' via dominance
+		// 4201  nonstandard extension used : nameless struct/union
+		// 4481  warning C4481: nonstandard extension used: override specifier 'override'
+		// 4748  warning C4748: /GS can not protect parameters and local variables from local buffer overrun because optimizations are disabled in function
+		// 4511 Disable warnings about private copy constructors
+		// 4121 warning C4121: 'symbol' : alignment of a member was sensitive to packing
+		// 4530 warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc (disabled due to std headers having exception syntax
+		// 4996 functions declared deprecated
+		// 4267 conversion from 'size_t' to 'int', possible loss of data
+		// 4311 pointer truncation from 'char *' to 'int'
+		// 4312 conversion from 'unsigned int' to 'memhandle_t' of greater size
+		$DisableSpecificWarnings	"$BASE;4100;4514;4127;4512;4611;4710;4702;4505;4239;4097;4324;4244;4305;4786;4250;4201;4481;4748;4511;4121;4530;4996;4267;4311;4312" [$WIN32]
+	}
+
+	$Linker
+	{
+		$AdditionalDependencies			"$BASE winmm.lib" [$WIN32]
+		$AdditionalDependencies			"$BASE wsock32.lib Ws2_32.lib" [$WIN32||$LINUXALL]
+		$SystemLibraries				"iconv" [$OSXALL]
+		$ModuleDefinitionFile			"$BASE $SRCDIR/game/server/ms.def"
+	}
+}
+
+$Project "Server"
+{	
+	$Folder	"HL1"
+	{
+		$File	".\half-life\animating.cpp"
+		$File	".\half-life\animation.cpp"
+		$File	".\half-life\buttons.cpp"
+		$File	".\half-life\defaultai.cpp"
+		$File	".\half-life\doors.cpp"
+		$File	".\half-life\explode.cpp"
+		$File	".\half-life\func_tank.cpp"
+		$File	".\half-life\globals.cpp"
+		$File	".\half-life\lights.cpp"
+		$File	".\half-life\monsters.cpp"
+		$File	".\half-life\monsterstate.cpp"
+		$File	".\half-life\nodes.cpp"
+		$File	".\half-life\pathcorner.cpp"
+		$File	".\half-life\plane.cpp"
+		$File	".\half-life\plats.cpp"
+		$File	".\half-life\schedule.cpp"
+		$File	".\half-life\scripted.cpp"
+		$File	".\shurispritedefs.h"
+		$File	".\half-life\skill.cpp"
+		$File	".\half-life\sound.cpp"
+		$File	".\half-life\spectator.cpp"
+		$File	".\half-life\subs.cpp"
+		$File	".\half-life\util.cpp"
+		$File	"$SRCDIR\game\shared\voice_gamemgr.cpp"
+		$File	".\basemonster.h"
+		$File	".\enginecallback.h"
+		$File	"half-life\monsters.h"
+		$File	"$SRCDIR\game\shared\movement\pm_defs.h"
+		$File	"$SRCDIR\game\shared\movement\pm_math.c"
+		$File	"$SRCDIR\game\shared\movement\pm_movevars.h"
+		$File	".\bmodels.cpp"
+		$File	".\half-life\cbase.cpp"
+		$File	".\cbase.h"
+		$File	"$SRCDIR\public\engine\progdefs.h"
+		$File	"$SRCDIR\common\const.h"
+		$File	".\cdll_dll.h"
+		$File	".\client.cpp"
+		$File	".\monsters\combat.cpp"
+		$File	".\effects.cpp"
+		$File	"half-life\extdll.h"
+		$File	".\func_break.cpp"
+		$File	".\game.cpp"
+		$File	"half-life\game.h"
+		$File	".\gamerules\gamerules.cpp"
+		$File	".\gamerules\gamerules.h"
+		$File	".\ggrenade.cpp"
+		$File	".\h_export.cpp"
+		$File	".\gamerules\multiplay_gamerules.cpp"
+		$File	".\half-life\soundent.cpp"
+		$File	"half-life\soundent.h"
+		$File	".\triggers.cpp"
+		$File	"half-life\util.h"
+		$File	".\weapons\weapons.cpp"
+		$File	".\weapons\weapons.h"
+		$File	".\global\world.cpp"
+	}
+	
+	$Folder	"MS"
+	{
+		$File	".\monsters\bodyparts\bodyparts.cpp"
+		$File	".\monsters\bodyparts\bodyparts_human.cpp"
+		$File	".\monsters\corpse.cpp"
+		$File	".\entity.cpp"
+		$File	".\magic.cpp"
+		$File	".\monsters\monsteranimation.cpp"
+		$File	".\mscentraltransaction_dll.cpp"
+		$File	".\effects\mseffects.cpp"
+		$File	"msmapents.cpp"
+		$File	".\monsters\msmonsterserver.cpp"
+		$File	"$SRCDIR\game\shared\MS\msmonstershared.cpp"
+		$File	"msnetcodeserver.cpp"
+		$File	"$SRCDIR\game\shared\MS\netcodeshared.cpp"
+		$File	".\monsters\npcact.cpp"
+		$File	"monsters\npcglobal.cpp"
+		$File	".\monsters\npcscript.cpp"
+		$File	".\player\player.cpp"
+		$File	"player\playerstats.cpp"
+		$File	"$SRCDIR\game\shared\movement\pm_shared.cpp"
+		$File	"$SRCDIR\game\shared\movement\pm_shared.h"
+		$File	"stats\races.cpp"
+		$File	".\items\shields\shield.cpp"
+		$File	".\store.cpp"
+		$File	".\sv_character.cpp"
+		$File	"svglobals.cpp"
+		$File	".\syntax\syntax.cpp"
+		$File	".\gamerules\team.cpp"	
+	
+		$Folder	"Generic Item"
+		{
+			$File	".\weapons\genericitem.cpp"
+			$File	".\weapons\genericitem.h"
+			$File	".\weapons\giarmor.cpp"
+			$File	".\weapons\giattack.cpp"
+			$File	".\weapons\gidrinkable.cpp"
+			$File	".\weapons\gipack.cpp"
+			$File	".\weapons\giprojectile.cpp"
+			$File	".\weapons\gispawn.cpp"
+			$File	".\weapons\gispell.cpp"
+		}
+		
+		$Folder	"Headers"
+		{
+			$File	".\monsters\bodyparts\bodyparts.h"
+			$File	".\monsters\bodyparts\bodyparts_human.h"
+			$File	".\monsters\corpse.h"
+			$File	"$SRCDIR\game\shared\MS\encrypt.h"
+			$File	"$SRCDIR\game\shared\MS\groupfile.h"
+			$File	".\player\modeldefs.h"
+			$File	".\monsters\monsteranimation.h"
+			$File	".\mscentral.h"
+			$File	"$SRCDIR\game\shared\MS\mscharacter.h"
+			$File	"$SRCDIR\game\shared\MS\mscharacterheader.h"
+			$File	"msdllheaders.h"
+			$File	".\effects\mseffects.h"
+			$File	"msgamerules.h"
+			$File	".\msitemdefs.h"
+			$File	".\monsters\msmonster.h"			
+			$File	"msnetcodeserver.h"
+			$File	".\player\player.h"
+			$File	".\stats\races.h"
+			$File	".\items\shields\shield.h"
+			$File	".\stats\statdefs.h"
+			$File	".\stats\stats.h"
+			$File	".\store.h"
+			$File	"svglobals.h"
+			$File	".\gamerules\teams.h"
+			$File	"$SRCDIR\game\shared\MS\titles.h"
+			$File	"$SRCDIR\game\shared\MS\votedefs.h"
+		}
+	}
+
+	$Folder	"Shared"
+	{
+		$File	"$SRCDIR\game\shared\MS\buildcontrol.h"
+		$File	"$SRCDIR\game\shared\MS\dbginputs.cpp"
+		$File	"$SRCDIR\game\shared\MS\encrypt.cpp"
+		$File	"genitemlist.cpp"
+		$File	"genitemlist.h"
+		$File	"$SRCDIR\game\shared\MS\global.cpp"
+		$File	"$SRCDIR\game\shared\MS\global.h"
+		$File	"$SRCDIR\game\shared\MS\globalmem.cpp"
+		$File	"$SRCDIR\game\shared\MS\groupfile.cpp"
+		$File	"$SRCDIR\game\shared\MS\iscript.h"
+		$File	".\logfile.h"
+		$File	"$SRCDIR\game\shared\MS\magic.h"
+		$File	"$SRCDIR\game\shared\MS\mem_encrypt.cpp"
+		$File	"$SRCDIR\game\shared\MS\mem_encrypt.h"
+		$File	"$SRCDIR\game\shared\MS\msbasic.h"
+		$File	"$SRCDIR\game\shared\MS\mscharacter.cpp"
+		$File	"$SRCDIR\game\shared\MS\msdebug.h"
+		$File	"$SRCDIR\game\shared\MS\msfileio.cpp"
+		$File	"$SRCDIR\game\shared\MS\msfileio.h"
+		$File	"$SRCDIR\game\shared\MS\msnetcode.cpp"
+		$File	"$SRCDIR\game\shared\MS\msnetcode.h"
+		$File	".\player\playershared.cpp"
+		$File	"$SRCDIR\game\shared\MS\script.cpp"
+		$File	"$SRCDIR\game\shared\MS\script.h"
+		$File	"$SRCDIR\game\shared\MS\scriptcmds.cpp"
+		$File	"$SRCDIR\game\shared\MS\scriptedeffects.cpp"
+		$File	"$SRCDIR\game\shared\MS\scriptedeffects.h"
+		$File	"$SRCDIR\game\shared\MS\sharedutil.cpp"
+		$File	"$SRCDIR\game\shared\MS\sharedutil.h"
+		$File	"$SRCDIR\game\shared\MS\stackstring.cpp"
+		$File	"$SRCDIR\game\shared\MS\stackstring.h"
+		$File	".\stats\stats.cpp"
+		$File	"$SRCDIR\game\shared\MS\storeshared.h"
+		$File	"$SRCDIR\game\shared\MS\versioncontrol.h"
+		$File	"$SRCDIR\game\shared\MS\vgui_menudefsshared.h"
+	}
+
+	$Folder	"Link Libraries" 
+	{
+	}
+}
